@@ -1,0 +1,40 @@
+﻿<Page x:Class="OxyPlotEx.DemoAppCore.Pages.StackedBarView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:OxyPlotEx.DemoAppCore.Pages"
+      xmlns:oxy="http://oxyplot.org/wpf"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="StackedBarView">
+
+
+    <UniformGrid  Columns="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>            
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <oxy:PlotView x:Name="plotView1" ></oxy:PlotView>
+            <TextBlock Grid.Row="1" Height="25">Stacked Bar</TextBlock>
+            <Button Grid.Row="2" Content="Reset" Width="100" Height="30" Click="Button_Click"></Button>
+            <ToggleButton Grid.Row="3" x:Name="ToggleButton1" Content="Is Stacked" Width="100" Height="30" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Checked"></ToggleButton>
+            
+        </Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            <oxy:PlotView x:Name="plotView2" ></oxy:PlotView>
+            <TextBlock Grid.Row="1" Height="25">Stacked Bar</TextBlock>
+  
+        </Grid>
+
+    </UniformGrid>
+ 
+</Page>
