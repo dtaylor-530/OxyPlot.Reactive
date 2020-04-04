@@ -1,4 +1,5 @@
 ﻿using OxyPlot;
+using OxyPlot.Axes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace OxyPlotEx
 
         public DataPoint GetDataPoint()
         {
-            return new DataPoint(DateTime.Ticks, Value);
+            return new DataPoint(DateTimeAxis.ToDouble(DateTime), Value);
         }
 
         public override string ToString()
