@@ -11,7 +11,7 @@ namespace OxyPlotEx.ViewModel
     using System.Reactive.Linq;
     using e = System.Linq.Enumerable;
 
-    public class LineModel<T> : MultiLineModel<T>
+    public class LineModel<T> : MultiDateTimeModel<T>
     {
 
         public LineModel(IDispatcher dispatcher, PlotModel model) : base(dispatcher, model)

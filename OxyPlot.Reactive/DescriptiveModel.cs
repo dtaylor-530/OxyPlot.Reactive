@@ -4,7 +4,6 @@ using OxyPlot;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
@@ -16,7 +15,7 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlotEx.ViewModel
 {
-    public class DescriptivePlotModel : IObserver<IDataPointProvider>, IObserver<string>
+    public class DescriptiveModel : IObserver<IDataPointProvider>, IObserver<string>
     {
 
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
@@ -26,7 +25,7 @@ namespace OxyPlotEx.ViewModel
         protected List<IDataPointProvider> DataPoints = new List<IDataPointProvider>();
         private string formatString = "X={2},\nY={4},\nAdditionalInfo={Description}";
 
-        public DescriptivePlotModel(IDispatcher dispatcher, PlotModel plotModel)
+        public DescriptiveModel(IDispatcher dispatcher, PlotModel plotModel)
         {
             this.dispatcher = dispatcher;
             this.plotModel = plotModel;
@@ -52,7 +51,7 @@ namespace OxyPlotEx.ViewModel
 
         public void OnCompleted() { }
 
-        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(DescriptivePlotModel)}");
+        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(DescriptiveModel)}");
 
         private void AddToDataPoints(IDataPointProvider item)
         {

@@ -14,17 +14,17 @@ using MoreLinq;
 
 namespace OxyPlotEx.ViewModel
 {
-    public class MultiLineModel<T> : MultiPlotModel<T, DateTime>, IObservable<DateTimePoint>, IObserver<int>
+    public class MultiDateTimeModel<T> : MultiPlotModel<T, DateTime>, IObservable<DateTimePoint>, IObserver<int>
     {
         readonly List<IDisposable> disposables = new List<IDisposable>();
         readonly Subject<DateTimePoint> subject = new Subject<DateTimePoint>();
         private int? count;
 
-        public MultiLineModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
         {
         }
 
-        public MultiLineModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
         {
         }
 

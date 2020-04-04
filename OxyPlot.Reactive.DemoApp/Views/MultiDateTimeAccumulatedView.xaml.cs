@@ -20,21 +20,21 @@ using System.Windows.Threading;
 namespace OxyPlotEx.DemoAppCore.Pages
 {
     /// <summary>
-    /// Interaction logic for MultiLineAccumulatedView.xaml
+    /// Interaction logic for MultiDateTimeModelAccumulatedView.xaml
     /// </summary>
-    public partial class MultiLineAccumulatedView
+    public partial class MultiDateTimeModelAccumulatedView
     {
-        private readonly MultiLineModelAccumulated<string> model2;
+        private readonly MultiDateTimeModelAccumulatedModel<string> model2;
         private readonly IDisposable disposable;
         Random random = new Random();
         DateTime now = DateTime.Now;
 
-        public MultiLineAccumulatedView()
+        public MultiDateTimeModelAccumulatedView()
         {
             InitializeComponent();
 
             plotView2.Model = new OxyPlot.PlotModel();
-            model2 = new MultiLineModelAccumulated<string>(new DispatcherX(this.Dispatcher), plotView2.Model) { ShowAll = true };
+            model2 = new MultiDateTimeModelAccumulatedModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model) { ShowAll = true };
             ProduceData(out var observable1, out var observable2);
          
             //var obs0 = observable1.Select((o, i) => new KeyValuePair<string, double>(o.Key, o.Value));

@@ -10,7 +10,7 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
-                    <Page Uri="\Views\DescriptivePlotView.xaml"
+                    <Page Uri="\Views\DescriptiveView.xaml"
                      Title="Descriptive Plot Series" />
                     
                     <Page Uri="\Views\ErrorBarView.xaml"
@@ -22,10 +22,10 @@
                     <Page Uri="\Views\HeatMapView.xaml"
                      Title="Heat Map Series" />
 
-                    <Page Uri="\Views\MultiLineView.xaml"
+                    <Page Uri="\Views\MultiDateTimeView.xaml"
                      Title="Multi Line Series" />
 
-                    <Page Uri="\Views\MultiLineAccumulatedView.xaml"
+                    <Page Uri="\Views\MultiDateTimeAccumulatedView.xaml"
                      Title="Multi Line Accumulated Series" />
 
                     <Page Uri="\Views\StackedBarView.xaml"

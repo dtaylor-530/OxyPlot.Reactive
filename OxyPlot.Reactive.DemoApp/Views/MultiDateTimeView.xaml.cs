@@ -20,18 +20,18 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// <summary>
     /// Interaction logic for LineView.xaml
     /// </summary>
-    public partial class MultiLineView : UserControl
+    public partial class MultiDateTimeModelView : UserControl
     {
-        public MultiLineView()
+        public MultiDateTimeModelView()
         {
             InitializeComponent();
 
             plotView.Model = new OxyPlot.PlotModel();
-            var model1 = new MultiLineModel<string>(new DispatcherX(this.Dispatcher), plotView.Model) { };
+            var model1 = new MultiDateTimeModel<string>(new DispatcherX(this.Dispatcher), plotView.Model) { };
             ProduceData().Subscribe(model1);
 
             plotView2.Model = new OxyPlot.PlotModel();
-            var model2 = new MultiLineModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model) { };
+            var model2 = new MultiDateTimeModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model) { };
 
             var array = new DataFactory().GetLine().Skip(100).Take(20).Select((o, i) =>
              {
@@ -50,7 +50,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
 
             plotView3.Model = new OxyPlot.PlotModel();
-            var model3 = new MultiLineModel<string>(new DispatcherX(this.Dispatcher), plotView3.Model) { };
+            var model3 = new MultiDateTimeModel<string>(new DispatcherX(this.Dispatcher), plotView3.Model) { };
             Observable.Return(10).Subscribe(model3);
             ProduceData().Subscribe(model3);
         }

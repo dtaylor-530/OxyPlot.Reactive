@@ -16,15 +16,15 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlotEx.ViewModel
 {
-    public class DescriptiveMultiPlotModel : MultiPlotModelBase<string,IDataPointProvider>
+    public class DescriptiveMultiModel : MultiPlotModelBase<string,IDataPointProvider>
     {
 
 
-        public DescriptiveMultiPlotModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public DescriptiveMultiModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
         {
         }
 
-        public DescriptiveMultiPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<string> comparer) : base(dispatcher, model, comparer)
+        public DescriptiveMultiModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<string> comparer) : base(dispatcher, model, comparer)
         {
         }
 

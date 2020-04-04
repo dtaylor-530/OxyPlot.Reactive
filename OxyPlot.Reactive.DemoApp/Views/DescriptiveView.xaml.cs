@@ -24,8 +24,8 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class DescriptivePlotView : Page
     {
-        private readonly DescriptivePlotModel sb;
-        private readonly DescriptiveMultiPlotModel sb2;
+        private readonly DescriptiveModel sb;
+        private readonly DescriptiveMultiModel sb2;
 
         //ViewModel.StackedBarModel sb;
 
@@ -37,13 +37,13 @@ namespace OxyPlotEx.DemoAppCore.Pages
             //plotView1.Model = sb.Model;
             //NewMethod1().Subscribe(sb);
             plotView1.Model = new OxyPlot.PlotModel();
-            sb = new ViewModel.DescriptivePlotModel(new DispatcherX(this.Dispatcher), plotView1.Model);
+            sb = new ViewModel.DescriptiveModel(new DispatcherX(this.Dispatcher), plotView1.Model);
             NewMethod().Subscribe(sb);
 
             CongfigureBindings(plotView1.ActualController);
 
             plotView2.Model = new PlotModel();
-            sb2 = new DescriptiveMultiPlotModel(new DispatcherX(this.Dispatcher), plotView2.Model);
+            sb2 = new DescriptiveMultiModel(new DispatcherX(this.Dispatcher), plotView2.Model);
             NewMethod2().Subscribe(sb2);
 
             CongfigureBindings2(plotView2.ActualController);

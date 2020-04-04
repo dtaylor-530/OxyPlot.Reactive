@@ -35,22 +35,15 @@ namespace OxyPlotEx.ViewModel
 
         public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel)
         {
-            if (plotModel == null)
-                throw new Exception("PlotModel is null");        
-            if (dispatcher == null)
-                throw new Exception("IDispatcher is null");    
-   
-            this.dispatcher = dispatcher;
-            this.plotModel = plotModel;
+            this.dispatcher = dispatcher ?? throw new ArgumentNullException("IDispatcher is null");
+            this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
             ModifyPlotModel();
             DataPoints = GetDataPoints();
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
         }
         public MultiPlotModelBase(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : this(dispatcher, model)
         {
-            if (comparer == null)
-                throw new Exception("PlotModel is null");
-            this.comparer = comparer;
+            this.comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
         }
 
         protected virtual void ModifyPlotModel() { }
@@ -75,7 +68,7 @@ namespace OxyPlotEx.ViewModel
             //throw new NotImplementedException();
         }
 
-        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiLineModelAccumulated<T>)}");
+        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiDateTimeModelAccumulatedModel<T>)}");
 
         private void AddToDataPoints(KeyValuePair<T, R> item)
         {
