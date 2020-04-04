@@ -33,6 +33,23 @@ namespace OxyPlotEx.ViewModel
             return lser;
         }
 
+        public static LineSeries Build(IEnumerable<IDataPointProvider> coll, string trackerFormatString, string title)
+        {
+            var lser = new LineSeries
+            {
+                Title = title,
+                StrokeThickness = 1,
+                Color = GetColor(title),
+                MarkerSize = 3,
+                ItemsSource = coll,
+                MarkerType = MarkerType.Plus,
+                TrackerFormatString = trackerFormatString
+            };
+
+            return lser;
+        }
+
+
         public static LineSeries Build(IEnumerable<DateTimePoint> coll, string key)
         {
             var lser = new LineSeries
@@ -43,7 +60,7 @@ namespace OxyPlotEx.ViewModel
                 MarkerSize = 3,
                 ItemsSource = coll,
                 MarkerType = OxyPlot.MarkerType.Plus,
-              
+
                 //DataFieldX = nameof(DateTimePoint.DateTime),
                 //DataFieldY = nameof(DateTimePoint.Value)
             };
@@ -86,10 +103,10 @@ namespace OxyPlotEx.ViewModel
         internal static Series Build(BoxPlotItem[] points, string title)
         {
             return new BoxPlotSeries
-            { 
-                ItemsSource = points, 
+            {
+                ItemsSource = points,
                 Title = title,
-                Stroke = GetColor(title) 
+                Stroke = GetColor(title)
             };
         }
 
