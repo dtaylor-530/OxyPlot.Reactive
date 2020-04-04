@@ -22,16 +22,16 @@ namespace OxyPlotEx.ViewModel
             {
                 plotModel.Series.Clear();
                 _ = await Task.Run(() =>
-      {
-          lock (lck)
-          {
-              return DataPoints.GroupBy(a => a.X).ToArray().Select(Selector).OrderBy(a => a.Item2.Value).ToArray();
-          }
+                {
+                    lock (lck)
+                    {
+                        return DataPoints.GroupBy(a => a.X).ToArray().Select(Selector).OrderBy(a => a.Item2.Value).ToArray();
+                    }
 
-      }).ContinueWith(async points =>
-      {
-          AddToSeries(await points, "A Title");
-      }, TaskScheduler.FromCurrentSynchronizationContext());
+                }).ContinueWith(async points =>
+                {
+                    AddToSeries(await points, "A Title");
+                }, TaskScheduler.FromCurrentSynchronizationContext());
 
 
                 plotModel.InvalidatePlot(true);
@@ -40,7 +40,7 @@ namespace OxyPlotEx.ViewModel
             static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
             {
                 var arr = grp.Select(a => a.Y).ToArray();
-               // var variance = Statistics.Variance(arr);
+                // var variance = Statistics.Variance(arr);
                 var sd = Statistics.StandardDeviation(arr);
                 var mean = Statistics.Mean(arr);
                 return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? OxyColors.CadetBlue : OxyColors.IndianRed });

@@ -45,7 +45,7 @@ namespace OxyPlotEx.ViewModel
 
         public void OnCompleted() { }
 
-        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiLineModelAccumulated<T>)}");
+        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(SinglePlotModel<T>)}");
 
 
         private void AddToDataPoints(KeyValuePair<T, double> item)

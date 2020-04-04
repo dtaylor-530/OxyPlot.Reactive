@@ -12,36 +12,53 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlotEx.ViewModel
 {
-    public abstract class MultiPlotModel<T,TR> : IObserver<KeyValuePair<T, (TR x, double value)>>
+    public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, (TR X, double Y)>
     {
+        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        {
+        }
 
+        public MultiPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        {
+        }
+    }
+
+    public abstract class MultiPlotModelBase<T, R> : IObserver<KeyValuePair<T, R>>
+    {
+        private readonly IEqualityComparer<T> comparer;
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly IDispatcher dispatcher;
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
-        protected readonly IEqualityComparer<T> comparer;
-        protected Dictionary<T, List<DataPoint<TR>>> DataPoints;
 
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel)
+        protected Dictionary<T, List<R>> DataPoints;
+
+        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel)
         {
+            if (plotModel == null)
+                throw new Exception("PlotModel is null");        
+            if (dispatcher == null)
+                throw new Exception("IDispatcher is null");    
+   
             this.dispatcher = dispatcher;
             this.plotModel = plotModel;
             ModifyPlotModel();
             DataPoints = GetDataPoints();
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
         }
-
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : this(dispatcher, model)
+        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : this(dispatcher, model)
         {
+            if (comparer == null)
+                throw new Exception("PlotModel is null");
             this.comparer = comparer;
         }
 
         protected virtual void ModifyPlotModel() { }
-        
+
 
         public bool ShowAll { get; set; } = false;
 
-        public void OnNext(KeyValuePair<T, (TR x, double value)> item)
+        public void OnNext(KeyValuePair<T, R> item)
         {
             if (item.Key != null)
                 Task.Run(() => AddToDataPoints(item)).ToObservable().Subscribe(refreshSubject.OnNext);
@@ -60,21 +77,19 @@ namespace OxyPlotEx.ViewModel
 
         public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiLineModelAccumulated<T>)}");
 
-
-        private void AddToDataPoints(KeyValuePair<T, (TR x, double value)> item)
+        private void AddToDataPoints(KeyValuePair<T, R> item)
         {
-            var newdp = new DataPoint<TR>(item.Value.x, item.Value.value);
+            var newdp = item.Value;
             lock (lck)
             {
                 if (!DataPoints.ContainsKey(item.Key))
-                    DataPoints[item.Key] = new List<DataPoint<TR>>();
+                    DataPoints[item.Key] = new List<R>();
                 DataPoints[item.Key].Add(newdp);
             }
         }
 
-
         protected abstract void Refresh(IList<Unit> units);
-  
+
         private void RemoveByPredicate(Predicate<OxyPlot.Series.Series> predicate)
         {
             dispatcher.Invoke(() =>
@@ -86,12 +101,11 @@ namespace OxyPlotEx.ViewModel
             });
         }
 
-
-        private Dictionary<T, List<DataPoint<TR>>> GetDataPoints()
+        private Dictionary<T, List<R>> GetDataPoints()
         {
             return comparer == default ?
-                new Dictionary<T, List<DataPoint<TR>>>() :
-                new Dictionary<T, List<DataPoint<TR>>>(comparer);
+                  new Dictionary<T, List<R>>() :
+                new Dictionary<T, List<R>>(comparer);
         }
     }
 }

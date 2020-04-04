@@ -36,7 +36,7 @@ namespace OxyPlotEx.DemoApp
 
             while (xc[chr].MoveNext())
             {
-                yield return new KeyValuePair<string, double>(chr, Math.Sin(((1+xc[chr].Current) + (1 + random.NextDouble())) / 4));
+                yield return new KeyValuePair<string, double>(chr, Math.Sin(((1 + xc[chr].Current) + (1 + random.NextDouble())) / 4));
                 chr = NextCharacter();
             }
         }
@@ -46,7 +46,7 @@ namespace OxyPlotEx.DemoApp
 
             while (xc[chr].MoveNext())
             {
-                var xx = new KeyValuePair<string, double>(chr, (1+xc[chr].Current )/ (1+random.NextDouble()) );
+                var xx = new KeyValuePair<string, double>(chr, (1 + xc[chr].Current) / (1 + random.NextDouble()));
                 yield return xx;
                 chr = NextCharacter();
             }
@@ -58,22 +58,23 @@ namespace OxyPlotEx.DemoApp
 
             while (xc2[chr].MoveNext())
             {
-                var xx = new KeyValuePair<string, double>(chr,(1+ xc2[chr].Current )/ (1 + random.NextDouble()));
+                var xx = new KeyValuePair<string, double>(chr, (1 + xc2[chr].Current) / (1 + random.NextDouble()));
                 yield return xx;
                 chr = NextCharacter();
             }
         }
 
-        public IEnumerable<(string, string,double)> GetLine2()
+        public IEnumerable<(string, string, double)> GetLine2(int change = 1)
         {
             var chr = NextCharacter();
-
+            int i = 0;
             while (xc2[chr].MoveNext())
             {
                 dict[chr] = ++dict[chr];
 
-                yield return (chr, dict[chr].ToString() ,( xc2[chr].Current+1) / (1 + random.NextDouble())); ;
-                chr = NextCharacter();
+                yield return (chr, dict[chr].ToString(), (xc2[chr].Current + 1) / (1 + random.NextDouble()));
+                if (i++ % change == 0)
+                    chr = NextCharacter();
             }
         }
     }
@@ -138,7 +139,7 @@ namespace OxyPlotEx.DemoApp
         }
 
         public bool MoveNext()
-        { 
+        {
             return true;
         }
 

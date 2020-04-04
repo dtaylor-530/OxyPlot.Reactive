@@ -57,14 +57,14 @@ namespace OxyPlotEx.ViewModel
                 plotModel.InvalidatePlot(true);
             });
 
-            static BoxPlotItem[] SelectBPI(IEnumerable<DataPoint<int>> dataPoints)
+            static BoxPlotItem[] SelectBPI(IEnumerable<(int X,double Y)> dataPoints)
             {
                 return dataPoints.GroupBy(a => a.X)
                               .Select(Selector)
                               .ToArray();
             }
 
-            static BoxPlotItem Selector(IGrouping<int, DataPoint<int>> grp)
+            static BoxPlotItem Selector(IGrouping<int, (int X, double Y)> grp)
             {
                 var arr = grp.Select(a => a.Y).ToArray();
                 var variance = MathNet.Numerics.Statistics.Statistics.Variance(arr);
