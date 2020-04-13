@@ -23,7 +23,7 @@ namespace OxyPlotEx.ViewModel
         }
 
 
-        protected override void AddToSeries(DateTimePoint[] points, string title)
+        protected override void AddToSeries(IDateTimeKeyPoint<T>[] items, string title)
         {
 
             if (plotModel.Annotations.Any(a => (a is EllipseAnnotation e) && e.Text == title) == false)
@@ -33,7 +33,7 @@ namespace OxyPlotEx.ViewModel
 
             plotModel.PlotType = PlotType.XY;
 
-             base.AddToSeries(points, title);
+             base.AddToSeries(items, title);
         }
     }
 }

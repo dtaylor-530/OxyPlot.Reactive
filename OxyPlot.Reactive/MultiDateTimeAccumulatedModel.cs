@@ -4,14 +4,14 @@ namespace OxyPlotEx.ViewModel
     using OxyPlot;
     using System.Collections.Generic;
 
-    public class MultiDateTimeModelAccumulatedModel<T> :MultiDateTimeModel<T>
+    public class MultiDateTimeAccumulatedModel<T> :MultiDateTimeModel<T>
     {
 
-        public MultiDateTimeModelAccumulatedModel(IDispatcher dispatcher, PlotModel model):base(dispatcher, model)
+        public MultiDateTimeAccumulatedModel(IDispatcher dispatcher, PlotModel model):base(dispatcher, model)
         {
         }
 
-        public MultiDateTimeModelAccumulatedModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        public MultiDateTimeAccumulatedModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
         {
         }
 

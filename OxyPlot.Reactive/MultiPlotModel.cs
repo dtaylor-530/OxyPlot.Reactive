@@ -6,55 +6,56 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Reactive.Threading.Tasks;
-using System.Threading.Tasks;
 using e = System.Linq.Enumerable;
 
 namespace OxyPlotEx.ViewModel
 {
     public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, (TR X, double Y)>
     {
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel, int refreshRate = 100) : base(dispatcher, plotModel,refreshRate)
         {
         }
 
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        public MultiPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer, int refreshRate = 100) : base(dispatcher, model, comparer, refreshRate)
         {
         }
     }
 
-    public abstract class MultiPlotModelBase<T, R> : IObserver<KeyValuePair<T, R>>
+    public abstract class MultiPlotModelBase<T, R> : IObserver<KeyValuePair<T, R>>, IObserver<bool>
     {
         private readonly IEqualityComparer<T> comparer;
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly IDispatcher dispatcher;
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
-
+        protected bool showAll;
         protected Dictionary<T, List<R>> DataPoints;
+      
 
-        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel)
+        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel, int refreshRate)
         {
             this.dispatcher = dispatcher ?? throw new ArgumentNullException("IDispatcher is null");
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
             ModifyPlotModel();
             DataPoints = GetDataPoints();
-            refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
+            refreshSubject.Buffer(TimeSpan.FromMilliseconds(refreshRate)).Where(e.Any)                .Subscribe(Refresh);
         }
-        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : this(dispatcher, model)
+        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer, int refreshRate) : this(dispatcher, model, refreshRate)
         {
             this.comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
         }
 
         protected virtual void ModifyPlotModel() { }
 
-
-        public bool ShowAll { get; set; } = false;
-
         public void OnNext(KeyValuePair<T, R> item)
         {
-            if (item.Key != null)
-                Task.Run(() => AddToDataPoints(item)).ToObservable().Subscribe(refreshSubject.OnNext);
+            AddToDataPoints(item);
+            refreshSubject.OnNext(Unit.Default);
+        }
+
+        public void OnNext(bool showAll)
+        {
+            this.showAll = showAll;
         }
 
         protected virtual double Combine(double x0, double x1) => x1;
@@ -68,9 +69,12 @@ namespace OxyPlotEx.ViewModel
             //throw new NotImplementedException();
         }
 
-        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiDateTimeModelAccumulatedModel<T>)}");
+        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiDateTimeAccumulatedModel<T>)}");
 
-        private void AddToDataPoints(KeyValuePair<T, R> item)
+
+        protected abstract void Refresh(IList<Unit> units);
+
+        protected virtual void AddToDataPoints(KeyValuePair<T, R> item)
         {
             var newdp = item.Value;
             lock (lck)
@@ -81,9 +85,7 @@ namespace OxyPlotEx.ViewModel
             }
         }
 
-        protected abstract void Refresh(IList<Unit> units);
-
-        private void RemoveByPredicate(Predicate<OxyPlot.Series.Series> predicate)
+        protected virtual void RemoveByPredicate(Predicate<OxyPlot.Series.Series> predicate)
         {
             dispatcher.Invoke(() =>
             {
@@ -94,7 +96,7 @@ namespace OxyPlotEx.ViewModel
             });
         }
 
-        private Dictionary<T, List<R>> GetDataPoints()
+        protected virtual Dictionary<T, List<R>> GetDataPoints()
         {
             return comparer == default ?
                   new Dictionary<T, List<R>>() :

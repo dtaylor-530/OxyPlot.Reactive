@@ -68,6 +68,25 @@ namespace OxyPlotEx.ViewModel
             return lser;
         }
 
+
+        public static LineSeries Build<T>(IEnumerable<IDateTimeKeyPoint<T>> coll, string key)
+        {
+            var lser = new LineSeries
+            {
+                Title = key,
+                StrokeThickness = 1,
+                Color = GetColor(key),
+                MarkerSize = 3,
+                ItemsSource = coll,
+                MarkerType = MarkerType.Plus,
+
+                //DataFieldX = nameof(DateTimePoint.DateTime),
+                //DataFieldY = nameof(DateTimePoint.Value)
+            };
+
+            return lser;
+        }
+
         internal static IEnumerable<Series> Build(IOrderedEnumerable<DateTimeUncertainPoint> points, string key)
         {
             var color = GetColor(key);

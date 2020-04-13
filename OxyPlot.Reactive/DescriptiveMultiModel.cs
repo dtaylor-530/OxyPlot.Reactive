@@ -20,11 +20,11 @@ namespace OxyPlotEx.ViewModel
     {
 
 
-        public DescriptiveMultiModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public DescriptiveMultiModel(IDispatcher dispatcher, PlotModel plotModel, int refreshRate =100) : base(dispatcher, plotModel, refreshRate)
         {
         }
 
-        public DescriptiveMultiModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<string> comparer) : base(dispatcher, model, comparer)
+        public DescriptiveMultiModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<string> comparer, int refreshRate = 100) : base(dispatcher, model, comparer, refreshRate)
         {
         }
 
@@ -57,7 +57,7 @@ namespace OxyPlotEx.ViewModel
                     }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
 
-                if (ShowAll)
+                if (this.showAll)
                 {
                     await Task.Run(() =>
                     {

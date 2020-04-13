@@ -21,6 +21,7 @@ namespace OxyPlotEx.ViewModel
 
         protected override void Refresh(IList<Unit> units)
         {
+
             this.dispatcher.BeginInvoke(async () =>
             {
                 plotModel.Series.Clear();
@@ -40,7 +41,7 @@ namespace OxyPlotEx.ViewModel
                 }
 
 
-                if (ShowAll)
+                if (this.showAll)
                 {
                     _ = await Task.Run(() =>
                       {
