@@ -52,7 +52,14 @@ namespace OxyPlotEx.DemoAppCore.Pages
             plotView3.Model = new OxyPlot.PlotModel();
             var model3 = new MultiDateTimeModel<string>(new DispatcherX(this.Dispatcher), plotView3.Model) { };
             Observable.Return(10).Subscribe(model3);
-            ProduceData().Subscribe(model3);
+            ProduceData().Delay(TimeSpan.FromSeconds(15)).Subscribe(model3);
+            Observable.Timer(TimeSpan.FromSeconds(15)).Select(a=>false).StartWith(true)
+                .SubscribeOnDispatcher()
+                .Subscribe(a =>
+            {
+                this.Dispatcher.InvokeAsync(()=> ProgressRingContentControl1.IsBusy = a);
+            });
+
         }
 
         private static IObservable<KeyValuePair<string, (DateTime, double)>> ProduceData()

@@ -24,42 +24,34 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class MultiDateTimeModelAccumulatedView
     {
-        private readonly MultiDateTimeModelAccumulatedModel<string> model2;
+        private readonly MultiDateTimeAccumulatedModel<string> model, model2;
         private readonly IDisposable disposable;
-        Random random = new Random();
         DateTime now = DateTime.Now;
 
         public MultiDateTimeModelAccumulatedView()
         {
             InitializeComponent();
 
-            plotView2.Model = new OxyPlot.PlotModel();
-            model2 = new MultiDateTimeModelAccumulatedModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model) { ShowAll = true };
+            plotView.Model = new OxyPlot.PlotModel();
+            model = new MultiDateTimeAccumulatedModel<string>(new DispatcherX(this.Dispatcher), plotView.Model);
+            model.OnNext(true);
             ProduceData(out var observable1, out var observable2);
-         
-            //var obs0 = observable1.Select((o, i) => new KeyValuePair<string, double>(o.Key, o.Value));
-            //var obs1 = observable1.Select((o, i) => new KeyValuePair<string, (DateTime, double)>(o.Key, (now.AddHours(i), o.Value)));
-            var obs2 = observable2.Select((o, i) => new KeyValuePair<string, (DateTime, double)>(o.Key, (now.AddHours(i), o.Value)));
-            //var obs3 = observable1.Select((o, i) => new KeyValuePair<string, (DateTime, double, double)>(string.Empty, (now.AddHours(i), o.Value, random.NextDouble())));
+            var obs = observable2.Select((o, i) => new KeyValuePair<string, (DateTime, double)>(o.Key, (now.AddHours(i), o.Value)));
+            disposable = obs.Subscribe(model);
 
-            //obs0.Subscribe(model1);      
+            plotView2.Model = new OxyPlot.PlotModel();
+            model2 = new MultiDateTimeAccumulatedModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model);
+            model2.OnNext(true);
+            var obs2 = observable1.Select((o, i) => (IDateTimeKeyPoint<string>)new DateTimePoint(now.AddHours(i), o.Value, o.Key));
             disposable = obs2.Subscribe(model2);
-            //obs1.Subscribe(model3);
-
-            //obs3.Subscribe(model4);
-
         }
 
         private static void ProduceData(out IObservable<KeyValuePair<string, double>> observable1, out IObservable<KeyValuePair<string, double>> observable2)
         {
             var get = new DataFactory().GetSin().GetEnumerator();
-            observable1 = Observable.Interval(TimeSpan.FromMilliseconds(0.5)).Select(t => { get.MoveNext(); return get.Current; }).Skip(1);
+            observable1 = Observable.Interval(TimeSpan.FromMilliseconds(50)).Select(t => { get.MoveNext(); return get.Current; }).Skip(1);
             var get2 = new DataFactory().GetLine().GetEnumerator();
-            observable2 = Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(t =>
-            {
-                get2.MoveNext();
-                return get2.Current;
-            }).Skip(1);
+            observable2 = Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(t =>           {                get2.MoveNext();                return get2.Current;            }).Skip(1);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
