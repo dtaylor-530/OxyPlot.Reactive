@@ -28,7 +28,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             plotView.Model = new OxyPlot.PlotModel();
             var model1 = new MultiDateTimeModel<string>(new DispatcherX(this.Dispatcher), plotView.Model) { };
-            ProduceData().Subscribe(model1);
+            ProduceData().Take(1000).Subscribe(model1);
 
             plotView2.Model = new OxyPlot.PlotModel();
             var model2 = new MultiDateTimeModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model) { };
@@ -59,7 +59,6 @@ namespace OxyPlotEx.DemoAppCore.Pages
             {
                 this.Dispatcher.InvokeAsync(()=> ProgressRingContentControl1.IsBusy = a);
             });
-
         }
 
         private static IObservable<KeyValuePair<string, (DateTime, double)>> ProduceData()
@@ -79,7 +78,5 @@ namespace OxyPlotEx.DemoAppCore.Pages
             });
             return obs1;
         }
-
-      
     }
 }

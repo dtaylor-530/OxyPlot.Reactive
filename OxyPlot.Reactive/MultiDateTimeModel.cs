@@ -21,11 +21,7 @@ namespace OxyPlotEx.ViewModel
         readonly Subject<IDateTimeKeyPoint<T>> subject = new Subject<IDateTimeKeyPoint<T>>();
         private int? count;
 
-        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
-        {
-        }
-
-        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T>? comparer=null) : base(dispatcher, model, comparer)
         {
         }
 
@@ -79,7 +75,7 @@ namespace OxyPlotEx.ViewModel
             IEnumerable<IDateTimeKeyPoint<T>> ToDataPoints2(KeyValuePair<T, List<(DateTime X, double Y)>> keyValue)
                 => ToDataPoints(keyValue.Value.Select(c => KeyValuePair.Create(keyValue.Key, c)));
 
-    }
+        }
 
 
         IEnumerable<IDateTimeKeyPoint<T>> ToDataPoints(IEnumerable<KeyValuePair<T, (DateTime X, double Y)>> collection)
@@ -108,7 +104,7 @@ namespace OxyPlotEx.ViewModel
             series.ItemsSource = items;
         }
 
-   
+
 
         public IDisposable Subscribe(IObserver<IDateTimeKeyPoint<T>> observer)
         {
@@ -130,5 +126,3 @@ namespace OxyPlotEx.ViewModel
 
     }
 }
-
-

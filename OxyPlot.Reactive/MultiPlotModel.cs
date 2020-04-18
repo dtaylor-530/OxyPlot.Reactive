@@ -1,4 +1,5 @@
-﻿using MoreLinq;
+﻿#nullable enable
+using MoreLinq;
 using OxyPlot;
 using System;
 using System.Collections.Generic;
@@ -12,37 +13,41 @@ namespace OxyPlotEx.ViewModel
 {
     public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, (TR X, double Y)>
     {
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel, int refreshRate = 100) : base(dispatcher, plotModel,refreshRate)
+        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100) : base(dispatcher, plotModel, comparer, refreshRate)
         {
-        }
+            CongfigureBindings(plotModel.PlotView.ActualController as IPlotController);
 
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer, int refreshRate = 100) : base(dispatcher, model, comparer, refreshRate)
-        {
+            static void CongfigureBindings(IPlotController pc)
+            {
+                pc.UnbindMouseDown(OxyMouseButton.Left);
+                //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Control);
+                //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Shift);
+
+                pc.BindMouseDown(OxyMouseButton.Left, new DelegatePlotCommand<OxyMouseDownEventArgs>(
+                             (view, controller, args) =>
+                                controller.AddMouseManipulator(view, new TrackerManipulator1(view), args)));
+            }
         }
     }
 
     public abstract class MultiPlotModelBase<T, R> : IObserver<KeyValuePair<T, R>>, IObserver<bool>
     {
-        private readonly IEqualityComparer<T> comparer;
+        private readonly IEqualityComparer<T>? comparer;
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly IDispatcher dispatcher;
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
         protected bool showAll;
         protected Dictionary<T, List<R>> DataPoints;
-      
 
-        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel, int refreshRate)
-        {
+        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100)
+        { 
+            this.comparer = comparer;
             this.dispatcher = dispatcher ?? throw new ArgumentNullException("IDispatcher is null");
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
             ModifyPlotModel();
             DataPoints = GetDataPoints();
-            refreshSubject.Buffer(TimeSpan.FromMilliseconds(refreshRate)).Where(e.Any)                .Subscribe(Refresh);
-        }
-        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer, int refreshRate) : this(dispatcher, model, refreshRate)
-        {
-            this.comparer = comparer ?? throw new ArgumentNullException("Comparer is null");
+            refreshSubject.Buffer(TimeSpan.FromMilliseconds(refreshRate)).Where(e.Any).Subscribe(Refresh);
         }
 
         protected virtual void ModifyPlotModel() { }

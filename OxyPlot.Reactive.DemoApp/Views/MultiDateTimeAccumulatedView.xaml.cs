@@ -51,7 +51,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
             var get = new DataFactory().GetSin().GetEnumerator();
             observable1 = Observable.Interval(TimeSpan.FromMilliseconds(50)).Select(t => { get.MoveNext(); return get.Current; }).Skip(1);
             var get2 = new DataFactory().GetLine().GetEnumerator();
-            observable2 = Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(t =>           {                get2.MoveNext();                return get2.Current;            }).Skip(1);
+            observable2 = Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(t => { get2.MoveNext(); return get2.Current; }).Skip(1);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
