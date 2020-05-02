@@ -15,9 +15,10 @@ namespace OxyPlotEx.ViewModel
     {
         public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100) : base(dispatcher, plotModel, comparer, refreshRate)
         {
-            CongfigureBindings(plotModel.PlotView.ActualController as IPlotController);
+            if(plotModel?.PlotView?.ActualController is IController plotController)
+                CongfigureBindings(plotController);
 
-            static void CongfigureBindings(IPlotController pc)
+            static void CongfigureBindings(IController pc)
             {
                 pc.UnbindMouseDown(OxyMouseButton.Left);
                 //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Control);
