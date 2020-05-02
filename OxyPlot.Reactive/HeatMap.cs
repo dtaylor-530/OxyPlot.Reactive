@@ -1,5 +1,6 @@
 ﻿using OxyPlot;
 using OxyPlot.Axes;
+using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,9 @@ using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using e = System.Linq.Enumerable;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
-    public class HeatMap : IObserver<KeyValuePair<(string, string), double>> 
+    public class HeatMap : IObserver<KeyValuePair<(string, string), double>>
     {
         public static readonly OxyColor foreground = OxyColors.SteelBlue;
         protected readonly ISubject<KeyValuePair<(string, string), double>> refreshSubject = new Subject<KeyValuePair<(string, string), double>>();
@@ -67,7 +68,7 @@ namespace OxyPlotEx.ViewModel
              });
 
             var (data, min, max, hNames, vNames) = item;
-            this.dispatcher.BeginInvoke(() =>
+            dispatcher.BeginInvoke(() =>
            {
                AlterModel(plotModel.Value, min, max, hNames, vNames);
                (plotModel.Value.Series[0] as HeatMapSeries).Data = data;

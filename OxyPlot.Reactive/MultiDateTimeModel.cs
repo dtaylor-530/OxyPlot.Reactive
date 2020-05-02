@@ -12,16 +12,17 @@ using System.Reactive.Subjects;
 using OxyPlot.Series;
 using MoreLinq;
 using System.Reactive.Threading.Tasks;
-using OxyPlotEx.Common;
+using OxyPlot.Reactive.Infrastructure;
+using OxyPlot.Reactive.Model;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
     public class MultiDateTimeModel<T> : MultiPlotModel<T, DateTime>, IObservable<IDateTimeKeyPoint<T>>, IObserver<int>, IObserver<IDateTimeKeyPoint<T>>
     {
         readonly Subject<IDateTimeKeyPoint<T>> subject = new Subject<IDateTimeKeyPoint<T>>();
         private int? count;
 
-        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T>? comparer=null) : base(dispatcher, model, comparer)
+        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T>? comparer = null) : base(dispatcher, model, comparer)
         {
         }
 
@@ -32,7 +33,7 @@ namespace OxyPlotEx.ViewModel
 
         protected override void Refresh(IList<Unit> units)
         {
-            this.dispatcher.BeginInvoke(async () =>
+            dispatcher.BeginInvoke(async () =>
             {
                 foreach (var keyValue in DataPoints.ToArray())
                 {
@@ -65,7 +66,7 @@ namespace OxyPlotEx.ViewModel
 
                     }).ContinueWith(async points =>
                     {
-                        AddToSeries((await points), "All");
+                        AddToSeries(await points, "All");
                     }, TaskScheduler.FromCurrentSynchronizationContext());
                 }
                 plotModel.InvalidatePlot(true);
@@ -89,7 +90,7 @@ namespace OxyPlotEx.ViewModel
         {
             if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
             {
-                series = (OxyFactory.Build(items, title));
+                series = OxyFactory.Build(items, title);
 
                 series.ToMouseDownEvents().Subscribe(e =>
                 {

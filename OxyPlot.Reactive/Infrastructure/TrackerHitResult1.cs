@@ -4,7 +4,7 @@ using OxyPlot;
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive.Infrastructure
 {
     public class TrackerHitResult1 : TrackerHitResult
     {
@@ -18,15 +18,15 @@ namespace OxyPlotEx.ViewModel
 
         public TrackerHitResult1(Dictionary<string, ValueAndBrush> values, TrackerHitResult trackerHitResult)
         {
-            this.Values = values;
-            this.Index = trackerHitResult.Index;
-            this.DataPoint = trackerHitResult.DataPoint;
-            this.Item = trackerHitResult.Item;
-            this.LineExtents = trackerHitResult.LineExtents;
-            this.PlotModel = trackerHitResult.PlotModel;
-            this.Position = trackerHitResult.Position;
-            this.Series = trackerHitResult.Series;
-            this.Text = trackerHitResult.Text;
+            Values = values;
+            Index = trackerHitResult.Index;
+            DataPoint = trackerHitResult.DataPoint;
+            Item = trackerHitResult.Item;
+            LineExtents = trackerHitResult.LineExtents;
+            PlotModel = trackerHitResult.PlotModel;
+            Position = trackerHitResult.Position;
+            Series = trackerHitResult.Series;
+            Text = trackerHitResult.Text;
         }
     }
 }

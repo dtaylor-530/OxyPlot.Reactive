@@ -7,8 +7,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
+using OxyPlot.Reactive.Infrastructure;
+using OxyPlot.Reactive.Model;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
     public class ErrorBarModel : SinglePlotModel<string>
     {
@@ -18,7 +20,7 @@ namespace OxyPlotEx.ViewModel
 
         protected override void Refresh(IList<Unit> units)
         {
-            this.dispatcher.BeginInvoke(async () =>
+            dispatcher.BeginInvoke(async () =>
             {
                 plotModel.Series.Clear();
                 _ = await Task.Run(() =>
@@ -41,8 +43,8 @@ namespace OxyPlotEx.ViewModel
             {
                 var arr = grp.Select(a => a.Y).ToArray();
                 // var variance = Statistics.Variance(arr);
-                var sd = Statistics.StandardDeviation(arr);
-                var mean = Statistics.Mean(arr);
+                var sd = arr.StandardDeviation();
+                var mean = arr.Mean();
                 return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? OxyColors.CadetBlue : OxyColors.IndianRed });
             }
         }

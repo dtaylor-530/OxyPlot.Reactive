@@ -1,13 +1,13 @@
-﻿
-namespace OxyPlotEx.ViewModel
+﻿namespace OxyPlot.Reactive
 {
     using OxyPlot;
+    using OxyPlot.Reactive.Infrastructure;
     using System.Collections.Generic;
 
-    public class MultiDateTimeAccumulatedModel<T> :MultiDateTimeModel<T>
+    public class MultiDateTimeAccumulatedModel<T> : MultiDateTimeModel<T>
     {
 
-        public MultiDateTimeAccumulatedModel(IDispatcher dispatcher, PlotModel model):base(dispatcher, model)
+        public MultiDateTimeAccumulatedModel(IDispatcher dispatcher, PlotModel model) : base(dispatcher, model)
         {
         }
 

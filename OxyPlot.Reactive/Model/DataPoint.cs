@@ -1,4 +1,4 @@
-﻿namespace OxyPlotEx
+﻿namespace OxyPlot.Reactive.Model
 {
     public struct DataPoint<T>
     {

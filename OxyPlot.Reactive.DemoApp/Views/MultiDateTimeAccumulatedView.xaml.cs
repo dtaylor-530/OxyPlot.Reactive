@@ -1,5 +1,6 @@
-﻿using OxyPlotEx.DemoApp;
-using OxyPlotEx.ViewModel;
+﻿using OxyPlot.Reactive;
+using OxyPlot.Reactive.Model;
+using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,12 +1,7 @@
-﻿using OxyPlot;
-using OxyPlot.Axes;
+﻿using OxyPlot.Axes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OxyPlotEx
+namespace OxyPlot.Reactive.Model
 {
     public interface IDateTimePoint : IDataPointProvider
     {
@@ -27,9 +22,9 @@ namespace OxyPlotEx
 
     }
 
-    public interface IDataPointKeyProvider<T>: IDataPointProvider,IKey<T>
+    public interface IDataPointKeyProvider<T> : IDataPointProvider, IKey<T>
     {
-     
+
     }
 
     public struct DateTimePoint : IDateTimeKeyPoint<string>

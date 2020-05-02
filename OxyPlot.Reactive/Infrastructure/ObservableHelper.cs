@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Text;
 
-namespace OxyPlotEx.Common
+namespace OxyPlot.Reactive.Infrastructure
 {
     public static class ObservableHelper
     {

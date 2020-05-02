@@ -1,6 +1,4 @@
-﻿using OxyPlot;
-
-namespace OxyPlotEx
+﻿namespace OxyPlot.Reactive.Model
 {
     public struct DataUncertainPoint<T>
     {

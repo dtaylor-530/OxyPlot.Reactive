@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive.Model
 {
 
     public struct DateTimeUncertainPoint
@@ -17,8 +15,8 @@ namespace OxyPlotEx.ViewModel
         public DateTime DateTime { get; }
 
         public double Value { get; }
-        public double Deviation { get; }
 
+        public double Deviation { get; }
 
         public double Lower => Value - Deviation;
 

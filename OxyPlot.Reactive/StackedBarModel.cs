@@ -1,5 +1,6 @@
 ﻿using OxyPlot;
 using OxyPlot.Axes;
+using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,12 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
     public class StackedBarModel : IObserver<(string groupkey, string key, double value)>, IObserver<bool>
     {
         private readonly Lazy<PlotModel> model;
-        private readonly Subject<Series> refreshSubject = new Subject<Series>();
+        private readonly Subject<Series.Series> refreshSubject = new Subject<Series.Series>();
         private readonly Subject<(string groupkey, string key, double value)> itemSubject = new Subject<(string groupkey, string key, double value)>();
         private readonly Subject<bool> stackSubject = new Subject<bool>();
         private readonly IDispatcher dispatcher;
@@ -23,7 +24,7 @@ namespace OxyPlotEx.ViewModel
 
         public StackedBarModel(IDispatcher dispatcher)
         {
-            this.model = new Lazy<PlotModel>(() => PlotBuilder.Build());
+            model = new Lazy<PlotModel>(() => PlotBuilder.Build());
             Init();
             this.dispatcher = dispatcher;
         }
@@ -122,7 +123,7 @@ namespace OxyPlotEx.ViewModel
                 columnCount = 0;
                 while (model.Value.Series.Any())
                     model.Value.Series.Remove(model.Value.Series.First());
-           
+
                 (model.Value.DefaultXAxis as CategoryAxis).Labels.Clear();
                 model.Value.InvalidatePlot(false);
             });
@@ -137,14 +138,14 @@ namespace OxyPlotEx.ViewModel
     {
         public static PlotModel Build()
         {
-            (Axis xaxis, Axis yaxis, List<Series> s1) = BuildComponents();
+            (Axis xaxis, Axis yaxis, List<Series.Series> s1) = BuildComponents();
 
             var model = Construct(xaxis, yaxis, s1);
 
             return model;
 
 
-            static PlotModel Construct(Axis xaxis, Axis yaxis, List<Series> s1)
+            static PlotModel Construct(Axis xaxis, Axis yaxis, List<Series.Series> s1)
             {
 
                 xaxis.MajorGridlineStyle = LineStyle.Solid;
@@ -162,7 +163,7 @@ namespace OxyPlotEx.ViewModel
                 return model;
             }
 
-            static (Axis, Axis, List<Series>) BuildComponents()
+            static (Axis, Axis, List<Series.Series>) BuildComponents()
             {
                 CategoryAxis xaxis = new CategoryAxis
                 {
@@ -174,7 +175,7 @@ namespace OxyPlotEx.ViewModel
                     Position = AxisPosition.Left
                 };
 
-                List<Series> s1 = new List<Series>();
+                List<Series.Series> s1 = new List<Series.Series>();
 
                 return (xaxis, yaxis, s1);
             }

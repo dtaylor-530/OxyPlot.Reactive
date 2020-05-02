@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using MoreLinq;
 using OxyPlot;
+using OxyPlot.Reactive.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,13 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using e = System.Linq.Enumerable;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
     public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, (TR X, double Y)>
     {
         public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100) : base(dispatcher, plotModel, comparer, refreshRate)
         {
-            if(plotModel?.PlotView?.ActualController is IController plotController)
+            if (plotModel?.PlotView?.ActualController is IController plotController)
                 CongfigureBindings(plotController);
 
             static void CongfigureBindings(IController pc)
@@ -42,7 +43,7 @@ namespace OxyPlotEx.ViewModel
         protected Dictionary<T, List<R>> DataPoints;
 
         public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100)
-        { 
+        {
             this.comparer = comparer;
             this.dispatcher = dispatcher ?? throw new ArgumentNullException("IDispatcher is null");
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
@@ -91,7 +92,7 @@ namespace OxyPlotEx.ViewModel
             }
         }
 
-        protected virtual void RemoveByPredicate(Predicate<OxyPlot.Series.Series> predicate)
+        protected virtual void RemoveByPredicate(Predicate<Series.Series> predicate)
         {
             dispatcher.Invoke(() =>
             {

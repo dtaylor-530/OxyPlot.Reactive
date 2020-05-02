@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive.Infrastructure
 {
     public interface IDispatcher
     {

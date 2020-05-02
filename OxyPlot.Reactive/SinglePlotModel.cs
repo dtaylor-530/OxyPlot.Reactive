@@ -1,5 +1,7 @@
 ﻿using MoreLinq;
 using OxyPlot;
+using OxyPlot.Reactive.Infrastructure;
+using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using e = System.Linq.Enumerable;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
     public abstract class SinglePlotModel<T> : IObserver<KeyValuePair<T, double>>
     {

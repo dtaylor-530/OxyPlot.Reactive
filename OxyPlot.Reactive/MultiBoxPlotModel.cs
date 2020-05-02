@@ -1,4 +1,5 @@
 ﻿using OxyPlot;
+using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive
 {
     public class MultiBoxPlotModel : MultiPlotModel<string, int>
     {
@@ -22,7 +23,7 @@ namespace OxyPlotEx.ViewModel
         protected override void Refresh(IList<Unit> units)
         {
 
-            this.dispatcher.BeginInvoke(async () =>
+            dispatcher.BeginInvoke(async () =>
             {
                 plotModel.Series.Clear();
                 foreach (var keyValue in DataPoints.ToArray())
@@ -41,7 +42,7 @@ namespace OxyPlotEx.ViewModel
                 }
 
 
-                if (this.showAll)
+                if (showAll)
                 {
                     _ = await Task.Run(() =>
                       {
@@ -58,7 +59,7 @@ namespace OxyPlotEx.ViewModel
                 plotModel.InvalidatePlot(true);
             });
 
-            static BoxPlotItem[] SelectBPI(IEnumerable<(int X,double Y)> dataPoints)
+            static BoxPlotItem[] SelectBPI(IEnumerable<(int X, double Y)> dataPoints)
             {
                 return dataPoints.GroupBy(a => a.X)
                               .Select(Selector)

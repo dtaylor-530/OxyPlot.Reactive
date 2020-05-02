@@ -1,4 +1,4 @@
-﻿using OxyPlotEx.ViewModel;
+﻿using OxyPlot.Reactive.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;

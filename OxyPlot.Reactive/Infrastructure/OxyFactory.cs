@@ -1,12 +1,13 @@
 ﻿using Endless;
 using OxyPlot;
+using OxyPlot.Reactive.Model;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive.Infrastructure
 {
     class OxyFactory
     {
@@ -59,7 +60,7 @@ namespace OxyPlotEx.ViewModel
                 Color = GetColor(key),
                 MarkerSize = 3,
                 ItemsSource = coll,
-                MarkerType = OxyPlot.MarkerType.Plus,
+                MarkerType = MarkerType.Plus,
 
                 //DataFieldX = nameof(DateTimePoint.DateTime),
                 //DataFieldY = nameof(DateTimePoint.Value)
@@ -87,7 +88,7 @@ namespace OxyPlotEx.ViewModel
             return lser;
         }
 
-        internal static IEnumerable<Series> Build(IOrderedEnumerable<DateTimeUncertainPoint> points, string key)
+        internal static IEnumerable<Series.Series> Build(IOrderedEnumerable<DateTimeUncertainPoint> points, string key)
         {
             var color = GetColor(key);
             yield return new AreaSeries
@@ -99,7 +100,7 @@ namespace OxyPlotEx.ViewModel
                 //Color = color.ChangeIntensity(0.5),
                 MarkerSize = 3,
                 ItemsSource = points,
-                MarkerType = OxyPlot.MarkerType.Plus,
+                MarkerType = MarkerType.Plus,
                 DataFieldX = nameof(DateTimeUncertainPoint.DateTime),
                 DataFieldY = nameof(DateTimeUncertainPoint.Lower),
                 DataFieldX2 = nameof(DateTimeUncertainPoint.DateTime),
@@ -113,13 +114,13 @@ namespace OxyPlotEx.ViewModel
                 Color = color,
                 MarkerSize = 3,
                 ItemsSource = points.Select(p => new DateTimePoint(p.DateTime, p.Value)),
-                MarkerType = OxyPlot.MarkerType.Plus,
+                MarkerType = MarkerType.Plus,
                 //DataFieldX = nameof(DateTimePoint.DateTime),
                 //DataFieldY = nameof(DateTimePoint.Value)
             };
         }
 
-        internal static Series Build(BoxPlotItem[] points, string title)
+        internal static Series.Series Build(BoxPlotItem[] points, string title)
         {
             return new BoxPlotSeries
             {
@@ -130,7 +131,7 @@ namespace OxyPlotEx.ViewModel
         }
 
 
-        internal static Series Build(ErrorColumnItem[] points, string title)
+        internal static Series.Series Build(ErrorColumnItem[] points, string title)
         {
             return new ErrorColumnSeries
             {

@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using OxyPlot;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -8,7 +7,7 @@ using OxyPlot.Series;
 using MoreLinq;
 using System.Drawing;
 
-namespace OxyPlotEx.ViewModel
+namespace OxyPlot.Reactive.Infrastructure
 {
     /// <summary>
     /// Provides a plot manipulator for tracker functionality.
@@ -18,7 +17,7 @@ namespace OxyPlotEx.ViewModel
         /// <summary>
         /// The current series.
         /// </summary>
-        private Series? currentSeries;
+        private Series.Series? currentSeries;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TrackerManipulator" /> class.
@@ -32,7 +31,7 @@ namespace OxyPlotEx.ViewModel
         /// <summary>
         /// Occurs when the input device changes position during a manipulation.
         /// </summary>
-        /// <param name="e">The <see cref="OxyPlot.OxyMouseEventArgs" /> instance containing the event data.</param>
+        /// <param name="e">The <see cref="OxyMouseEventArgs" /> instance containing the event data.</param>
         public override void Delta(OxyMouseEventArgs e)
         {
             base.Delta(e);
@@ -46,42 +45,42 @@ namespace OxyPlotEx.ViewModel
             {
                 var htr = new TrackerHitResult1(results.Where(a => a != null).ToDictionary(a => a.Text.Split('\n').First(), a =>
                  {
-                     var c = this.PlotView.ActualModel.Series.OfType<LineSeries>().SingleOrDefault(s => s.Title == a.Text.Split('\n').First()).Color;
+                     var c = PlotView.ActualModel.Series.OfType<LineSeries>().SingleOrDefault(s => s.Title == a.Text.Split('\n').First()).Color;
                      return new TrackerHitResult1.ValueAndBrush
                      {
                          Color = Color.FromArgb(c.A, c.R, c.G, c.B),
                          Value = a.DataPoint.Y,
                      };
                  }), first);
-                this.PlotView.ShowTracker(htr);
-                this.PlotView.ActualModel.RaiseTrackerChanged(htr);
+                PlotView.ShowTracker(htr);
+                PlotView.ActualModel.RaiseTrackerChanged(htr);
             }
 
             IEnumerable<TrackerHitResult?> SelectResults()
             =>
                 from series in PlotView.ActualModel.Series.OfType<XYAxisSeries>()
                 orderby series.Title == currentSeries?.Title descending
-                select GetNearestHit(series, e.Position, this.Snap, this.PointsOnly);
+                select GetNearestHit(series, e.Position, Snap, PointsOnly);
 
 
             bool Return()
             {
-                var actualModel = this.PlotView.ActualModel;
+                var actualModel = PlotView.ActualModel;
                 if (actualModel == null || !actualModel.PlotArea.Contains(e.Position.X, e.Position.Y))
                 {
                     return true;
                 }
 
-                if (this.currentSeries == null || !this.LockToInitialSeries)
+                if (currentSeries == null || !LockToInitialSeries)
                 {
                     // get the nearest
-                    this.currentSeries = actualModel.GetSeriesFromPoint(e.Position, 20);
+                    currentSeries = actualModel.GetSeriesFromPoint(e.Position, 20);
 
-                    if (this.currentSeries == null)
+                    if (currentSeries == null)
                     {
-                        if (!this.LockToInitialSeries)
+                        if (!LockToInitialSeries)
                         {
-                            this.PlotView.HideTracker();
+                            PlotView.HideTracker();
                         }
 
                         return true;
@@ -99,7 +98,7 @@ namespace OxyPlotEx.ViewModel
         /// <param name="snap">Snap to points.</param>
         /// <param name="pointsOnly">Check points only (no interpolation).</param>
         /// <returns>A tracker hit result.</returns>
-        private static TrackerHitResult? GetNearestHit(Series series, ScreenPoint point, bool snap, bool pointsOnly)
+        private static TrackerHitResult? GetNearestHit(Series.Series series, ScreenPoint point, bool snap, bool pointsOnly)
         {
             // Check data points only
             if (snap || pointsOnly)

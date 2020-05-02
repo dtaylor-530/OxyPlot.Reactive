@@ -1,4 +1,5 @@
-﻿using OxyPlotEx.DemoApp;
+﻿using OxyPlot.Reactive;
+using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,17 +22,17 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class StackedBarView : Page
     {
-        ViewModel.StackedBarModel sb;
+        StackedBarModel sb;
 
         public StackedBarView()
         {
             InitializeComponent();
 
-            sb = new ViewModel.StackedBarModel(new DispatcherX(this.Dispatcher));
+            sb = new StackedBarModel(new DispatcherX(this.Dispatcher));
             plotView1.Model = sb.Model;
             NewMethod1().Subscribe(sb);
 
-            var sb2 = new ViewModel.StackedBarModel(new DispatcherX(this.Dispatcher));
+            var sb2 = new StackedBarModel(new DispatcherX(this.Dispatcher));
             plotView2.Model = sb2.Model;
             NewMethod().Subscribe(sb2);
 
