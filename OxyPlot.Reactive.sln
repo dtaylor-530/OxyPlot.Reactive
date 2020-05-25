@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive.DemoApp", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive", "OxyPlot.Reactive\OxyPlot.Reactive.csproj", "{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OxyPlot.Test", "OxyPlot.Test\OxyPlot.Test.csproj", "{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{EA079EFF-C639-4AEE-AED1-1C47C0A22A1D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,9 +25,16 @@ Global
 		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1F2CB24A-D1EF-4ADA-857D-C90E88BF685E} = {EA079EFF-C639-4AEE-AED1-1C47C0A22A1D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50E340F6-A0FA-456F-8E9F-4A5B4CA081D6}

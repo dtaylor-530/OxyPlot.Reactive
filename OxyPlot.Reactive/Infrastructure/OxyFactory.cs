@@ -1,22 +1,18 @@
-﻿using Endless;
-using OxyPlot;
-using OxyPlot.Reactive.Model;
+﻿using OxyPlot.Reactive.Model;
 using OxyPlot.Series;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OxyPlot.Reactive.Infrastructure
 {
-    class OxyFactory
+    using static ColorRepo;
+
+    static class OxyFactory
     {
-        private static Dictionary<string, string> ColorsMatch = new Dictionary<string, string>();
-        private static IEnumerator<KeyValuePair<string, string>> Colors2;
 
         static OxyFactory()
         {
-            Colors2 = Colors.Value.OrderBy(a => Guid.NewGuid()).Cycle().GetEnumerator();
+            //Colors2 = Colors.Value.OrderBy(a => Guid.NewGuid()).Cycle().GetEnumerator();
         }
 
         public static LineSeries Build(IEnumerable<DataPoint> coll, string key)
@@ -145,64 +141,6 @@ namespace OxyPlot.Reactive.Infrastructure
             };
 
         }
-
-        private static OxyColor GetColor(string key)
-        {
-            var value = Math.Abs(key.GetHashCode()) % Colors.Value.Count;
-            return OxyColor.Parse(Colors.Value.ElementAt(value).Value);
-        }
-
-        private static OxyColor NextColor()
-        {
-            Colors2.MoveNext(); return OxyColor.Parse(Colors2.Current.Value);
-        }
-
-
-        /// <summary>
-        /// A nicer color palette for the web.
-        /// https://github.com/mrmrs/colors
-        /// </summary>
-        /// <returns></returns>
-        private static OxyColor GetColorRandom(string key)
-        {
-            if (ColorsMatch.ContainsKey(key) == false)
-            {
-                Colors2.MoveNext();
-                ColorsMatch[key] = Colors2.Current.Key;
-            }
-            return OxyColor.Parse(Colors.Value[ColorsMatch[key]]);
-        }
-
-
-        /// <summary>
-        /// A nicer color palette for the web.
-        /// https://github.com/mrmrs/colors
-        /// </summary>
-        private static Lazy<Dictionary<string, string>> Colors = new Lazy<Dictionary<string, string>>(() =>
-            new Dictionary<string, string> {
-            { "navy", "#001F3F"} ,
-
-             { "blue", "#0074D9"} ,
-              { "aqua", "#7FDBFF"} ,
-                                  { "teal", "#39CCCC"} ,
-                                  { "olive", "#3D9970"} ,
-                                  { "green", "#2ECC40"} ,
-                                  { "lime", "#01FF70"} ,
-                                  {  "yellow", "#FFDC00"} ,
-                                  {  "orange", "#FF851B"} ,
-                                  { "red", "#FF4136"} ,
-               { "fuchsia", "#F012BE"} ,
-
-             { "purple", "#B10DC9"} ,
-
-             { "maroon", "#85144B"} ,
-              //{ "white", "#FFFFFF"} ,
-                                  //{ "gray", "#AAAAAA"} ,
-                                  { "silver", "#DDDDDD"} ,
-                                  { "black", "#111111"}
-
-                              });
-
     }
 }
 

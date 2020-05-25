@@ -14,6 +14,9 @@ namespace OxyPlot.Reactive
 {
     public class ErrorBarModel : SinglePlotModel<string>
     {
+        static readonly OxyColor Positive = OxyColor.Parse("#0074D9");
+        static readonly OxyColor Negative = OxyColor.Parse("#FF4136");
+
         public ErrorBarModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
         {
         }
@@ -45,7 +48,7 @@ namespace OxyPlot.Reactive
                 // var variance = Statistics.Variance(arr);
                 var sd = arr.StandardDeviation();
                 var mean = arr.Mean();
-                return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? OxyColors.CadetBlue : OxyColors.IndianRed });
+                return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
             }
         }
 
