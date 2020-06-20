@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:oxy="http://oxyplot.org/wpf"
              xmlns:controls="clr-namespace:NMT.Wpf.Controls;assembly=WindowsProgressRing"
-             xmlns:common="clr-namespace:OxyPlot.Reactive.DemoApp.Common"
+             xmlns:common="clr-namespace:OxyPlot.Reactive.DemoApp.Common" xmlns:rui="http://reactiveui.net"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -19,11 +19,8 @@
             <RowDefinition Height="*"></RowDefinition>
 
         </Grid.RowDefinitions>
-        <oxy:PlotView x:Name="plotView">
+        <oxy:PlotView x:Name="plotView"/>
 
-
-
-        </oxy:PlotView>
 
         <UniformGrid Rows="1" Grid.Row="1">
             <oxy:PlotView x:Name="plotView2" >
@@ -72,10 +69,6 @@
             </DataGrid>
         </UniformGrid>
 
-        <common:ProgressRingContentControl x:Name="ProgressRingContentControl1"  Grid.Row="2">
-            <common:ProgressRingContentControl.Content>
-                <oxy:PlotView x:Name="plotView3"></oxy:PlotView>
-            </common:ProgressRingContentControl.Content>
-        </common:ProgressRingContentControl>
+        <rui:ViewModelViewHost x:Name="ViewModelViewHost1" Grid.Row="2"/>
     </Grid>
 </UserControl>

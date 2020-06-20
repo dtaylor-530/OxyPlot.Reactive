@@ -8,17 +8,14 @@
 
   <ItemGroup>
     <Compile Remove="NewFolder1\**" />
-    <Compile Remove="NewFolder\**" />
     <EmbeddedResource Remove="NewFolder1\**" />
-    <EmbeddedResource Remove="NewFolder\**" />
     <None Remove="NewFolder1\**" />
-    <None Remove="NewFolder\**" />
     <Page Remove="NewFolder1\**" />
-    <Page Remove="NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="OxyPlot.Wpf" Version="2.0.0" />
+    <PackageReference Include="ReactiveUI.WPF" Version="11.4.17" />
     <PackageReference Include="WindowsProgressRing" Version="1.0.0" />
   </ItemGroup>
 
