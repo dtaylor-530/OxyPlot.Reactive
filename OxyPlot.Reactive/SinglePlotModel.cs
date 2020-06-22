@@ -1,11 +1,10 @@
-﻿using MoreLinq;
-using OxyPlot;
-using OxyPlot.Reactive.Infrastructure;
+﻿#nullable enable
 using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
@@ -18,15 +17,15 @@ namespace OxyPlot.Reactive
     {
 
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
-        protected readonly IDispatcher dispatcher;
         protected readonly PlotModel plotModel;
+        protected readonly IScheduler scheduler;
         protected readonly object lck = new object();
         protected List<DataPoint<T>> DataPoints = new List<DataPoint<T>>();
 
-        public SinglePlotModel(IDispatcher dispatcher, PlotModel plotModel)
+        public SinglePlotModel( PlotModel plotModel, IScheduler? scheduler=null)
         {
-            this.dispatcher = dispatcher;
             this.plotModel = plotModel;
+            this.scheduler = scheduler?? Scheduler.Default;
             ModifyPlotModel();
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
         }

@@ -1,9 +1,11 @@
 ﻿using MoreLinq;
 using OxyPlot.Reactive;
 using OxyPlotEx.DemoApp;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Windows;
@@ -30,10 +32,10 @@ namespace OxyPlotEx.DemoAppCore
             InitializeComponent();
 
             PlotView1.Model = new OxyPlot.PlotModel();
-            var bModel = new ErrorBarModel(Constants.DispatcherX, PlotView1.Model);
-
-            _ = GenerateData().Subscribe(bModel);
-
+ 
+                var bModel = new ErrorBarModel(PlotView1.Model, scheduler: RxApp.MainThreadScheduler);
+                _ = GenerateData().Subscribe(bModel);
+      
         }
 
         private static IObservable<KeyValuePair<string, double>> GenerateData()

@@ -1,6 +1,7 @@
 ﻿using OxyPlot.Reactive;
 using OxyPlot.Reactive.Model;
 using OxyPlotEx.DemoApp;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,14 +35,14 @@ namespace OxyPlotEx.DemoAppCore.Pages
             InitializeComponent();
 
             plotView.Model = new OxyPlot.PlotModel();
-            model = new MultiDateTimeAccumulatedModel<string>(new DispatcherX(this.Dispatcher), plotView.Model);
+            model = new MultiDateTimeAccumulatedModel<string>(plotView.Model, scheduler:RxApp.MainThreadScheduler);
             model.OnNext(true);
             ProduceData(out var observable1, out var observable2);
             var obs = observable2.Select((o, i) => new KeyValuePair<string, (DateTime, double)>(o.Key, (now.AddHours(i), o.Value)));
             disposable = obs.Subscribe(model);
 
             plotView2.Model = new OxyPlot.PlotModel();
-            model2 = new MultiDateTimeAccumulatedModel<string>(new DispatcherX(this.Dispatcher), plotView2.Model);
+            model2 = new MultiDateTimeAccumulatedModel<string>(plotView2.Model, scheduler: RxApp.MainThreadScheduler);
             model2.OnNext(true);
             var obs2 = observable1.Select((o, i) => (IDateTimeKeyPoint<string>)new DateTimePoint(now.AddHours(i), o.Value, o.Key));
             disposable = obs2.Subscribe(model2);

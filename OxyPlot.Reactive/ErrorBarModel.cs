@@ -1,4 +1,4 @@
-﻿using OxyPlot;
+﻿#nullable enable
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System.Collections.Generic;
@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
+using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
@@ -17,15 +18,18 @@ namespace OxyPlot.Reactive
         static readonly OxyColor Positive = OxyColor.Parse("#0074D9");
         static readonly OxyColor Negative = OxyColor.Parse("#FF4136");
 
-        public ErrorBarModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public ErrorBarModel(PlotModel plotModel, IScheduler? scheduler = null) : base(plotModel, scheduler: scheduler)
         {
         }
 
         protected override void Refresh(IList<Unit> units)
         {
-            dispatcher.BeginInvoke(async () =>
+            scheduler.Schedule(async () =>
             {
-                plotModel.Series.Clear();
+                lock (lck)
+                {
+                    plotModel.Series.Clear();
+                }
                 _ = await Task.Run(() =>
                 {
                     lock (lck)
@@ -35,11 +39,15 @@ namespace OxyPlot.Reactive
 
                 }).ContinueWith(async points =>
                 {
+
                     AddToSeries(await points, "A Title");
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+                });
 
 
-                plotModel.InvalidatePlot(true);
+                lock (lck)
+                {
+                    plotModel.InvalidatePlot(true);
+                }
             });
 
             static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
@@ -62,7 +70,8 @@ namespace OxyPlot.Reactive
             };
             //linearAxis1.MaximumPadding = 0.06;
             //linearAxis1.MinimumPadding = 0;
-            plotModel.Axes.Add(linearAxis1);
+            lock (lck)
+                plotModel.Axes.Add(linearAxis1);
 
             base.ModifyPlotModel();
         }
@@ -70,26 +79,29 @@ namespace OxyPlot.Reactive
 
         protected virtual void AddToSeries((string key, ErrorColumnItem)[] points, string title)
         {
-            plotModel.Series.Add(OxyFactory.Build(points.Select(a => a.Item2).ToArray(), title));
-
-            for (int i = plotModel.Axes.Count - 1; i > -1; i--)
+            lock (lck)
             {
-                if (plotModel.Axes[i].Key == "y")
-                    plotModel.Axes.RemoveAt(i);
+                plotModel.Series.Add(OxyFactory.Build(points.Select(a => a.Item2).ToArray(), title));
+
+                for (int i = plotModel.Axes.Count - 1; i > -1; i--)
+                {
+                    if (plotModel.Axes[i].Key == "y")
+                        plotModel.Axes.RemoveAt(i);
+                }
+
+                var categoryAxis1 = new CategoryAxis
+                {
+                    Key = "y",
+                    MinorStep = 1
+                };
+
+                foreach (var key in points.Select(p => p.key))
+                {
+                    categoryAxis1.Labels.Add(key);
+                    //categoryAxis1.ActualLabels.Add(key);
+                }
+                plotModel.Axes.Add(categoryAxis1);
             }
-
-            var categoryAxis1 = new CategoryAxis
-            {
-                Key = "y",
-                MinorStep = 1
-            };
-
-            foreach (var key in points.Select(p => p.key))
-            {
-                categoryAxis1.Labels.Add(key);
-                //categoryAxis1.ActualLabels.Add(key);
-            }
-            plotModel.Axes.Add(categoryAxis1);
         }
     }
 }

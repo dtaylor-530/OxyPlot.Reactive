@@ -12,10 +12,10 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
     {
         private readonly ObservableAsPropertyHelper<bool> isBusy;
 
-        public BusyViewModel(IObservable<KeyValuePair<string, (DateTime, double)>?> observable, IDispatcher dispatcher)
+        public BusyViewModel(IObservable<KeyValuePair<string, (DateTime, double)>?> observable)
         {
 
-            var model3 = new MultiDateTimeModel<string>(dispatcher, PlotModel) { };
+            var model3 = new MultiDateTimeModel<string>(PlotModel,scheduler: RxApp.MainThreadScheduler) { };
 
             observable.Where(a => a.HasValue).Select(a => a.Value).Subscribe(model3);
 

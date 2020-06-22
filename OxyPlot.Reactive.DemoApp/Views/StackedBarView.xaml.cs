@@ -28,11 +28,11 @@ namespace OxyPlotEx.DemoAppCore.Pages
         {
             InitializeComponent();
 
-            sb = new StackedBarModel(new DispatcherX(this.Dispatcher));
+            sb = new StackedBarModel(scheduler: ReactiveUI.RxApp.MainThreadScheduler);
             plotView1.Model = sb.Model;
             NewMethod1().Subscribe(sb);
 
-            var sb2 = new StackedBarModel(new DispatcherX(this.Dispatcher));
+            var sb2 = new StackedBarModel(scheduler: ReactiveUI.RxApp.MainThreadScheduler);
             plotView2.Model = sb2.Model;
             NewMethod().Subscribe(sb2);
 
@@ -64,7 +64,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
             MessageBox.Show((ToggleButton1.IsChecked?.ToString()));
-            sb.OnNext(ToggleButton1.IsChecked ?? false);
+            sb?.OnNext(ToggleButton1.IsChecked ?? false);
 
         }
     }

@@ -1,4 +1,5 @@
-﻿namespace OxyPlot.Reactive
+﻿#nullable enable
+namespace OxyPlot.Reactive
 {
     using OxyPlot;
     using OxyPlot.Annotations;
@@ -7,17 +8,18 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
     using e = System.Linq.Enumerable;
 
     public class LineModel<T> : MultiDateTimeModel<T>
     {
 
-        public LineModel(IDispatcher dispatcher, PlotModel model) : base(dispatcher, model)
+        public LineModel(PlotModel model, IScheduler? scheduler = null) : base( model, scheduler:scheduler)
         {
         }
 
-        public LineModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        public LineModel(PlotModel model, IEqualityComparer<T> comparer, IScheduler? scheduler = null) : base( model, comparer, scheduler: scheduler)
         {
         }
 

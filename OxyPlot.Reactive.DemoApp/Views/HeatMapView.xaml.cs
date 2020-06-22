@@ -27,14 +27,14 @@ namespace OxyPlotEx.DemoAppCore.Pages
         {
             InitializeComponent();
 
-            var hmapModel = new HeatMap(Constants.DispatcherX, new WDComparer(), null, "WeekDay", "Number");
+            var hmapModel = new HeatMap(new WDComparer(), null, "WeekDay", "Number", scheduler:ReactiveUI.RxApp.MainThreadScheduler);
             plotView.Model = hmapModel.Model;
             _ = NewMethod().Subscribe(hmapModel);
 
 
-            var hmapModel2 = new HeatMap(Constants.DispatcherX, new WDComparer(), null);
-            plotView2.Model = hmapModel2.Model;
-            _ = NewMethod2(out _).Subscribe(hmapModel2);
+            //var hmapModel2 = new HeatMap(new WDComparer(), null);
+            //plotView2.Model = hmapModel2.Model;
+            //_ = NewMethod2(out _).Subscribe(hmapModel2);
         }
 
         private IObservable<KeyValuePair<(string, string), double>> NewMethod()

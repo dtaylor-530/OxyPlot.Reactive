@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using e = System.Linq.Enumerable;
@@ -14,7 +15,7 @@ namespace OxyPlot.Reactive
 {
     public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, (TR X, double Y)>
     {
-        public MultiPlotModel(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100) : base(dispatcher, plotModel, comparer, refreshRate)
+        public MultiPlotModel(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
             if (plotModel?.PlotView?.ActualController is IController plotController)
                 CongfigureBindings(plotController);
@@ -36,16 +37,16 @@ namespace OxyPlot.Reactive
     {
         private readonly IEqualityComparer<T>? comparer;
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
-        protected readonly IDispatcher dispatcher;
+        protected readonly IScheduler scheduler;
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
         protected bool showAll;
         protected Dictionary<T, List<R>> DataPoints;
 
-        public MultiPlotModelBase(IDispatcher dispatcher, PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100)
+        public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default)
         {
             this.comparer = comparer;
-            this.dispatcher = dispatcher ?? throw new ArgumentNullException("IDispatcher is null");
+            this.scheduler = scheduler ?? Scheduler.CurrentThread;
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
             ModifyPlotModel();
             DataPoints = GetDataPoints();
@@ -94,7 +95,7 @@ namespace OxyPlot.Reactive
 
         protected virtual void RemoveByPredicate(Predicate<Series.Series> predicate)
         {
-            dispatcher.Invoke(() =>
+            scheduler.Schedule(() =>
             {
                 while (plotModel.Series.Any(predicate.Invoke))
                     plotModel.Series.Remove(plotModel.Series.First(predicate.Invoke));

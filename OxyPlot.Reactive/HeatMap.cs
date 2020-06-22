@@ -1,10 +1,10 @@
-﻿using OxyPlot;
+﻿#nullable enable
 using OxyPlot.Axes;
-using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -16,32 +16,31 @@ namespace OxyPlot.Reactive
     {
         public static readonly OxyColor foreground = OxyColors.SteelBlue;
         protected readonly ISubject<KeyValuePair<(string, string), double>> refreshSubject = new Subject<KeyValuePair<(string, string), double>>();
-        protected readonly IDispatcher dispatcher;
         protected readonly Lazy<PlotModel> plotModel;
         protected readonly object lck = new object();
-        private readonly IComparer<string> hNamesComparer;
-        private readonly IComparer<string> vNamesComparer;
-        private readonly string hAxisKey;
-        private readonly string vAxisKey;
+        private readonly IComparer<string>? hNamesComparer;
+        private readonly IComparer<string>? vNamesComparer;
+        //private readonly string? hAxisKey;
+        //private readonly string? vAxisKey;
+        protected readonly IScheduler scheduler;
+        readonly Dictionary<(string, string), double> dictionary = new Dictionary<(string, string), double>();
 
-        Dictionary<(string, string), double> dictionary = new Dictionary<(string, string), double>();
-
-        public HeatMap(IDispatcher dispatcher, string hAxisKey = null, string vAxisKey = null)
+        public HeatMap(string? hAxisKey = null, string? vAxisKey = null, IScheduler? scheduler=null)
         {
-            this.hAxisKey = hAxisKey;
-            this.vAxisKey = vAxisKey;
-
-            this.dispatcher = dispatcher;
+            //this.hAxisKey = hAxisKey;
+            //this.vAxisKey = vAxisKey;
+            this.scheduler = scheduler?? Scheduler.Default;
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
             plotModel = new Lazy<PlotModel>(() => CreateModel(hAxisKey, vAxisKey));
         }
 
 
-        public HeatMap(IDispatcher dispatcher,
-            IComparer<string> hNamesComparer = null,
-            IComparer<string> vNamesComparer = null,
-            string hAxisKey = null,
-            string vAxisKey = null) : this(dispatcher, hAxisKey, vAxisKey)
+        public HeatMap(
+            IComparer<string>? hNamesComparer = null,
+            IComparer<string>? vNamesComparer = null,
+            string? hAxisKey = null,
+            string? vAxisKey = null,
+            IScheduler? scheduler =null) : this( hAxisKey, vAxisKey, scheduler:scheduler)
         {
             this.hNamesComparer = hNamesComparer ?? StringComparer.InvariantCultureIgnoreCase;
             this.vNamesComparer = vNamesComparer ?? StringComparer.InvariantCultureIgnoreCase;
@@ -68,7 +67,7 @@ namespace OxyPlot.Reactive
              });
 
             var (data, min, max, hNames, vNames) = item;
-            dispatcher.BeginInvoke(() =>
+            scheduler.Schedule(() =>
            {
                AlterModel(plotModel.Value, min, max, hNames, vNames);
                (plotModel.Value.Series[0] as HeatMapSeries).Data = data;
@@ -98,7 +97,7 @@ namespace OxyPlot.Reactive
             throw new NotImplementedException();
         }
 
-        private static PlotModel CreateModel(string horizontalAxis, string verticalAxis)
+        private static PlotModel CreateModel(string? horizontalAxis, string? verticalAxis)
         {
             var plotModel = new PlotModel
             {

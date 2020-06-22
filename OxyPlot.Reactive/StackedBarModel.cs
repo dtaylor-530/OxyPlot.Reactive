@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
@@ -16,32 +17,40 @@ namespace OxyPlot.Reactive
     public class StackedBarModel : IObserver<(string groupkey, string key, double value)>, IObserver<bool>
     {
         private readonly Lazy<PlotModel> model;
-        private readonly Subject<Series.Series> refreshSubject = new Subject<Series.Series>();
-        private readonly Subject<(string groupkey, string key, double value)> itemSubject = new Subject<(string groupkey, string key, double value)>();
-        private readonly Subject<bool> stackSubject = new Subject<bool>();
-        private readonly IDispatcher dispatcher;
+        private readonly ReplaySubject<Series.Series> refreshSubject = new ReplaySubject<Series.Series>();
+        private readonly ReplaySubject<(string groupkey, string key, double value)> itemSubject = new ReplaySubject<(string groupkey, string key, double value)>();
+        private readonly ReplaySubject<bool> stackSubject = new ReplaySubject<bool>();
+        private readonly IScheduler scheduler;
         private IDisposable disposable;
-
-        public StackedBarModel(IDispatcher dispatcher)
+        object lck = new object();
+        public StackedBarModel(IScheduler? scheduler = null)
         {
+            this.scheduler = scheduler ?? Scheduler.Default;
             model = new Lazy<PlotModel>(() => PlotBuilder.Build());
             Init();
-            this.dispatcher = dispatcher;
+
         }
 
         private void Init()
         {
+            itemSubject.Subscribe(a =>
+            {
+
+            },e=>
+            {
+            });
+
             disposable ??= itemSubject.CombineLatest(stackSubject.StartWith(true), (a, b) => (a, b))
                 .Select(c => Combine(c.a, c.b))
+                          .ObserveOn(scheduler)
                 .Buffer(TimeSpan.FromMilliseconds(300))
+                .SubscribeOn(scheduler)
                 .Subscribe(series =>
                 {
                     if (series.Any())
                     {
-                        dispatcher.Invoke(() =>
-                        {
+                        lock (model)
                             model.Value.InvalidatePlot(true);
-                        });
                     }
                 });
         }
@@ -50,8 +59,7 @@ namespace OxyPlot.Reactive
 
         public void OnCompleted()
         {
-            //throw new NotImplementedException();
-            disposable.Dispose();
+//            disposable.Dispose();
             //Reset();
         }
 
@@ -110,7 +118,8 @@ namespace OxyPlot.Reactive
             {
                 series = new ColumnSeries { Title = key, IsStacked = stack };
                 columnCount++;
-                model.Value.Series.Add(series);
+                lock (model)
+                    model.Value.Series.Add(series);
             }
 
             return series;
@@ -118,7 +127,7 @@ namespace OxyPlot.Reactive
 
         public void Reset()
         {
-            dispatcher.Invoke(() =>
+            scheduler.Schedule(() =>
             {
                 columnCount = 0;
                 while (model.Value.Series.Any())

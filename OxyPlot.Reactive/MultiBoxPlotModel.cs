@@ -4,6 +4,7 @@ using OxyPlot.Series;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
@@ -11,53 +12,58 @@ namespace OxyPlot.Reactive
 {
     public class MultiBoxPlotModel : MultiPlotModel<string, int>
     {
-        public MultiBoxPlotModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public MultiBoxPlotModel(PlotModel plotModel, IScheduler? scheduler = null) : base(plotModel, scheduler: scheduler)
         {
         }
 
-        public MultiBoxPlotModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<string> comparer) : base(dispatcher, model, comparer)
+        public MultiBoxPlotModel(PlotModel model, IEqualityComparer<string> comparer, IScheduler scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
 
         protected override void Refresh(IList<Unit> units)
         {
-
-            dispatcher.BeginInvoke(async () =>
-            {
-                plotModel.Series.Clear();
-                foreach (var keyValue in DataPoints.ToArray())
-                {
-                    _ = await Task.Run(() =>
-                      {
-                          lock (lck)
-                          {
-                              return SelectBPI(keyValue.Value);
-                          }
-
-                      }).ContinueWith(async points =>
-                      {
-                          AddToSeries(await points, keyValue.Key.ToString());
-                      }, TaskScheduler.FromCurrentSynchronizationContext());
-                }
+            
+            scheduler.Schedule(async () =>
+           {
+               lock (lck)
+                   plotModel.Series.Clear();
 
 
-                if (showAll)
-                {
-                    _ = await Task.Run(() =>
-                      {
-                          lock (lck)
-                          {
-                              return SelectBPI(DataPoints.SelectMany(a => a.Value));
-                          }
+               foreach (var keyValue in DataPoints.ToArray())
+               {
+                    await Task.Run(() =>
+                     {
+                         lock (lck)
+                         {
+                             return SelectBPI(keyValue.Value);
+                         }
 
-                      }).ContinueWith(async points =>
-                      {
-                          AddToSeries(await points, "All");
-                      }, TaskScheduler.FromCurrentSynchronizationContext());
-                }
-                plotModel.InvalidatePlot(true);
-            });
+                     }).ContinueWith(points =>
+                     {
+                         scheduler.Schedule(async()=>
+
+                       AddToSeries(await points, keyValue.Key.ToString()));
+                     });
+               }
+
+
+               if (showAll)
+               {
+                   await Task.Run(() =>
+                     {
+                         return SelectBPI(DataPoints.SelectMany(a => a.Value));
+                     }).ContinueWith(points =>
+                     {
+                         scheduler.Schedule(async()=>
+ 
+                          AddToSeries(await points, "All"));
+                     });
+               }
+
+               lock (lck)
+                   plotModel.InvalidatePlot(true);
+           });
 
             static BoxPlotItem[] SelectBPI(IEnumerable<(int X, double Y)> dataPoints)
             {
@@ -81,7 +87,11 @@ namespace OxyPlot.Reactive
 
         protected virtual void AddToSeries(BoxPlotItem[] points, string title)
         {
-            plotModel.Series.Add(OxyFactory.Build(points, title));
+            scheduler.Schedule(() =>
+            {
+                lock (lck)
+                    plotModel.Series.Add(OxyFactory.Build(points, title));
+            });
         }
 
     }
