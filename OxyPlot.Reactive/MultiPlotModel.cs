@@ -9,6 +9,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading;
 using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
@@ -31,13 +32,31 @@ namespace OxyPlot.Reactive
                                 controller.AddMouseManipulator(view, new TrackerManipulator1(view), args)));
             }
         }
+
+        public MultiPlotModel(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        {
+            if (plotModel?.PlotView?.ActualController is IController plotController)
+                CongfigureBindings(plotController);
+
+            static void CongfigureBindings(IController pc)
+            {
+                pc.UnbindMouseDown(OxyMouseButton.Left);
+                //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Control);
+                //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Shift);
+
+                pc.BindMouseDown(OxyMouseButton.Left, new DelegatePlotCommand<OxyMouseDownEventArgs>(
+                             (view, controller, args) =>
+                                controller.AddMouseManipulator(view, new TrackerManipulator1(view), args)));
+            }
+        }
     }
 
-    public abstract class MultiPlotModelBase<T, R> : IObserver<KeyValuePair<T, R>>, IObserver<bool>
+    public abstract class MultiPlotModelBase<T, R> : IObserver<KeyValuePair<T, R>>, IObserver<bool>, IMixedScheduler
     {
         private readonly IEqualityComparer<T>? comparer;
+        private readonly SynchronizationContext? context;
+        public IScheduler? scheduler;
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
-        protected readonly IScheduler scheduler;
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
         protected bool showAll;
@@ -47,6 +66,16 @@ namespace OxyPlot.Reactive
         {
             this.comparer = comparer;
             this.scheduler = scheduler ?? Scheduler.CurrentThread;
+            this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
+            ModifyPlotModel();
+            DataPoints = GetDataPoints();
+            refreshSubject.Buffer(TimeSpan.FromMilliseconds(refreshRate)).Where(e.Any).Subscribe(Refresh);
+        }
+
+        public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = default)
+        {
+            this.comparer = comparer;
+            this.context = context ?? SynchronizationContext.Current;
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
             ModifyPlotModel();
             DataPoints = GetDataPoints();
@@ -95,13 +124,18 @@ namespace OxyPlot.Reactive
 
         protected virtual void RemoveByPredicate(Predicate<Series.Series> predicate)
         {
-            scheduler.Schedule(() =>
+            (this as IMixedScheduler).ScheduleAction(Sdf, predicate);
+
+            void Sdf(Predicate<Series.Series> pred)
             {
-                while (plotModel.Series.Any(predicate.Invoke))
-                    plotModel.Series.Remove(plotModel.Series.First(predicate.Invoke));
-                DataPoints = GetDataPoints();
-                plotModel.InvalidatePlot(true);
-            });
+                lock (lck)
+                {
+                    while (plotModel.Series.Any(pred.Invoke))
+                        plotModel.Series.Remove(plotModel.Series.First(pred.Invoke));
+                    DataPoints = GetDataPoints();
+                    plotModel.InvalidatePlot(true);
+                }
+            }
         }
 
         protected virtual Dictionary<T, List<R>> GetDataPoints()
@@ -110,6 +144,9 @@ namespace OxyPlot.Reactive
                   new Dictionary<T, List<R>>() :
                 new Dictionary<T, List<R>>(comparer);
         }
+
+        IScheduler? IMixedScheduler.Scheduler => scheduler;
+        SynchronizationContext? IMixedScheduler.Context => context;
     }
 }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
+using System.Threading;
 using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
@@ -18,46 +19,41 @@ namespace OxyPlot.Reactive
         static readonly OxyColor Positive = OxyColor.Parse("#0074D9");
         static readonly OxyColor Negative = OxyColor.Parse("#FF4136");
 
-        public ErrorBarModel(PlotModel plotModel, IScheduler? scheduler = null) : base(plotModel, scheduler: scheduler)
+        public ErrorBarModel(PlotModel plotModel, SynchronizationContext? context = null, IScheduler? scheduler = null) : base(plotModel, context: context, scheduler: scheduler)
         {
         }
 
-        protected override void Refresh(IList<Unit> units)
+        protected override async void Refresh(IList<Unit> units)
         {
-            scheduler.Schedule(async () =>
+
+            var points = await Task.Run(() =>
             {
                 lock (lck)
                 {
-                    plotModel.Series.Clear();
-                }
-                _ = await Task.Run(() =>
-                {
-                    lock (lck)
-                    {
-                        return DataPoints.GroupBy(a => a.X).ToArray().Select(Selector).OrderBy(a => a.Item2.Value).ToArray();
-                    }
-
-                }).ContinueWith(async points =>
-                {
-
-                    AddToSeries(await points, "A Title");
-                });
-
-
-                lock (lck)
-                {
-                    plotModel.InvalidatePlot(true);
+                    return DataPoints.GroupBy(a => a.X).ToArray().Select(Selector).OrderBy(a => a.Item2.Value).ToArray();
                 }
             });
 
-            static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
+            (this as IMixedScheduler).ScheduleAction(() =>
             {
-                var arr = grp.Select(a => a.Y).ToArray();
-                // var variance = Statistics.Variance(arr);
-                var sd = arr.StandardDeviation();
-                var mean = arr.Mean();
-                return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
-            }
+                lock (plotModel)
+                {
+                    plotModel.Series.Clear();
+                    AddToSeries(points, "A Title");
+                    plotModel.InvalidatePlot(true);
+                }
+            });
+        }
+
+        //static (string key, ErrorBarItem) Selector(IGrouping<string, DataPoint<string>> grp)
+        static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
+        {
+            var arr = grp.Select(a => a.Y).ToArray();
+            // var variance = Statistics.Variance(arr);
+            var sd = arr.StandardDeviation();
+            var mean = arr.Mean();
+            // return (grp.Key, new ErrorBarItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
+            return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
         }
 
         protected override void ModifyPlotModel()
@@ -77,31 +73,29 @@ namespace OxyPlot.Reactive
         }
 
 
+        //protected virtual void AddToSeries((string key, ErrorBarItem)[] points, string title)
         protected virtual void AddToSeries((string key, ErrorColumnItem)[] points, string title)
         {
-            lock (lck)
+            plotModel.Series.Add(OxyFactory.Build(points.Select(a => a.Item2).ToArray(), title));
+
+            for (int i = plotModel.Axes.Count - 1; i > -1; i--)
             {
-                plotModel.Series.Add(OxyFactory.Build(points.Select(a => a.Item2).ToArray(), title));
-
-                for (int i = plotModel.Axes.Count - 1; i > -1; i--)
-                {
-                    if (plotModel.Axes[i].Key == "y")
-                        plotModel.Axes.RemoveAt(i);
-                }
-
-                var categoryAxis1 = new CategoryAxis
-                {
-                    Key = "y",
-                    MinorStep = 1
-                };
-
-                foreach (var key in points.Select(p => p.key))
-                {
-                    categoryAxis1.Labels.Add(key);
-                    //categoryAxis1.ActualLabels.Add(key);
-                }
-                plotModel.Axes.Add(categoryAxis1);
+                if (plotModel.Axes[i].Key == "y")
+                    plotModel.Axes.RemoveAt(i);
             }
+
+            var categoryAxis1 = new CategoryAxis
+            {
+                Key = "y",
+                MinorStep = 1
+            };
+
+            foreach (var key in points.Select(p => p.key))
+            {
+                categoryAxis1.Labels.Add(key);
+                //categoryAxis1.ActualLabels.Add(key);
+            }
+            plotModel.Axes.Add(categoryAxis1);
         }
     }
 }

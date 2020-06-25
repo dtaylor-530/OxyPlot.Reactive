@@ -1,22 +1,10 @@
 ﻿using MoreLinq;
 using OxyPlot.Reactive;
-using OxyPlotEx.DemoApp;
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OxyPlotEx.DemoAppCore
 {
@@ -31,25 +19,22 @@ namespace OxyPlotEx.DemoAppCore
         {
             InitializeComponent();
 
-            PlotView1.Model = new OxyPlot.PlotModel();
- 
-                var bModel = new ErrorBarModel(PlotView1.Model, scheduler: RxApp.MainThreadScheduler);
-                _ = GenerateData().Subscribe(bModel);
-      
+            _ = GenerateData().Subscribe(new ErrorBarModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
+
         }
 
         private static IObservable<KeyValuePair<string, double>> GenerateData()
         {
             Random random = new Random();
 
-           return Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(o =>
-            {
-                return new KeyValuePair<string, double>(abc[random.Next(0, 10)].ToString(), random.Next(-10, 10));
-            });
+            return Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(o =>
+             {
+                 return new KeyValuePair<string, double>(abc[random.Next(0, 10)].ToString(), random.Next(-10, 10));
+             });
         }
 
         private static IObservable<KeyValuePair<string, double>> GenerateData2()
-        
+
            => Enumerable.Repeat(1, 100).Scan(default(KeyValuePair<string, double>), (a, b) => KeyValuePair.Create("aa", 1d * b)).ToObservable();
 
     }

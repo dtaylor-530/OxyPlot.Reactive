@@ -127,6 +127,21 @@ namespace OxyPlot.Reactive.Infrastructure
         }
 
 
+        //internal static Series.Series Build(ErrorBarItem[] points, string title)
+        //{
+        //    return new ErrorBarSeries
+        //    {
+        //        ErrorStrokeThickness = 4,
+        //        ErrorWidth = 0,
+        //        StrokeThickness = 1,
+        //        Title = title,
+        //        ItemsSource = points,
+        //        XAxisKey = "y",
+        //        YAxisKey = "x"
+        //    };
+
+        //}
+        
         internal static Series.Series Build(ErrorColumnItem[] points, string title)
         {
             return new ErrorColumnSeries
@@ -139,7 +154,6 @@ namespace OxyPlot.Reactive.Infrastructure
                 XAxisKey = "y",
                 YAxisKey = "x"
             };
-
         }
     }
 }

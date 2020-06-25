@@ -2,7 +2,6 @@
 using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Factory;
 using OxyPlot.Reactive.DemoApp.ViewModels;
-using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,17 +19,12 @@ namespace OxyPlotEx.DemoAppCore.Pages
         {
             InitializeComponent();
 
-            plotView.Model = new OxyPlot.PlotModel();
-            var model1 = new MultiDateTimeModel<string>(plotView.Model, scheduler:ReactiveUI.RxApp.MainThreadScheduler) { };
-            DataSource.Observe().Take(1000).Subscribe(model1);
 
-            plotView2.Model = new OxyPlot.PlotModel();
-            var model2 = new MultiDateTimeModel<string>(plotView2.Model, scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
+            DataSource.Observe().Take(1000).Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
 
-
+            var model2 = new MultiDateTimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
 
             var obs = DataSource.Observe2();
-
             obs.Subscribe(model2);
             obs
                   .ToObservableChangeSet()

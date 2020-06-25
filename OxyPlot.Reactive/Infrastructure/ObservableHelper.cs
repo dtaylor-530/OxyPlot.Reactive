@@ -1,8 +1,7 @@
-﻿using OxyPlot;
+﻿
+using OxyPlot;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace OxyPlot.Reactive.Infrastructure
 {

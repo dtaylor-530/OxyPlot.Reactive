@@ -1,16 +1,13 @@
-﻿using OxyPlot;
+﻿#nullable enable
 using OxyPlot.Axes;
-using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace OxyPlot.Reactive
 {
@@ -20,12 +17,12 @@ namespace OxyPlot.Reactive
         private readonly ReplaySubject<Series.Series> refreshSubject = new ReplaySubject<Series.Series>();
         private readonly ReplaySubject<(string groupkey, string key, double value)> itemSubject = new ReplaySubject<(string groupkey, string key, double value)>();
         private readonly ReplaySubject<bool> stackSubject = new ReplaySubject<bool>();
-        private readonly IScheduler scheduler;
-        private IDisposable disposable;
-        object lck = new object();
-        public StackedBarModel(IScheduler? scheduler = null)
+        private readonly SynchronizationContext scheduler;
+        private IDisposable? disposable;
+        readonly object lck = new object();
+        public StackedBarModel(SynchronizationContext? scheduler = null)
         {
-            this.scheduler = scheduler ?? Scheduler.Default;
+            this.scheduler = scheduler ?? SynchronizationContext.Current;
             model = new Lazy<PlotModel>(() => PlotBuilder.Build());
             Init();
 
@@ -33,25 +30,15 @@ namespace OxyPlot.Reactive
 
         private void Init()
         {
-            itemSubject.Subscribe(a =>
-            {
-
-            },e=>
-            {
-            });
-
-            disposable ??= itemSubject.CombineLatest(stackSubject.StartWith(true), (a, b) => (a, b))
+            disposable ??= itemSubject.Buffer(TimeSpan.FromMilliseconds(300))
+                .Where(a => a.Any())
+                .CombineLatest(stackSubject.StartWith(true).DistinctUntilChanged(), (a, b) => (a, b))
                 .Select(c => Combine(c.a, c.b))
-                          .ObserveOn(scheduler)
-                .Buffer(TimeSpan.FromMilliseconds(300))
                 .SubscribeOn(scheduler)
                 .Subscribe(series =>
                 {
-                    if (series.Any())
-                    {
-                        lock (model)
-                            model.Value.InvalidatePlot(true);
-                    }
+                    lock (model)
+                        model.Value.InvalidatePlot(true);
                 });
         }
 
@@ -59,7 +46,7 @@ namespace OxyPlot.Reactive
 
         public void OnCompleted()
         {
-//            disposable.Dispose();
+            //            disposable.Dispose();
             //Reset();
         }
 
@@ -81,7 +68,7 @@ namespace OxyPlot.Reactive
         }
 
 
-        public Unit Combine((string groupkey, string key, double value) item, bool stack)
+        public Unit Combine(IList<(string groupkey, string key, double value)> items, bool stack)
         {
             lock (model)
             {
@@ -89,13 +76,35 @@ namespace OxyPlot.Reactive
                 {
                     throw new Exception($"PlotModel needs a {model.Value.DefaultXAxis} (can't be null)");
                 }
-                Init();
-                ColumnSeries s = FindSeries(item.groupkey, stack);
-                var labels = (model.Value.DefaultXAxis as CategoryAxis).Labels;
-                if (labels.Contains(item.key) == false)
-                    labels.Add(item.key);
 
-                s.Items.Add(new ColumnItem(item.value));
+                var cSeries = EnumerateColumnSeries(stack).ToArray();
+
+                foreach (var gk in items.GroupBy(a => a.groupkey))
+                {
+                    ColumnSeries s = FindSeries(gk.Key, cSeries, stack);
+                    foreach (var (groupkey, key, value) in items)
+                    {
+                        double val = s.Items.Sum(a => a.Value);
+                        double newVal = value;
+                        if (groupkey == key)
+                        {
+                            newVal += val;
+                            s.Items.Clear();
+                        }
+
+                        s.Items.Add(new ColumnItem(newVal));
+                    }
+
+                }
+                if (model.Value.DefaultXAxis is CategoryAxis axis)
+                {
+                    foreach (var k in items.GroupBy(a => (a.groupkey, a.key)).Select(a => a.Key).Where(a => a.groupkey != a.key).Select(a => a.key))
+                    {
+                        var labels = axis.Labels;
+                        if (labels.Contains(k) == false)
+                            labels.Add(k);
+                    }
+                }
 
                 return Unit.Default;
             }
@@ -103,39 +112,57 @@ namespace OxyPlot.Reactive
 
         int columnCount = 0;
 
-        private ColumnSeries FindSeries(string key, bool stack)
+        private ColumnSeries FindSeries(string key, IEnumerable<ColumnSeries> series, bool stack)
         {
-            ColumnSeries series = null;
-            for (int i = 0; i < columnCount; i++)
+            ColumnSeries? cSerie = null;
+
+            foreach (var serie in series)
             {
-                if (model.Value.Series[i].Title == key)
+                if (serie.Title == key)
                 {
-                    series = model.Value.Series[i] as ColumnSeries;
-                    series.IsStacked = stack;
+                    cSerie = serie;
                 }
+                serie.IsStacked = stack;
             }
-            if (series == null)
+            if (cSerie == null)
             {
-                series = new ColumnSeries { Title = key, IsStacked = stack };
+                cSerie = new ColumnSeries { Title = key, IsStacked = stack };
                 columnCount++;
                 lock (model)
-                    model.Value.Series.Add(series);
+                    model.Value.Series.Add(cSerie);
             }
 
-            return series;
+            return cSerie;
+        }
+
+
+        IEnumerable<ColumnSeries> EnumerateColumnSeries(bool stack)
+        {
+            for (int i = 0; i < columnCount; i++)
+            {
+                if (model.Value.Series[i] is ColumnSeries cSeries)
+                {
+                    cSeries.IsStacked = stack;
+                    yield return cSeries;
+                }
+            }
         }
 
         public void Reset()
         {
-            scheduler.Schedule(() =>
+            scheduler.Post((a) =>
             {
-                columnCount = 0;
-                while (model.Value.Series.Any())
-                    model.Value.Series.Remove(model.Value.Series.First());
+                lock (model)
+                {
+                    columnCount = 0;
+                    while (model.Value.Series.Any())
+                        model.Value.Series.Remove(model.Value.Series.First());
 
-                (model.Value.DefaultXAxis as CategoryAxis).Labels.Clear();
-                model.Value.InvalidatePlot(false);
-            });
+                    if (model.Value.DefaultXAxis is CategoryAxis categoryAxis)
+                        categoryAxis.Labels.Clear();
+                    model.Value.InvalidatePlot(false);
+                }
+            }, null);
         }
 
 

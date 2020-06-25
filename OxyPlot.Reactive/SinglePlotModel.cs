@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
@@ -8,28 +9,35 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
 using System.Threading.Tasks;
 using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
-    public abstract class SinglePlotModel<T> : IObserver<KeyValuePair<T, double>>
+    public abstract class SinglePlotModel<T> : IObserver<KeyValuePair<T, double>>, IMixedScheduler
     {
 
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly PlotModel plotModel;
-        protected readonly IScheduler scheduler;
+        protected readonly SynchronizationContext? context;
+        protected readonly IScheduler? scheduler;
         protected readonly object lck = new object();
         protected List<DataPoint<T>> DataPoints = new List<DataPoint<T>>();
 
-        public SinglePlotModel( PlotModel plotModel, IScheduler? scheduler=null)
+
+
+        public SinglePlotModel( PlotModel plotModel, SynchronizationContext? context = null, IScheduler? scheduler=null)
         {
             this.plotModel = plotModel;
-            this.scheduler = scheduler?? Scheduler.Default;
+            if (scheduler == null)
+                this.Context = context ?? SynchronizationContext.Current;
+            else
+                this.scheduler = scheduler;
             ModifyPlotModel();
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
-        }
-
+        }     
+        
         protected virtual void ModifyPlotModel() { }
 
         public void OnNext(KeyValuePair<T, double> item)
@@ -72,8 +80,9 @@ namespace OxyPlot.Reactive
 
         }
 
+        public IScheduler? Scheduler => scheduler;
 
-
+        public SynchronizationContext? Context { get; }
     }
 }
 

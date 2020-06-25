@@ -3,38 +3,55 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:OxyPlotEx.DemoAppCore.Pages"
       xmlns:oxy="http://oxyplot.org/wpf"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="StackedBarView">
+      Title="StackedBarView" FontSize="17">
+
+    <DockPanel >
+        <ToolBar DockPanel.Dock="Top">
+            <Label>Is Stacked</Label>
+            <ToggleButton Grid.Row="3" x:Name="ToggleButton1" ToolTip="Is Stacked"
+                          Content="{Binding RelativeSource={RelativeSource Self},Path=IsChecked}"
+                          IsChecked="True"
+                          Width="100" Height="30" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Checked"></ToggleButton>
+        </ToolBar>
+
+        <UniformGrid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <oxy:PlotView x:Name="plotView1" ></oxy:PlotView>
+                <TextBlock Grid.Row="1" Height="25" HorizontalAlignment="Center">Dynamic</TextBlock>
+                <Button Grid.Row="2" Content="Reset" Width="100" Height="30" Click="Button_Click"></Button>
 
 
-    <UniformGrid  Columns="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>            
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <oxy:PlotView x:Name="plotView1" ></oxy:PlotView>
-            <TextBlock Grid.Row="1" Height="25">Stacked Bar</TextBlock>
-            <Button Grid.Row="2" Content="Reset" Width="100" Height="30" Click="Button_Click"></Button>
-            <ToggleButton Grid.Row="3" x:Name="ToggleButton1" Content="Is Stacked" Width="100" Height="30" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Checked"></ToggleButton>
-            
-        </Grid>
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            <oxy:PlotView x:Name="plotView2" ></oxy:PlotView>
-            <TextBlock Grid.Row="1" Height="25">Stacked Bar</TextBlock>
-  
-        </Grid>
+            </Grid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <oxy:PlotView x:Name="plotView2" ></oxy:PlotView>
+                <TextBlock Grid.Row="1" Height="25" HorizontalAlignment="Center">Static</TextBlock>
 
-    </UniformGrid>
- 
+            </Grid>
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                <oxy:PlotView x:Name="plotView3" ></oxy:PlotView>
+                <TextBlock Grid.Row="1" Height="25" HorizontalAlignment="Center">Grouped</TextBlock>
+
+            </Grid>
+        </UniformGrid>
+    </DockPanel>
 </Page>
