@@ -77,6 +77,20 @@ namespace OxyPlotEx.DemoApp
                     chr = NextCharacter();
             }
         }
+
+        public IEnumerable<(string, string, double)> GetLine3(int change = 1)
+        {
+            var chr = NextCharacter();
+            int i = 0;
+            while (xc2[chr].MoveNext())
+            {
+                dict[chr] = ++dict[chr];
+
+                yield return (chr, chr, (xc2[chr].Current + 1) / (1 + random.NextDouble()));
+                if (i++ % change == 0)
+                    chr = NextCharacter();
+            }
+        }
     }
 
 

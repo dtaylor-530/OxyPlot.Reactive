@@ -1,17 +1,19 @@
-﻿namespace OxyPlot.Reactive
+﻿#nullable enable
+namespace OxyPlot.Reactive
 {
     using OxyPlot;
     using OxyPlot.Reactive.Infrastructure;
     using System.Collections.Generic;
+    using System.Reactive.Concurrency;
 
     public class MultiDateTimeAccumulatedModel<T> : MultiDateTimeModel<T>
     {
 
-        public MultiDateTimeAccumulatedModel(IDispatcher dispatcher, PlotModel model) : base(dispatcher, model)
+        public MultiDateTimeAccumulatedModel(PlotModel model, IScheduler? scheduler=null) : base( model,scheduler: scheduler)
         {
         }
 
-        public MultiDateTimeAccumulatedModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : base(dispatcher, model, comparer)
+        public MultiDateTimeAccumulatedModel(PlotModel model, IEqualityComparer<T> comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 

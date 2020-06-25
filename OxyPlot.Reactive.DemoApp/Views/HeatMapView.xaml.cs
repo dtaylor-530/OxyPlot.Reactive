@@ -1,20 +1,10 @@
 ﻿using OxyPlot.Reactive;
-using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace OxyPlotEx.DemoAppCore.Pages
 {
@@ -27,14 +17,9 @@ namespace OxyPlotEx.DemoAppCore.Pages
         {
             InitializeComponent();
 
-            var hmapModel = new HeatMap(Constants.DispatcherX, new WDComparer(), null, "WeekDay", "Number");
-            plotView.Model = hmapModel.Model;
-            _ = NewMethod().Subscribe(hmapModel);
+            _ = NewMethod().Subscribe(new HeatMap(plotView1.Model ??= new OxyPlot.PlotModel(), hNamesComparer: new WDComparer(), hAxisKey: "WeekDay", vAxisKey: "Number", scheduler: ReactiveUI.RxApp.MainThreadScheduler));
 
-
-            var hmapModel2 = new HeatMap(Constants.DispatcherX, new WDComparer(), null);
-            plotView2.Model = hmapModel2.Model;
-            _ = NewMethod2(out _).Subscribe(hmapModel2);
+            _ = NewMethod2(out _).Subscribe(new HeatMap(plotView2.Model ??= new OxyPlot.PlotModel(), hNamesComparer: new WDComparer()));
         }
 
         private IObservable<KeyValuePair<(string, string), double>> NewMethod()
@@ -49,9 +34,8 @@ namespace OxyPlotEx.DemoAppCore.Pages
                             .GroupBy(a => a.Item1)
                             .Select(a => (a.Key, a.First().Item2))
                             .ToDictionary(a => a.Key, a => a.Item2).ToObservable();
-
-
         }
+
         private IObservable<KeyValuePair<(string, string), double>> NewMethod2(out IDisposable disp)
         {
             Random rand = new Random();

@@ -1,4 +1,4 @@
-﻿using OxyPlot;
+﻿#nullable enable
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System.Collections.Generic;
@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using MathNet.Numerics.Statistics;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
+using System.Threading;
+using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
@@ -17,39 +19,41 @@ namespace OxyPlot.Reactive
         static readonly OxyColor Positive = OxyColor.Parse("#0074D9");
         static readonly OxyColor Negative = OxyColor.Parse("#FF4136");
 
-        public ErrorBarModel(IDispatcher dispatcher, PlotModel plotModel) : base(dispatcher, plotModel)
+        public ErrorBarModel(PlotModel plotModel, SynchronizationContext? context = null, IScheduler? scheduler = null) : base(plotModel, context: context, scheduler: scheduler)
         {
         }
 
-        protected override void Refresh(IList<Unit> units)
+        protected override async void Refresh(IList<Unit> units)
         {
-            dispatcher.BeginInvoke(async () =>
+
+            var points = await Task.Run(() =>
             {
-                plotModel.Series.Clear();
-                _ = await Task.Run(() =>
+                lock (lck)
                 {
-                    lock (lck)
-                    {
-                        return DataPoints.GroupBy(a => a.X).ToArray().Select(Selector).OrderBy(a => a.Item2.Value).ToArray();
-                    }
-
-                }).ContinueWith(async points =>
-                {
-                    AddToSeries(await points, "A Title");
-                }, TaskScheduler.FromCurrentSynchronizationContext());
-
-
-                plotModel.InvalidatePlot(true);
+                    return DataPoints.GroupBy(a => a.X).ToArray().Select(Selector).OrderBy(a => a.Item2.Value).ToArray();
+                }
             });
 
-            static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
+            (this as IMixedScheduler).ScheduleAction(() =>
             {
-                var arr = grp.Select(a => a.Y).ToArray();
-                // var variance = Statistics.Variance(arr);
-                var sd = arr.StandardDeviation();
-                var mean = arr.Mean();
-                return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
-            }
+                lock (plotModel)
+                {
+                    plotModel.Series.Clear();
+                    AddToSeries(points, "A Title");
+                    plotModel.InvalidatePlot(true);
+                }
+            });
+        }
+
+        //static (string key, ErrorBarItem) Selector(IGrouping<string, DataPoint<string>> grp)
+        static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
+        {
+            var arr = grp.Select(a => a.Y).ToArray();
+            // var variance = Statistics.Variance(arr);
+            var sd = arr.StandardDeviation();
+            var mean = arr.Mean();
+            // return (grp.Key, new ErrorBarItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
+            return (grp.Key, new ErrorColumnItem(mean, sd) { Color = mean > 0 ? Positive : Negative });
         }
 
         protected override void ModifyPlotModel()
@@ -62,12 +66,14 @@ namespace OxyPlot.Reactive
             };
             //linearAxis1.MaximumPadding = 0.06;
             //linearAxis1.MinimumPadding = 0;
-            plotModel.Axes.Add(linearAxis1);
+            lock (lck)
+                plotModel.Axes.Add(linearAxis1);
 
             base.ModifyPlotModel();
         }
 
 
+        //protected virtual void AddToSeries((string key, ErrorBarItem)[] points, string title)
         protected virtual void AddToSeries((string key, ErrorColumnItem)[] points, string title)
         {
             plotModel.Series.Add(OxyFactory.Build(points.Select(a => a.Item2).ToArray(), title));

@@ -14,6 +14,7 @@ using MoreLinq;
 using System.Reactive.Threading.Tasks;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
+using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
@@ -22,7 +23,7 @@ namespace OxyPlot.Reactive
         readonly Subject<IDateTimeKeyPoint<T>> subject = new Subject<IDateTimeKeyPoint<T>>();
         private int? count;
 
-        public MultiDateTimeModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T>? comparer = null) : base(dispatcher, model, comparer)
+        public MultiDateTimeModel( PlotModel model, IEqualityComparer<T>? comparer = null, IScheduler? scheduler=null) : base( model, comparer, scheduler: scheduler)
         {
         }
 
@@ -33,7 +34,7 @@ namespace OxyPlot.Reactive
 
         protected override void Refresh(IList<Unit> units)
         {
-            dispatcher.BeginInvoke(async () =>
+            scheduler.Schedule(async () =>
             {
                 foreach (var keyValue in DataPoints.ToArray())
                 {
@@ -48,7 +49,7 @@ namespace OxyPlot.Reactive
                       }).ContinueWith(async points =>
                       {
                           AddToSeries(await points, keyValue.Key.ToString());
-                      }, TaskScheduler.FromCurrentSynchronizationContext());
+                      });
                 }
 
                 if (showAll)
@@ -88,21 +89,24 @@ namespace OxyPlot.Reactive
 
         protected virtual void AddToSeries(IDateTimeKeyPoint<T>[] items, string title)
         {
-            if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
+            lock (lck)
             {
-                series = OxyFactory.Build(items, title);
-
-                series.ToMouseDownEvents().Subscribe(e =>
+                if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
                 {
-                    var time = DateTimeAxis.ToDateTime(series.InverseTransform(e.Position).X);
-                    var point = items.MinBy(a => Math.Abs((a.DateTime - time).Ticks)).First();
-                    subject.OnNext(point);
-                });
+                    series = OxyFactory.Build(items, title);
 
-                plotModel.Series.Add(series);
+                    series.ToMouseDownEvents().Subscribe(e =>
+                    {
+                        var time = DateTimeAxis.ToDateTime(series.InverseTransform(e.Position).X);
+                        var point = items.MinBy(a => Math.Abs((a.DateTime - time).Ticks)).First();
+                        subject.OnNext(point);
+                    });
+
+                    plotModel.Series.Add(series);
+                }
+
+                series.ItemsSource = items;
             }
-
-            series.ItemsSource = items;
         }
 
 

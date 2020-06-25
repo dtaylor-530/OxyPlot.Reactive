@@ -2,7 +2,6 @@
 using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Factory;
 using OxyPlot.Reactive.DemoApp.ViewModels;
-using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,19 +19,12 @@ namespace OxyPlotEx.DemoAppCore.Pages
         {
             InitializeComponent();
 
-            var dx = new DispatcherX(this.Dispatcher);
 
-            plotView.Model = new OxyPlot.PlotModel();
-            var model1 = new MultiDateTimeModel<string>(dx, plotView.Model) { };
-            DataSource.Observe().Take(1000).Subscribe(model1);
+            DataSource.Observe().Take(1000).Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
 
-            plotView2.Model = new OxyPlot.PlotModel();
-            var model2 = new MultiDateTimeModel<string>(dx, plotView2.Model) { };
-
-
+            var model2 = new MultiDateTimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
 
             var obs = DataSource.Observe2();
-
             obs.Subscribe(model2);
             obs
                   .ToObservableChangeSet()
@@ -51,7 +43,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
             DataGrid1.ItemsSource = collection;
 
             var obs2 = DataSource.Observe().Select(a => (KeyValuePair<string, (DateTime, double)>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, (DateTime, double)>?));
-            ViewModelViewHost1.ViewModel = new BusyViewModel(obs2, dx);
+            ViewModelViewHost1.ViewModel = new BusyViewModel(obs2);
         }
     }
 }
