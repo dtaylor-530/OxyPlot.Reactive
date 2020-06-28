@@ -1,0 +1,48 @@
+﻿<rxui:ReactiveUserControl x:Class="Betfair.View.Profits.TestSubView"
+                          x:TypeArguments="vm:TestSubViewModel"
+                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:rxui="http://reactiveui.net"
+                          xmlns:vm="clr-namespace:Betfair.ViewModel.Profits;assembly=Betfair.ViewModel.Profits"
+                          mc:Ignorable="d"
+                          d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <!--<base:Converter x:Key="Converter"></base:Converter>-->
+
+        <ListBox x:Key="ListBox1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1"></UniformGrid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ListBox>
+        <rxui:ViewModelViewHost x:Key="ViewModelViewHost1" ViewContract="Selected"></rxui:ViewModelViewHost>
+
+    </UserControl.Resources>
+    <DockPanel>
+
+        <ToolBar DockPanel.Dock="Top">
+
+            <!--<toggleSwitch:HorizontalToggleSwitch IsChecked="True" CheckedContent="HDA" UncheckedContent="Day of Week" Checked="HorizontalToggleSwitch_Checked" Unchecked="HorizontalToggleSwitch_Unchecked"></toggleSwitch:HorizontalToggleSwitch>-->
+            <TextBlock x:Name="TextBlock1" ></TextBlock>
+
+            <rxui:TransitioningContentControl Transition="Fade"  x:Name="TransitionControl" Visibility="Hidden">
+                <StackPanel>
+                    <Label>Mean</Label>
+                    <TextBlock x:Name="Mean" Width="50"  ></TextBlock>
+                    <Label>Standard Deviation</Label>
+                    <TextBlock x:Name="Variance" Width="50" ></TextBlock>
+                </StackPanel>
+            </rxui:TransitioningContentControl>
+        </ToolBar>
+        
+
+        <rxui:TransitioningContentControl x:Name="TCC1" Content="{StaticResource ListBox1}">
+
+        </rxui:TransitioningContentControl >
+
+    </DockPanel>
+
+</rxui:ReactiveUserControl>

@@ -1,0 +1,54 @@
+﻿<rxui:ReactiveUserControl x:Class="Betfair.View.Profits.MultiPlotView"
+                          x:TypeArguments="vm:TestViewModel"                          
+                          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                          xmlns:rxui="http://reactiveui.net"                  
+                          xmlns:vm="clr-namespace:Betfair.ViewModel.Profits;assembly=Betfair.ViewModel.Profits" 
+                          xmlns:vm1="clr-namespace:Betfair.ViewModel.Base;assembly=Betfair.ViewModel.Base" 
+                          xmlns:pt="http://propertytools.org/wpf"
+                          mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+
+    <DockPanel>
+
+        <ListBox x:Name="ListBox1" DockPanel.Dock="Left" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedIndex="0" >
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="1"></UniformGrid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate  DataType="{x:Type vm:TestSubViewModel}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="Bold"></TextBlock>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ListBox>
+
+        <DockPanel>
+            <ToolBar DockPanel.Dock="Top">
+                <Label Content="ByEfficiency"></Label>
+                <!--<ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" x:Name="ToggleButton1" IsChecked="True"></ToggleButton>-->
+                <pt:RadioButtonList x:Name="RadioButtonList1"
+                                    EnumType="{x:Type vm1:WagerModifierType}" 
+                                    Orientation="Horizontal" 
+                                    Value="{x:Static vm1:WagerModifierType.None}"></pt:RadioButtonList>
+            </ToolBar>
+            <!--<ContentControl x:Name="ContentControl1"></ContentControl>-->
+            <rxui:ViewModelViewHost
+                x:Name="sampleViewModelViewHost"
+                HorizontalContentAlignment="Stretch"
+                VerticalContentAlignment="Stretch">
+            </rxui:ViewModelViewHost>
+        </DockPanel>
+
+    </DockPanel>
+</rxui:ReactiveUserControl>

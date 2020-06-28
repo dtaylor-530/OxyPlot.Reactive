@@ -1,0 +1,25 @@
+﻿<rui:ReactiveUserControl
+    x:TypeArguments="vm1:TestSubChartViewModel"
+            x:Class="Betfair.View.Profits.TestSubChartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:oxy="http://oxyplot.org/wpf"
+    xmlns:rui="http://reactiveui.net" 
+    xmlns:vm1="clr-namespace:Betfair.ViewModel.Profits;assembly=Betfair.ViewModel.Profits"
+    mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Label x:Name="TextBlock1" FontSize="14" FontWeight="Bold"></Label>
+        <Grid Grid.Row="1">
+            <oxy:PlotView x:Name="PlotView1" MinHeight="500" MinWidth="300"  ></oxy:PlotView>
+        </Grid>
+    </Grid>
+    
+</rui:ReactiveUserControl>
