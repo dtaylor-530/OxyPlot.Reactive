@@ -41,7 +41,6 @@ namespace OxyPlot.Reactive
                       }).ContinueWith(async points =>
                           AddToSeries(await points, keyValue.Key.ToString()));
 
-
                     if (showAll)
                     {
                         _ = await Task.Run(() =>

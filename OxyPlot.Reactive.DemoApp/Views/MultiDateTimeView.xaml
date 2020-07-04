@@ -14,10 +14,8 @@
     <Grid >
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
-
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
-
         </Grid.RowDefinitions>
         <oxy:PlotView x:Name="plotView"/>
 

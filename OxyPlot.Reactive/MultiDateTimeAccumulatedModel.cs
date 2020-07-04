@@ -2,7 +2,6 @@
 namespace OxyPlot.Reactive
 {
     using OxyPlot;
-    using OxyPlot.Reactive.Infrastructure;
     using System.Collections.Generic;
     using System.Reactive.Concurrency;
 
