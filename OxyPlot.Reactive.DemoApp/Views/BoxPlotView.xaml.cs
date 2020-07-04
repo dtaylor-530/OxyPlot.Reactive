@@ -21,7 +21,7 @@ namespace OxyPlotEx.DemoAppCore
 
         }
 
-        private static IObservable<KeyValuePair<string, (int, double)>> GenerateData()
+        private static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> GenerateData()
         {
             DateTime now = DateTime.Now;
             var get2 = new DataFactory().GetLine().GetEnumerator();
@@ -34,7 +34,7 @@ namespace OxyPlotEx.DemoAppCore
 
             var obs1 = observable1.Select(o =>
             {
-                return new KeyValuePair<string, (int, double)>(o.Key, (random.Next(0, 10), o.Value));
+                return new KeyValuePair<string, KeyValuePair<int, double>>(o.Key, KeyValuePair.Create(random.Next(0, 10), o.Value));
             });
             return obs1;
         }

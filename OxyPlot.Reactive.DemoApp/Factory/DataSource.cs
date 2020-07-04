@@ -8,17 +8,17 @@ namespace OxyPlot.Reactive.DemoApp.Factory
 {
     class DataSource
     {
-        public static IObservable<KeyValuePair<string, (DateTime, double)>> Observe1000()
+        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000()
         {
             var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
             {
-                return new KeyValuePair<string, (DateTime, double)>(o.Key, (DateTime.UnixEpoch.AddYears(i), o.Value));
+                return new KeyValuePair<string, KeyValuePair<DateTime, double>>(o.Key, KeyValuePair.Create(DateTime.UnixEpoch.AddYears(i), o.Value));
             }).ToArray();
 
             return array.ToObservable();
         }
 
-        public static IObservable<KeyValuePair<string, (DateTime, double)>> Observe20()
+        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe20()
         {
             return Observe1000().Take(20);
         }

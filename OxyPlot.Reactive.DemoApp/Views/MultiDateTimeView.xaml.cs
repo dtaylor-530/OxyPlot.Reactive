@@ -19,9 +19,9 @@ namespace OxyPlotEx.DemoAppCore.Pages
         public MultiDateTimeModelView()
         {
             InitializeComponent();
+            var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1));
 
-
-            DataSource.Observe1000().Pace(TimeSpan.FromSeconds(5)).Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
+            pacedObs.Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
 
             var model2 = new MultiDateTimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
 
@@ -36,14 +36,14 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             model2.Subscribe(p =>
             {
-                var n = collection.Select((a, i) => (a.Value.Item1, i)).Single(a => a.Item1 == p.DateTime).i;
+                var n = collection.Select((a, i) => (a.Value.Key, i)).Single(a => a.Item1 == p.DateTime).i;
                 DataGrid1.SelectedIndex = n;
                 DataGrid1.ScrollIntoView(DataGrid1.Items[n]);
             });
 
             DataGrid1.ItemsSource = collection;
 
-            var obs2 = DataSource.Observe1000().Select(a => (KeyValuePair<string, (DateTime, double)>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, (DateTime, double)>?));
+            var obs2 = pacedObs.Select(a => (KeyValuePair<string, KeyValuePair<DateTime, double>>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, KeyValuePair<DateTime, double>>?));
             ViewModelViewHost1.ViewModel = new BusyViewModel(obs2);
         }
     }

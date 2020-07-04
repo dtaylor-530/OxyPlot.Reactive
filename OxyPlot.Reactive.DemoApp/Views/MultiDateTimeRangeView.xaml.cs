@@ -54,7 +54,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             obs.Subscribe(model2);
             obs.Subscribe(model3);
 
-            obs.Scan(new HashSet<DateTime>(), (a, b) => { a.Add(b.Value.Item1); return a; })
+            obs.Scan(new HashSet<DateTime>(), (a, b) => { a.Add(b.Value.Key); return a; })
                             .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
                 .Subscribe(c => {
@@ -63,7 +63,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                     Count = c.Count;
                 });
 
-            obs.ToMinMax(a => FromDateTime(a.Value.Item1))
+            obs.ToMinMax(a => FromDateTime(a.Value.Key))
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
                 .Subscribe(a =>

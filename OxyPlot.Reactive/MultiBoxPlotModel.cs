@@ -42,7 +42,7 @@ namespace OxyPlot.Reactive
 
         protected override async void Refresh(IList<Unit> units)
         {
-            KeyValuePair<string, List<(int x, double y)>>[] arr;
+            KeyValuePair<string, ICollection<KeyValuePair<int, double>>>[] arr;
 
             lock (lck)
             {
@@ -81,16 +81,16 @@ namespace OxyPlot.Reactive
             });
 
 
-            static BoxPlotItem[] SelectBPI(IList<(int X, double Y)> dataPoints)
+            static BoxPlotItem[] SelectBPI(IList<KeyValuePair<int, double>> dataPoints)
             {
-                return dataPoints.GroupBy(a => a.X)
+                return dataPoints.GroupBy(a => a.Key)
                           .Select(Selector)
                           .ToArray();
 
 
-                static BoxPlotItem Selector(IGrouping<int, (int X, double Y)> grp)
+                static BoxPlotItem Selector(IGrouping<int, KeyValuePair<int, double>> grp)
                 {
-                    var arr = grp.Select(a => a.Y).ToArray();
+                    var arr = grp.Select(a => a.Value).ToArray();
                     var variance = MathNet.Numerics.Statistics.Statistics.Variance(arr);
                     var sd = MathNet.Numerics.Statistics.Statistics.StandardDeviation(arr);
                     var median = MathNet.Numerics.Statistics.Statistics.Mean(arr);

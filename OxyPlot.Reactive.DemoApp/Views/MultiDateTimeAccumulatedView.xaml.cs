@@ -37,7 +37,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
         }
 
 
-        private static void ProduceData(out IObservable<IDateTimeKeyPoint<string>> observable1, out IObservable<KeyValuePair<string, (DateTime, double)>> observable2)
+        private static void ProduceData(out IObservable<IDateTimeKeyPoint<string>> observable1, out IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable2)
         {
             DateTime now = DateTime.Now;
             var get = new DataFactory().GetSin().GetEnumerator();
@@ -45,7 +45,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 .Select((o, i) => (IDateTimeKeyPoint<string>)new DateTimePoint(now.AddHours(i), o.Value, o.Key));
             var get2 = new DataFactory().GetLine().GetEnumerator();
             observable2 = Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(t => { get2.MoveNext(); return get2.Current; }).Skip(1)
-                .Select((o, i) => new KeyValuePair<string, (DateTime, double)>(o.Key, (now.AddHours(i), o.Value)));
+                .Select((o, i) => new KeyValuePair<string, KeyValuePair<DateTime, double>>(o.Key, KeyValuePair.Create(now.AddHours(i), o.Value)));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

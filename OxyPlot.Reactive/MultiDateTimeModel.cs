@@ -18,12 +18,12 @@ using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
-    public class MultiDateTimeModel<T> : MultiPlotModel<T, DateTime>, IObservable<IDateTimeKeyPoint<T>>, IObserver<int>, IObserver<IDateTimeKeyPoint<T>>
+    public class MultiDateTimeModel<TKey> : MultiPlotModel<TKey, DateTime>, IObservable<IDateTimeKeyPoint<TKey>>, IObserver<int>, IObserver<IDateTimeKeyPoint<TKey>>
     {
-        readonly Subject<IDateTimeKeyPoint<T>> subject = new Subject<IDateTimeKeyPoint<T>>();
-        private int? count;
+        readonly Subject<IDateTimeKeyPoint<TKey>> subject = new Subject<IDateTimeKeyPoint<TKey>>();
+        protected int? count;
 
-        public MultiDateTimeModel( PlotModel model, IEqualityComparer<T>? comparer = null, IScheduler? scheduler=null) : base( model, comparer, scheduler: scheduler)
+        public MultiDateTimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -34,62 +34,57 @@ namespace OxyPlot.Reactive
 
         protected override void Refresh(IList<Unit> units)
         {
-            scheduler.Schedule(async () =>
-            {
-                foreach (var keyValue in DataPoints.ToArray())
-                {
-                    _ = await Task.Run(() =>
-                      {
-                          lock (lck)
-                          {
-                              return count.HasValue ?
-                               Enumerable.TakeLast(ToDataPoints2(keyValue), count.Value).ToArray() :
-                               ToDataPoints2(keyValue).ToArray();
-                          }
-                      }).ContinueWith(async points =>
-                      {
-                          AddToSeries(await points, keyValue.Key.ToString());
-                      });
-                }
+            _ = scheduler.Schedule(async () =>
+              {
+                  KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[] dataPoints;
+                  lock (DataPoints)
+                      dataPoints = DataPoints.ToArray();
 
-                if (showAll)
-                {
-                    _ = await Task.Run(() =>
-                    {
-                        lock (lck)
+
+                  foreach (var keyValue in dataPoints)
+                  {
+                      _ = await Task.Run(() =>
                         {
-                            var xx = ToDataPoints(DataPoints.SelectMany(a => a.Value.Select(c => KeyValuePair.Create(a.Key, c))));
+                            lock (lck)
+                            {
+                                return count.HasValue ?
+                                 Enumerable.TakeLast(ToDataPoints2(keyValue), count.Value).ToArray() :
+                                 ToDataPoints2(keyValue).ToArray();
+                            }
+                        }).ContinueWith(async points => AddToSeries(await points, keyValue.Key.ToString()));
+                  }
 
-                            return count.HasValue ?
-                            Enumerable.TakeLast(xx, count.Value).ToArray() :
-                            xx.ToArray();
-                        }
+                  if (showAll)
+                  {
+                      _ = await Task.Run(() =>
+                        {
+                            lock (lck)
+                            {
+                                var xx = ToDataPoints(DataPoints.SelectMany(a => a.Value.ToArray().Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
+                                return count.HasValue ?
+                                Enumerable.TakeLast(xx, count.Value).ToArray() :
+                                xx.ToArray();
+                            }
 
-                    }).ContinueWith(async points =>
-                    {
-                        AddToSeries(await points, "All");
-                    }, TaskScheduler.FromCurrentSynchronizationContext());
-                }
-                plotModel.InvalidatePlot(true);
-            });
+                        }).ContinueWith(async points => AddToSeries(await points, "All"));
+                  }
+                  plotModel.InvalidatePlot(true);
+              });
 
 
-            IEnumerable<IDateTimeKeyPoint<T>> ToDataPoints2(KeyValuePair<T, List<(DateTime X, double Y)>> keyValue)
-                => ToDataPoints(keyValue.Value.Select(c => KeyValuePair.Create(keyValue.Key, c)));
-
+            IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints2(KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>> keyValue)
+                => ToDataPoints(keyValue.Value.ToArray().Select(c => KeyValuePair.Create(keyValue.Key, c)));
         }
 
-
-        IEnumerable<IDateTimeKeyPoint<T>> ToDataPoints(IEnumerable<KeyValuePair<T, (DateTime X, double Y)>> collection)
+        protected IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
             => collection
-            .OrderBy(c => c.Value.X)
-            .Scan(new DateTimePoint<T>(), (xy0, xy) => new DateTimePoint<T>(xy.Value.X, Combine(xy0.Value, xy.Value.Y), xy.Key))
-            .Cast<IDateTimeKeyPoint<T>>()
+            .Scan(new DateTimePoint<TKey>(), (xy0, xy) => new DateTimePoint<TKey>(xy.Value.Key, Combine(xy0.Value, xy.Value.Value), xy.Key))
+            .Cast<IDateTimeKeyPoint<TKey>>()
             .Skip(1);
 
-        protected virtual void AddToSeries(IDateTimeKeyPoint<T>[] items, string title)
+        protected virtual void AddToSeries(IDateTimeKeyPoint<TKey>[] items, string title)
         {
-            lock (lck)
+            lock (plotModel)
             {
                 if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
                 {
@@ -109,9 +104,18 @@ namespace OxyPlot.Reactive
             }
         }
 
+        protected override void AddToDataPoints(KeyValuePair<TKey, KeyValuePair<DateTime, double>> item)
+        {
+            var newdp = item.Value;
+            lock (DataPoints)
+            {
+                if (!DataPoints.ContainsKey(item.Key))
+                    DataPoints[item.Key] = new SortedList<DateTime, double>();
+                DataPoints[item.Key].Add(newdp);
+            }
+        }
 
-
-        public IDisposable Subscribe(IObserver<IDateTimeKeyPoint<T>> observer)
+        public IDisposable Subscribe(IObserver<IDateTimeKeyPoint<TKey>> observer)
         {
             return subject.Subscribe(observer);
         }
@@ -122,12 +126,11 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        public void OnNext(IDateTimeKeyPoint<T> item)
+        public void OnNext(IDateTimeKeyPoint<TKey> item)
         {
-            Task.Run(() => AddToDataPoints(KeyValuePair.Create(item.Key, (item.DateTime, item.Value))))
+            Task.Run(() => AddToDataPoints(KeyValuePair.Create(item.Key, KeyValuePair.Create(item.DateTime, item.Value))))
                 .ToObservable()
                 .Subscribe(refreshSubject.OnNext);
         }
-
     }
 }

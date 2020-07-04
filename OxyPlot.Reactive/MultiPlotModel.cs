@@ -14,7 +14,7 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
-    public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, (TR X, double Y)>
+    public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>>
     {
         public MultiPlotModel(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
@@ -60,7 +60,7 @@ namespace OxyPlot.Reactive
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
         protected bool showAll;
-        protected Dictionary<T, List<R>> DataPoints;
+        protected Dictionary<T, ICollection<R>> DataPoints;
 
         public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default)
         {
@@ -138,11 +138,11 @@ namespace OxyPlot.Reactive
             }
         }
 
-        protected virtual Dictionary<T, List<R>> GetDataPoints()
+        protected virtual Dictionary<T, ICollection<R>> GetDataPoints()
         {
             return comparer == default ?
-                  new Dictionary<T, List<R>>() :
-                new Dictionary<T, List<R>>(comparer);
+                  new Dictionary<T, ICollection<R>>() :
+                new Dictionary<T, ICollection<R>>(comparer);
         }
 
         IScheduler? IMixedScheduler.Scheduler => scheduler;
