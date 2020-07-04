@@ -30,7 +30,10 @@
                      Title="Stacked Bar Series" />
 
                     <Page Uri="\Views\MultiDateTimeRangeView.xaml"
-                     Title="Multi Line Range" />
+                     Title="Multi Line Range" />    
+                    
+                    <Page Uri="\Views\MultiDateTimeGroupView.xaml"
+                     Title="Multi Group" />
                 </Pages>
             </x:XData>
         </XmlDataProvider>
