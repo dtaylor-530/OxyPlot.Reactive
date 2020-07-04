@@ -1,5 +1,6 @@
 ﻿using DynamicData;
 using OxyPlot.Reactive;
+using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
 using OxyPlot.Reactive.DemoApp.ViewModels;
 using System;
@@ -20,11 +21,11 @@ namespace OxyPlotEx.DemoAppCore.Pages
             InitializeComponent();
 
 
-            DataSource.Observe().Take(1000).Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
+            DataSource.Observe1000().Pace(TimeSpan.FromSeconds(5)).Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
 
             var model2 = new MultiDateTimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
 
-            var obs = DataSource.Observe2();
+            var obs = DataSource.Observe20();
             obs.Subscribe(model2);
             obs
                   .ToObservableChangeSet()
@@ -42,7 +43,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             DataGrid1.ItemsSource = collection;
 
-            var obs2 = DataSource.Observe().Select(a => (KeyValuePair<string, (DateTime, double)>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, (DateTime, double)>?));
+            var obs2 = DataSource.Observe1000().Select(a => (KeyValuePair<string, (DateTime, double)>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, (DateTime, double)>?));
             ViewModelViewHost1.ViewModel = new BusyViewModel(obs2);
         }
     }

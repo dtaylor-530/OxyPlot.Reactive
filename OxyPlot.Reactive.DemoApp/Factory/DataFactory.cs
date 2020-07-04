@@ -78,6 +78,7 @@ namespace OxyPlotEx.DemoApp
             }
         }
 
+
         public IEnumerable<(string, string, double)> GetLine3(int change = 1)
         {
             var chr = NextCharacter();

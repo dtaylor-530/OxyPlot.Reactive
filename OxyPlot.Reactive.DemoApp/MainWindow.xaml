@@ -28,6 +28,9 @@
 
                     <Page Uri="\Views\StackedBarView.xaml"
                      Title="Stacked Bar Series" />
+
+                    <Page Uri="\Views\MultiDateTimeRangeView.xaml"
+                     Title="Multi Line Range" />
                 </Pages>
             </x:XData>
         </XmlDataProvider>
