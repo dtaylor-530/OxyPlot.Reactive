@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="OxyPlot.Reactive.DemoApp.Views.MultiPlotView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OxyPlot.Reactive.DemoApp.Views" xmlns:oxy="http://oxyplot.org/wpf" xmlns:common="clr-namespace:OxyPlot.Reactive.DemoApp.Common"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <common:TrackerConverter x:Key="TrackerConverter"></common:TrackerConverter>
+    </UserControl.Resources>
+    <UniformGrid>
+        <oxy:PlotView x:Name="PlotView1"></oxy:PlotView>
+        <ItemsControl x:Name="ItemsControl1">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="300" Width="500">
+                        <oxy:PlotView Model="{Binding Path=.}"></oxy:PlotView>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl x:Name="ItemsControl2">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Ellipse Fill="Red" Height="20" Width="20"></Ellipse>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </UniformGrid>
+</UserControl>
