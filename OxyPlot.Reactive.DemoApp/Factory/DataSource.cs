@@ -8,20 +8,33 @@ namespace OxyPlot.Reactive.DemoApp.Factory
 {
     class DataSource
     {
+        private static Lazy<KeyValuePair<string, KeyValuePair<DateTime, double>>[]> array;
+
+        static DataSource()
+        {
+            array = new Lazy<KeyValuePair<string, KeyValuePair<DateTime, double>>[]>(() =>
+             {
+                 var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
+                 {
+                     return new KeyValuePair<string, KeyValuePair<DateTime, double>>(o.Key, KeyValuePair.Create(DateTime.UnixEpoch.AddYears(i), o.Value));
+                 }).ToArray();
+
+                 return array;
+             });
+        }
+
         public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000()
         {
-            var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
-            {
-                return new KeyValuePair<string, KeyValuePair<DateTime, double>>(o.Key, KeyValuePair.Create(DateTime.UnixEpoch.AddYears(i), o.Value));
-            }).ToArray();
-
-            return array.ToObservable();
+            return array.Value.ToObservable();
         }
 
         public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe20()
         {
-            return Observe1000().Take(20);
+            return array.Value.Take(20).ToObservable();
         }
+
+
+
 
         public static DateTime ToDateTime(double d) => DateTime.UnixEpoch.AddDays((int)d);
 

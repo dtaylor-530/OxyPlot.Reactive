@@ -53,29 +53,6 @@ namespace OxyPlot.Reactive.Infrastructure
         }
 
 
-        //public static IEnumerable<IGrouping<DateTimeRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<DateTimeRange> ranges, Func<T, DateTime> predicate)
-        //{
-        //    return from ar in ranges.Join(from asc in enumerable select (asc, predicate.Invoke(asc)),
-        //        a => (a.Start, a.End),
-        //        a => (default(DateTime), a.Item2),
-        //        (a, b) => (a, b), new EqualityComparer())
-        //           group ar by ar.a into g
-        //           select new Grouping<T>(g.Key, g.Select(c => c.b.asc).ToArray());
-        //}
-
-        //public class EqualityComparer : IEqualityComparer<(DateTime, DateTime)>
-        //{
-        //    public bool Equals((DateTime, DateTime) x, (DateTime, DateTime) y)
-        //    {
-        //        return x.Item2 <= y.Item2 && x.Item2 >= y.Item1;
-        //    }
-
-        //    public int GetHashCode((DateTime, DateTime) obj)
-        //    {
-        //        return 0;
-        //    }
-        //}
-
         class Grouping<T> : IGrouping<DateTimeRange, T>
         {
 
