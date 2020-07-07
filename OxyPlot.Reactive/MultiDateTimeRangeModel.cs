@@ -10,6 +10,7 @@ using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
 using Exceptionless.DateTimeExtensions;
+using System.Threading;
 
 namespace OxyPlot.Reactive
 {
@@ -26,7 +27,7 @@ namespace OxyPlot.Reactive
 
         protected override void Refresh(IList<Unit> units)
         {
-            scheduler.Schedule(async () =>
+            (this as IMixedScheduler).ScheduleAction(async () =>
             {
                 KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[]? arr = default;
                 lock (DataPoints)
@@ -40,22 +41,22 @@ namespace OxyPlot.Reactive
 
                       }).ContinueWith(async points =>
                           AddToSeries(await points, keyValue.Key.ToString()));
-
-                    if (showAll)
-                    {
-                        _ = await Task.Run(() =>
-                        {
-                            lock (DataPoints)
-                            {
-                                return Switch(arr.SelectMany(a => a.Value.Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
-                            }
-
-                        }).ContinueWith(async points =>
-                            AddToSeries(await points, "All"));
-                    }
-                    lock (plotModel)
-                        plotModel.InvalidatePlot(true);
                 }
+
+                if (showAll)
+                {
+                    _ = await Task.Run(() =>
+                    {
+                        lock (DataPoints)
+                        {
+                            return Switch(arr.SelectMany(a => a.Value.Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
+                        }
+
+                    }).ContinueWith(async points =>
+                        AddToSeries(await points, "All"));
+                }
+                lock (plotModel)
+                    plotModel.InvalidatePlot(true);
             });
 
             IEnumerable<IDateTimeKeyPoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)

@@ -10,26 +10,39 @@ using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
 using MoreLinq;
+using Exceptionless.DateTimeExtensions;
+using System.Reactive.Subjects;
 
 namespace OxyPlot.Reactive
 {
-    public class MultiDateTimeGroupModel<TKey> : MultiDateTimeModel<TKey>, IObserver<TimeSpan>
+    public class MultiDateTimeGroup2Model<TKey> : MultiDateTimeModel<TKey>, IObserver<TimeSpan>, IObservable<DateTimeRange[]>
     {
         private RangeType rangeType = RangeType.None;
         private TimeSpan? timeSpan;
-
-        public MultiDateTimeGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        private DateTimeRange[]? ranges;
+        private Subject<DateTimeRange[]> rangesSubject = new Subject<DateTimeRange[]>();
+        public MultiDateTimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
 
+
         protected override void Refresh(IList<Unit> units)
         {
-            scheduler.Schedule(async () =>
+            (this as IMixedScheduler).ScheduleAction(async () =>
             {
                 KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[]? arr = default;
                 lock (DataPoints)
                     arr = DataPoints.ToArray();
+
+                if (timeSpan.HasValue)
+                {
+                    ranges = await Task.Run(() =>
+                    {
+                        return EnumerateDateTimeRanges(min, max, timeSpan.Value).ToArray();
+                    });
+                    rangesSubject.OnNext(ranges);
+                }
 
                 foreach (var keyValue in arr)
                 {
@@ -39,22 +52,22 @@ namespace OxyPlot.Reactive
 
                     }).ContinueWith(async points =>
                         AddToSeries(await points, keyValue.Key.ToString()));
-
-
-                    if (showAll)
-                    {
-                        _ = await Task.Run(() =>
-                        {
-                            lock (DataPoints)
-                            {
-                                return Switch(arr.SelectMany(a => a.Value.Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
-                            }
-                        }).ContinueWith(async points =>
-                            AddToSeries(await points, "All"));
-                    }
-                    lock (plotModel)
-                        plotModel.InvalidatePlot(true);
                 }
+
+
+                if (showAll)
+                {
+                    _ = await Task.Run(() =>
+                    {
+                        lock (DataPoints)
+                        {
+                            return Switch(arr.SelectMany(a => a.Value.Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
+                        }
+                    }).ContinueWith(async points =>
+                        AddToSeries(await points, "All"));
+                }
+                lock (plotModel)
+                    plotModel.InvalidatePlot(true);
             });
 
             IEnumerable<IDateTimeKeyPoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
@@ -67,6 +80,17 @@ namespace OxyPlot.Reactive
                     _ => throw new ArgumentOutOfRangeException("fdssffd")
                 };
             }
+
+
+            static IEnumerable<DateTimeRange> EnumerateDateTimeRanges(DateTime minDateTime, DateTime maxDateTime, TimeSpan timeSpan)
+            {
+                var dtRange = new DateTimeRange(minDateTime, minDateTime += timeSpan);
+                while (dtRange.End < maxDateTime)
+                {
+                    yield return dtRange = new DateTimeRange(minDateTime, minDateTime += timeSpan);
+                }
+
+            }
         }
 
         protected override IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
@@ -74,17 +98,17 @@ namespace OxyPlot.Reactive
             var ees = collection
                 .OrderBy(a => a.Value.Key);
 
-
-
-            return timeSpan.HasValue ? ees.GroupBy(timeSpan.Value, a => a.Value.Key)
+            var se = ranges != null ? ees.GroupBy(ranges, a => a.Value.Key)
+                .Where(a => a.Any())
                 .Select(ac =>
                 {
                     var ss = ac.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key)).Cast<IDateTimeKeyPoint<TKey>>()
-                    .Skip(1).ToArray();
+                  .Skip(1).ToArray();
                     return new DateTimeRangePoint<TKey>(ac.Key, ss);
                 }).Cast<IDateTimeKeyPoint<TKey>>().ToArray() :
-                ees.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value , b.Value.Value), b.Key)).Cast<IDateTimeKeyPoint<TKey>>().Skip(1).ToArray();
+                ees.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key)).Cast<IDateTimeKeyPoint<TKey>>().Skip(1).ToArray(); ;
 
+            return se;
         }
 
         public void OnNext(TimeSpan value)
@@ -92,6 +116,11 @@ namespace OxyPlot.Reactive
             timeSpan = value;
             rangeType = RangeType.TimeSpan;
             refreshSubject.OnNext(Unit.Default);
+        }
+
+        public IDisposable Subscribe(IObserver<DateTimeRange[]> observer)
+        {
+            return rangesSubject.Subscribe(observer);
         }
 
         enum RangeType

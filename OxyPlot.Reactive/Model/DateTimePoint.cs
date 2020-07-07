@@ -112,9 +112,9 @@ namespace OxyPlot.Reactive.Model
 
         public TKey Key { get; }
 
-        public virtual DateTime DateTime => DateTimeRange.Start;
+        public virtual DateTime DateTime => DateTimeRange.Start + (DateTimeRange.End - DateTimeRange.Start) / 2;
 
-        public virtual double Value => Collection.First().Value;
+        public virtual double Value => Collection.Average(a => a.Value);
 
         public ICollection<IDateTimeKeyPoint<TKey>> Collection { get; }
 

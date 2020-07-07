@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace OxyPlot.Reactive.Infrastructure
 {
@@ -30,49 +31,67 @@ namespace OxyPlot.Reactive.Infrastructure
             });
         }
 
-        public static IEnumerable<IGrouping<DateRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
+        public static IEnumerable<IGrouping<DateTimeRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
         {
             Grouping<T> grouping = null;
             foreach (var (a, dt) in from b in enumerable select (b, predicate.Invoke(b)))
             {
                 if (grouping == null || dt > grouping.Key.End)
-                    yield return grouping = new Grouping<T>(new DateRange(dt, dt + timeSpan), a);
+                    yield return grouping = new Grouping<T>(new DateTimeRange(dt, dt + timeSpan), a);
                 else
                     grouping.Add(a);
             }
         }
 
-        class Grouping<T> : IGrouping<DateRange, T>
+
+        public static IEnumerable<IGrouping<DateTimeRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<DateTimeRange> ranges, Func<T, DateTime> predicate)
+        {
+            return from r in ranges
+                   join prod in enumerable on true equals true
+                   into temp
+                   select new Grouping<T>(r, temp.Where(t => predicate.Invoke(t) >= r.Start && predicate.Invoke(t) <= r.End).ToArray());
+        }
+
+
+        //public static IEnumerable<IGrouping<DateTimeRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<DateTimeRange> ranges, Func<T, DateTime> predicate)
+        //{
+        //    return from ar in ranges.Join(from asc in enumerable select (asc, predicate.Invoke(asc)),
+        //        a => (a.Start, a.End),
+        //        a => (default(DateTime), a.Item2),
+        //        (a, b) => (a, b), new EqualityComparer())
+        //           group ar by ar.a into g
+        //           select new Grouping<T>(g.Key, g.Select(c => c.b.asc).ToArray());
+        //}
+
+        //public class EqualityComparer : IEqualityComparer<(DateTime, DateTime)>
+        //{
+        //    public bool Equals((DateTime, DateTime) x, (DateTime, DateTime) y)
+        //    {
+        //        return x.Item2 <= y.Item2 && x.Item2 >= y.Item1;
+        //    }
+
+        //    public int GetHashCode((DateTime, DateTime) obj)
+        //    {
+        //        return 0;
+        //    }
+        //}
+
+        class Grouping<T> : IGrouping<DateTimeRange, T>
         {
 
             readonly List<T> elements = new List<T>();
 
-            public DateRange Key { get; }
+            public DateTimeRange Key { get; }
 
-            public Grouping(DateRange key) => Key = key;
+            public Grouping(DateTimeRange key) => Key = key;
 
-            public Grouping(DateRange key, T element) : this(key) => Add(element);
+            public Grouping(DateTimeRange key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
 
             public void Add(T element) => elements.Add(element);
 
             public IEnumerator<T> GetEnumerator() => this.elements.GetEnumerator();
 
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
-
-
-        public class DateRange
-        {
-
-            public DateRange(DateTime start, DateTime end)
-            {
-                this.Start = start;
-                this.End = end;
-            }
-
-            public DateTime Start { get; set; }
-            public DateTime End { get; set; }
         }
     }
 }

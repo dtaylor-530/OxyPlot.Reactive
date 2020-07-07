@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using OxyPlot;
 using OxyPlot.Axes;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ namespace OxyPlot.Reactive
     {
         readonly Subject<IDateTimeKeyPoint<TKey>> subject = new Subject<IDateTimeKeyPoint<TKey>>();
         protected int? count;
-
+        protected DateTime min=DateTime.MaxValue, max = DateTime.MinValue;
         public MultiDateTimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
@@ -34,9 +33,9 @@ namespace OxyPlot.Reactive
 
         protected override void Refresh(IList<Unit> units)
         {
-            _ = scheduler.Schedule(async () =>
+            _ = (this as IMixedScheduler).ScheduleAction(async () =>
               {
-                  KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[] dataPoints;
+                  KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[]? dataPoints;
                   lock (DataPoints)
                       dataPoints = DataPoints.ToArray();
 
@@ -47,9 +46,10 @@ namespace OxyPlot.Reactive
                         {
                             lock (lck)
                             {
+                                var ssx = ToDataPoints(Flatten(keyValue)).ToArray();
                                 return count.HasValue ?
-                                 Enumerable.TakeLast(ToDataPoints2(keyValue), count.Value).ToArray() :
-                                 ToDataPoints2(keyValue).ToArray();
+                                 Enumerable.TakeLast(ToDataPoints(Flatten(keyValue)), count.Value).ToArray() :
+                                 ToDataPoints(Flatten(keyValue)).ToArray();
                             }
                         }).ContinueWith(async points => AddToSeries(await points, keyValue.Key.ToString()));
                   }
@@ -60,10 +60,8 @@ namespace OxyPlot.Reactive
                         {
                             lock (lck)
                             {
-                                var xx = ToDataPoints(DataPoints.SelectMany(a => a.Value.ToArray().Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
-                                return count.HasValue ?
-                                Enumerable.TakeLast(xx, count.Value).ToArray() :
-                                xx.ToArray();
+                                var xx = ToDataPoints(DataPoints.SelectMany(a => Flatten(a))).ToArray();
+                                return count.HasValue ? Enumerable.TakeLast(xx, count.Value).ToArray() : xx;
                             }
 
                         }).ContinueWith(async points => AddToSeries(await points, "All"));
@@ -72,11 +70,11 @@ namespace OxyPlot.Reactive
               });
 
 
-            IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints2(KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>> keyValue)
-                => ToDataPoints(keyValue.Value.ToArray().Select(c => KeyValuePair.Create(keyValue.Key, c)));
+            IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime,double>>> Flatten(KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>> keyValue)
+                => keyValue.Value.ToArray().Select(c => KeyValuePair.Create(keyValue.Key, c));
         }
 
-        protected IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected virtual IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
             => collection
             .Scan(new DateTimePoint<TKey>(), (xy0, xy) => new DateTimePoint<TKey>(xy.Value.Key, Combine(xy0.Value, xy.Value.Value), xy.Key))
             .Cast<IDateTimeKeyPoint<TKey>>()
@@ -106,12 +104,23 @@ namespace OxyPlot.Reactive
 
         protected override void AddToDataPoints(KeyValuePair<TKey, KeyValuePair<DateTime, double>> item)
         {
-            var newdp = item.Value;
-            lock (DataPoints)
+            try
             {
-                if (!DataPoints.ContainsKey(item.Key))
-                    DataPoints[item.Key] = new SortedList<DateTime, double>();
-                DataPoints[item.Key].Add(newdp);
+                var newdp = item.Value;
+                min = new DateTime(Math.Min(newdp.Key.Ticks, min.Ticks));
+                max = new DateTime(Math.Max(newdp.Key.Ticks, max.Ticks));
+
+                lock (DataPoints)
+                {
+                    if (!DataPoints.ContainsKey(item.Key))
+                        DataPoints[item.Key] = new SortedList<DateTime, double>();
+                    DataPoints[item.Key].Add(newdp);
+                }
+            }
+            catch(Exception ex)
+            {
+
+
             }
         }
 
