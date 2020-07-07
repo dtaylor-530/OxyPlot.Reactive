@@ -47,7 +47,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
                   .GroupBy(a => a.Item1)
                   .Select(a => (a.Key, a.First().Item2))
                   .ToDictionary(a => a.Key, a => a.Item2).GetEnumerator();
-            var obs2 = Observable.Interval(TimeSpan.FromMilliseconds(200))
+            var obs2 = Observable.Interval(TimeSpan.FromMilliseconds(600))
          .TakeWhile(a => enm.MoveNext())
          .Select(t => enm.Current)
          .Skip(1);

@@ -10,7 +10,6 @@ using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
 using Exceptionless.DateTimeExtensions;
-using System.Threading;
 
 namespace OxyPlot.Reactive
 {

@@ -34,8 +34,6 @@ namespace OxyPlot.Reactive.DemoApp.Factory
         }
 
 
-
-
         public static DateTime ToDateTime(double d) => DateTime.UnixEpoch.AddDays((int)d);
 
         public static TimeSpan ToTimeSpan(double d) => DateTime.UnixEpoch.AddDays((int)d) - DateTime.UnixEpoch;
