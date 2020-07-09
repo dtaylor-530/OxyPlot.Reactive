@@ -12,7 +12,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        public MultiDateTimeAccumulatedModel(PlotModel model, IEqualityComparer<T> comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public MultiDateTimeAccumulatedModel(PlotModel model, IEqualityComparer<T>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
