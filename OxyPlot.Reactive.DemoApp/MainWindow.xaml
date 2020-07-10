@@ -10,7 +10,7 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
-                    <Page Uri="\Views\MultiPlotView.xaml"
+                    <Page Uri="\Views\MultiDateTimePlotView.xaml"
                      Title="Multi" />
                     
                     <Page Uri="\Views\ErrorBarView.xaml"

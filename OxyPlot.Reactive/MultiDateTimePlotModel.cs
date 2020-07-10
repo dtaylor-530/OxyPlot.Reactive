@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using NestedDictionaryLib;
 using OxyPlot.Reactive.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -11,14 +10,51 @@ using System.Threading;
 
 namespace OxyPlot.Reactive
 {
+
+    public class MultiDateTimePlotAccumulatedModel<TGroupKey, TKey> : MultiDateTimePlotModel<TGroupKey, TKey>
+    {
+        private ErrorBarModel errorBarModel;
+
+        public MultiDateTimePlotAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
+            base(comparer, scheduler, synchronizationContext)
+        {
+            var plotModel = new PlotModel();
+            errorBarModel = new ErrorBarModel(plotModel, synchronizationContext, scheduler);
+            PlotModelChanges.OnNext(plotModel);
+        }
+
+        protected override void AddToDataPoints(KeyValuePair<TGroupKey, KeyValuePair<TKey, KeyValuePair<DateTime, double>>> item)
+        {
+            lock (Models)
+            {
+                (this as IMixedScheduler).ScheduleAction(() =>
+                {
+
+                    if (!Models.ContainsKey(item.Key))
+                    {
+                        var plotModel = new PlotModel();
+                        Models[item.Key] = CreateModel(plotModel);
+                        PlotModelChanges.OnNext(plotModel);
+                    }
+                    Models[item.Key].OnNext(item.Value);
+                    errorBarModel.OnNext(KeyValuePair.Create(item.Value.Key?.ToString()?? "faadsd", item.Value.Value.Value));
+                });
+            }
+        }
+
+        protected override MultiDateTimeModel<TKey> CreateModel(PlotModel plotModel)
+        {
+            return new MultiDateTimeAccumulatedModel<TKey>(plotModel, this.comparer, this.Scheduler);
+        }
+
+    }
+
     public class MultiDateTimePlotModel<TGroupKey, TKey> : IObserver<KeyValuePair<TGroupKey, KeyValuePair<TKey, KeyValuePair<DateTime, double>>>>, IObservable<PlotModel>, IMixedScheduler
     {
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
-        //private readonly IEqualityComparer<TKey>? comparer;
-        //private readonly IScheduler? scheduler;
-        protected Dictionary<TGroupKey, MultiDateTimeModel<TKey>> Models = new Dictionary<TGroupKey, MultiDateTimeModel<TKey>>();
-        protected Subject<PlotModel> PlotModelChanges = new Subject<PlotModel>();
-        private IEqualityComparer<TKey>? comparer;
+        protected readonly Dictionary<TGroupKey, MultiDateTimeModel<TKey>> Models = new Dictionary<TGroupKey, MultiDateTimeModel<TKey>>();
+        protected readonly ReplaySubject<PlotModel> PlotModelChanges = new ReplaySubject<PlotModel>();
+        protected readonly IEqualityComparer<TKey>? comparer;
 
         public IScheduler? Scheduler { get; }
 
@@ -59,12 +95,17 @@ namespace OxyPlot.Reactive
                     if (!Models.ContainsKey(item.Key))
                     {
                         var plotModel = new PlotModel();
-                        Models[item.Key] = new MultiDateTimeModel<TKey>(plotModel, this.comparer, this.Scheduler);
+                        Models[item.Key] = CreateModel(plotModel);
                         PlotModelChanges.OnNext(plotModel);
                     }
                     Models[item.Key].OnNext(item.Value);
                 });
             }
+        }
+
+        protected virtual MultiDateTimeModel<TKey> CreateModel(PlotModel plotModel)
+        {
+            return new MultiDateTimeModel<TKey>(plotModel, this.comparer, this.Scheduler);
         }
 
         public IDisposable Subscribe(IObserver<PlotModel> observer)

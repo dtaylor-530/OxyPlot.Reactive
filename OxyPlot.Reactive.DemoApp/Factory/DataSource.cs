@@ -1,4 +1,5 @@
-﻿using OxyPlotEx.DemoApp;
+﻿using Endless;
+using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace OxyPlot.Reactive.DemoApp.Factory
              {
                  var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
                  {
-                     return new KeyValuePair<string, KeyValuePair<DateTime, double>>(o.Key, KeyValuePair.Create(DateTime.UnixEpoch.AddYears(i), o.Value));
+                     return KeyValuePair.Create(o.Key, KeyValuePair.Create(DateTime.UnixEpoch.AddYears(i), o.Value));
                  }).ToArray();
 
                  return array;
@@ -26,6 +27,16 @@ namespace OxyPlot.Reactive.DemoApp.Factory
         public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000()
         {
             return array.Value.ToObservable();
+        }
+
+        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000PlusMinus()
+        {
+            return array.Value.ToObservable().Select(a =>
+            {
+                var kvp = KeyValuePair.Create(a.Value.Key, Enumerable.Range(-1, 3).Random() * a.Value.Value);
+                var tt = KeyValuePair.Create(a.Key, kvp);
+                return tt;
+            });
         }
 
         public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe20()

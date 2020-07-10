@@ -1,0 +1,43 @@
+﻿<UserControl x:Class="OxyPlot.Reactive.DemoApp.Views.MultiDateTimePlotView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:oxy="http://oxyplot.org/wpf" 
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Themes/Generic.xaml"></ResourceDictionary>
+    </UserControl.Resources>
+    <TabControl>
+        <TabItem Header="Accumulated">
+
+            <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                <ItemsControl x:Name="ItemsControl2" Style="{StaticResource LastItemBottomRowStyle}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid >
+                                <oxy:PlotView Model="{Binding model}" Margin="10,0,0,0"></oxy:PlotView>
+                                <TextBlock FontSize="20" Text="{Binding index}"></TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Standard">
+            <ScrollViewer>
+                <ItemsControl x:Name="ItemsControl1">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Height="300" Width="500">
+                                <oxy:PlotView Model="{Binding }"></oxy:PlotView>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </TabItem>
+     
+    </TabControl>
+</UserControl>
