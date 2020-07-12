@@ -44,6 +44,11 @@ namespace OxyPlot.Reactive.DemoApp.Factory
             return array.Value.Take(20).ToObservable();
         }
 
+        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe3()
+        {
+            return array.Value.Take(3).ToObservable();
+        }
+
 
         public static DateTime ToDateTime(double d) => DateTime.UnixEpoch.AddDays((int)d);
 

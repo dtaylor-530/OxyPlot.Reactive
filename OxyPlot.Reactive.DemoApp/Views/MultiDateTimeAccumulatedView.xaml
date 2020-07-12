@@ -13,13 +13,15 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
             <oxy:PlotView x:Name="plotView" ></oxy:PlotView>
             <oxy:PlotView x:Name="plotView2"  Grid.Row="1"></oxy:PlotView>
-            <TextBlock Grid.Row="2" Height="25">Accumulate</TextBlock>
-            <Button Grid.Row="3"  Width="30"  Height="30" Click="Button_Click" Background="Gray" BorderBrush="Transparent"></Button>
+            <oxy:PlotView x:Name="plotView3"  Grid.Row="2"></oxy:PlotView>
+            <!--<TextBlock Grid.Row="2" Height="25">Accumulate</TextBlock>
+            <Button Grid.Row="3"  Width="30"  Height="30" Click="Button_Click" Background="Gray" BorderBrush="Transparent"></Button>-->
         </Grid>
     </UniformGrid>
 </UserControl>

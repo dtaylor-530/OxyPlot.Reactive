@@ -1,12 +1,8 @@
-﻿using Endless.Functional;
-using OxyPlot.Reactive;
-using OxyPlot.Reactive.Model;
-using OxyPlotEx.DemoApp;
+﻿using OxyPlot.Reactive;
+using OxyPlot.Reactive.DemoApp.Common;
+using OxyPlot.Reactive.DemoApp.Factory;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive.Linq;
 using System.Windows;
 
 namespace OxyPlotEx.DemoAppCore.Pages
@@ -22,30 +18,20 @@ namespace OxyPlotEx.DemoAppCore.Pages
         public MultiDateTimeModelAccumulatedView()
         {
             InitializeComponent();
-            ProduceData(out var observable1, out var observable2);
+            //ProduceData(out var observable1, out var observable2);
 
 
-            disposable = observable2.Subscribe(
-                new MultiDateTimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)
-                .Pipe(a => { a.OnNext(true); return a; }));
+            disposable = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5)).Subscribe(
+                new MultiDateTimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)); ;
 
 
-            var model2 = new MultiDateTimeAccumulatedModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            model2.OnNext(true);
 
-            disposable = observable1.Subscribe(model2);
-        }
+            disposable = DataSource.Observe3().Subscribe(
+                new MultiDateTimeAccumulatedModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
+            disposable = DataSource.Observe1000PlusMinus().Pace(TimeSpan.FromSeconds(1.5)).Subscribe(
+     new MultiDateTimeAccumulatedModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
-        private static void ProduceData(out IObservable<IDateTimeKeyPoint<string>> observable1, out IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable2)
-        {
-            DateTime now = DateTime.Now;
-            var get = new DataFactory().GetSin().GetEnumerator();
-            observable1 = Observable.Interval(TimeSpan.FromMilliseconds(50)).Select(t => { get.MoveNext(); return get.Current; }).Skip(1)
-                .Select((o, i) => (IDateTimeKeyPoint<string>)new DateTimePoint(now.AddHours(i), o.Value, o.Key));
-            var get2 = new DataFactory().GetLine().GetEnumerator();
-            observable2 = Observable.Interval(TimeSpan.FromMilliseconds(1)).Select(t => { get2.MoveNext(); return get2.Current; }).Skip(1)
-                .Select((o, i) => new KeyValuePair<string, KeyValuePair<DateTime, double>>(o.Key, KeyValuePair.Create(now.AddHours(i), o.Value)));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
