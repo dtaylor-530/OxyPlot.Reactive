@@ -16,57 +16,60 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <oxy:PlotView x:Name="plotView"/>
 
-
-        <UniformGrid Rows="1" Grid.Row="1">
-            <oxy:PlotView x:Name="plotView2" >
-                <oxy:PlotView.DefaultTrackerTemplate>
-                    <ControlTemplate>
-                        <oxy:TrackerControl Position="{Binding Position}" 
+            <UniformGrid Rows="1" Grid.Row="1">
+                <oxy:PlotView x:Name="plotView2" >
+                    <oxy:PlotView.DefaultTrackerTemplate>
+                        <ControlTemplate>
+                            <oxy:TrackerControl Position="{Binding Position}" 
                                         BorderThickness="2" BorderBrush="LightSteelBlue" LineStroke="SteelBlue"
                                             Background="White"
                                         LineExtents="{Binding PlotModel.PlotArea}">
 
-                            <oxy:TrackerControl.Content>
+                                <oxy:TrackerControl.Content>
 
-                                <ItemsControl ItemsSource="{Binding Values}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <UniformGrid Rows="1" Margin="5" >
-                                                <TextBlock Text="{Binding Key}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" FontWeight="DemiBold" 
+                                    <ItemsControl ItemsSource="{Binding Values}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <UniformGrid Rows="1" Margin="5" >
+                                                    <TextBlock Text="{Binding Key}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" FontWeight="DemiBold" 
                                                            Foreground="{Binding Value.Color,Converter={StaticResource ColorToBrushConverter1}}"/>
-                                                <TextBlock Text="{Binding Value.Value,StringFormat=f3}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" FontWeight="DemiBold"></TextBlock>
-                                            </UniformGrid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                                    <TextBlock Text="{Binding Value.Value,StringFormat=f3}" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10" FontWeight="DemiBold"></TextBlock>
+                                                </UniformGrid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
 
 
-                            </oxy:TrackerControl.Content>
-                        </oxy:TrackerControl>
+                                </oxy:TrackerControl.Content>
+                            </oxy:TrackerControl>
 
-                    </ControlTemplate>
-                </oxy:PlotView.DefaultTrackerTemplate>
-            </oxy:PlotView>
-            <DataGrid x:Name="DataGrid1">
-                <DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow">
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected"
+                        </ControlTemplate>
+                    </oxy:PlotView.DefaultTrackerTemplate>
+                </oxy:PlotView>
+                <DataGrid x:Name="DataGrid1">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected"
                         Value="True">
-                                <Setter Property="BorderBrush"
+                                    <Setter Property="BorderBrush"
                         Value="Blue" />
-                                <Setter Property="BorderThickness"
+                                    <Setter Property="BorderThickness"
                         Value="2" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
-            </DataGrid>
-        </UniformGrid>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+            </UniformGrid>
 
-        <rui:ViewModelViewHost x:Name="ViewModelViewHost1" Grid.Row="2"/>
+            <rui:ViewModelViewHost x:Name="ViewModelViewHost1" Grid.Row="2"/>
+
+
+        <oxy:PlotView x:Name="plotView1"  Grid.Row="3"/>
     </Grid>
 </UserControl>

@@ -45,6 +45,8 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             var obs2 = pacedObs.Select(a => (KeyValuePair<string, KeyValuePair<DateTime, double>>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, KeyValuePair<DateTime, double>>?));
             ViewModelViewHost1.ViewModel = new BusyViewModel(obs2);
+
+            DataSource.Observe1000().Concat(DataSource.Observe1000()).Subscribe(new MultiDateTimeModel<string>(plotView1.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
         }
     }
 }

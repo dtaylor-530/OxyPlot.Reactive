@@ -27,8 +27,23 @@ namespace OxyPlot.Reactive
 
 
 
-        protected override void Refresh(IList<Unit> units)
+        protected override async void Refresh(IList<Unit> units)
         {
+            if (!await Task.Run(() =>
+            {
+                lock (list)
+                {
+                    if (list.Any())
+                    {
+                        AddToDataPoints(list.ToArray());
+                        list.Clear();
+                        return true;
+                    }
+                    else
+                        return true;
+                }
+            })) return;
+
             (this as IMixedScheduler).ScheduleAction(async () =>
             {
                 KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[]? arr = default;
