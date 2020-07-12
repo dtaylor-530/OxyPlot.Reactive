@@ -44,36 +44,20 @@ namespace OxyPlot.Reactive
         {
             KeyValuePair<string, ICollection<KeyValuePair<int, double>>>[] arr;
 
-            lock (lck)
+            lock (DataPoints)
             {
                 arr = DataPoints.ToArray();
             }
 
-            List<(string, BoxPlotItem[])> list = new List<(string, BoxPlotItem[])>();
-
-            foreach (var keyValue in arr)
+            (this as IMixedScheduler).ScheduleAction(async () =>
             {
-                list.Add((keyValue.Key.ToString(), await Task.Run(() =>
-                 {
-                     var ar = keyValue.Value.ToArray();
-                     return SelectBPI(ar);
-                 })));
-            }
+                var botPlotItems = await Task.Run(() => Transform(arr, showAll));
 
-
-            if (showAll)
-            {
-                list.Add(("All", await Task.Run(() => SelectBPI(arr.SelectMany(a => a.Value).ToArray()))));
-            }
-
-
-            (this as IMixedScheduler).ScheduleAction(() =>
-            {
                 lock (plotModel)
                 {
                     plotModel.Series.Clear();
 
-                    foreach (var item in list)
+                    foreach (var item in botPlotItems)
                         AddToSeries(item.Item2, item.Item1);
 
                     plotModel.InvalidatePlot(true);
@@ -98,6 +82,28 @@ namespace OxyPlot.Reactive
                     { Mean = median, Tag = "A Tag" };
 
                 };
+            }
+
+            static (string, BoxPlotItem[])[] Transform(KeyValuePair<string, ICollection<KeyValuePair<int, double>>>[] arr, bool showAll)
+            {
+                (string, BoxPlotItem[])[] combinedArray = new (string, BoxPlotItem[])[(arr.Length + System.Convert.ToInt32(showAll))];
+                ICollection<KeyValuePair<int, double>>[] valuePairs = new ICollection<KeyValuePair<int, double>>[arr.Length];
+
+                int i = 0;
+                foreach (var keyValue in arr)
+                {
+                    var arrA = keyValue.Value.ToArray();
+                    valuePairs[i] = arrA;
+                    combinedArray[i++] = (keyValue.Key.ToString(), SelectBPI(arrA));
+                }
+
+                if (showAll)
+                {
+                    var arrAll = valuePairs.SelectMany(a => a).ToArray();
+                    combinedArray[i] = ("All", SelectBPI(arrAll));
+                }
+
+                return combinedArray;
             }
 
         }
