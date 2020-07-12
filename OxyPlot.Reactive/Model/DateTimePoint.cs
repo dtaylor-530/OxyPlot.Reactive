@@ -21,7 +21,6 @@ namespace OxyPlot.Reactive.Model
 
     public interface IDateTimeKeyPoint<T> : IDateTimePoint, IKey<T>
     {
-
     }
 
     public interface IDataPointKeyProvider<T> : IDataPointProvider, IKey<T>
@@ -32,11 +31,11 @@ namespace OxyPlot.Reactive.Model
     public struct DateTimePoint : IDateTimeKeyPoint<string>
     {
 
-        public DateTimePoint(DateTime dateTime, double value, string key)
+        public DateTimePoint(DateTime dateTime, double value, string? key)
         {
             DateTime = dateTime;
             Value = value;
-            Key = key;
+            Key = key ?? string.Empty;
 
         }
 
@@ -58,6 +57,11 @@ namespace OxyPlot.Reactive.Model
         public override string ToString()
         {
             return $"{DateTime:F}, {Value}, {Key}";
+        }
+
+        public static IDateTimeKeyPoint<string> Create(DateTime dateTime, double value, string key)
+        {
+            return new DateTimePoint(dateTime, value, key);
         }
     }
 
@@ -90,6 +94,11 @@ namespace OxyPlot.Reactive.Model
         public override string ToString()
         {
             return $"{DateTime:F}, {Value}, {Key}";
+        }
+
+        public static IDateTimeKeyPoint<TKey> Create(DateTime dateTime, double value, TKey key)
+        {
+            return new DateTimePoint<TKey>(dateTime, value, key);
         }
     }
 
@@ -126,6 +135,11 @@ namespace OxyPlot.Reactive.Model
         public override string ToString()
         {
             return $"{DateTime:F}, {Value}";
+        }
+
+        public static IDateTimeKeyPoint<TKey> Create(DateTimeRange dateTimeRange, ICollection<IDateTimeKeyPoint<TKey>> value, TKey key)
+        {
+            return new DateTimeRangePoint<TKey>(dateTimeRange, value, key);
         }
     }
 }
