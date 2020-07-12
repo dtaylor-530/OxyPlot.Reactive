@@ -106,7 +106,7 @@ namespace OxyPlot.Reactive
             //throw new NotImplementedException();
         }
 
-        public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(MultiDateTimeAccumulatedModel<T>)}");
+        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiPlotModelBase<T,R>)}",error);
 
 
         protected abstract void Refresh(IList<Unit> units);
