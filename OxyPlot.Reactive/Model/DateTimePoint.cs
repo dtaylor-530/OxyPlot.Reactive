@@ -1,4 +1,5 @@
 ﻿using Exceptionless.DateTimeExtensions;
+using LinqStatistics;
 using NodaTime;
 using OxyPlot.Axes;
 using System;
@@ -14,13 +15,34 @@ namespace OxyPlot.Reactive.Model
         double Value { get; }
     }
 
-    public interface IKey<T>
+    public interface IKey<TKey>
     {
-        T Key { get; }
+        TKey Key { get; }
     }
 
-    public interface IDateTimeKeyPoint<T> : IDateTimePoint, IKey<T>
+    public interface IDateTimePoint<TKey> : IDateTimePoint, IKey<TKey>
     {
+    }
+
+    public interface ICollection
+    {
+
+    }
+
+    public interface IDateTimeKeyPointCollection<TKey>
+    {
+        public ICollection<IDateTimePoint<TKey>> Collection { get; }
+    }
+
+    public interface IDateTimeRange
+    {
+        public DateTimeRange DateTimeRange { get; }
+    }
+
+    public interface IDateTimeRangePoint<TKey> : IDateTimePoint<TKey>, IDateTimeKeyPointCollection<TKey>, IDateTimeRange
+    {
+
+
     }
 
     public interface IDataPointKeyProvider<T> : IDataPointProvider, IKey<T>
@@ -28,7 +50,11 @@ namespace OxyPlot.Reactive.Model
 
     }
 
-    public struct DateTimePoint : IDateTimeKeyPoint<string>
+    public interface IDateTimeKeyPointObserver<TType, TKey> : IObserver<TType> where TType: IDateTimePoint<TKey>
+    {
+    }
+
+    public struct DateTimePoint : IDateTimePoint<string>
     {
 
         public DateTimePoint(DateTime dateTime, double value, string? key)
@@ -59,13 +85,13 @@ namespace OxyPlot.Reactive.Model
             return $"{DateTime:F}, {Value}, {Key}";
         }
 
-        public static IDateTimeKeyPoint<string> Create(DateTime dateTime, double value, string key)
+        public static IDateTimePoint<string> Create(DateTime dateTime, double value, string key)
         {
             return new DateTimePoint(dateTime, value, key);
         }
     }
 
-    public struct DateTimePoint<TKey> : IDateTimeKeyPoint<TKey>
+    public struct DateTimePoint<TKey> : IDateTimePoint<TKey>
     {
 
         public DateTimePoint(DateTime dateTime, double value, TKey key)
@@ -96,36 +122,57 @@ namespace OxyPlot.Reactive.Model
             return $"{DateTime:F}, {Value}, {Key}";
         }
 
-        public static IDateTimeKeyPoint<TKey> Create(DateTime dateTime, double value, TKey key)
+        public static IDateTimePoint<TKey> Create(DateTime dateTime, double value, TKey key)
         {
             return new DateTimePoint<TKey>(dateTime, value, key);
         }
     }
 
-    public class DateTimeRangePoint<TKey> : IDateTimeKeyPoint<TKey>
+    public class DateTimeRangePoint<TKey> : IDateTimeRangePoint<TKey>
     {
+        private readonly Operation operation;
 
-        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimeKeyPoint<TKey>> value, TKey key)
+        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key, Operation operation)
         {
             DateTimeRange = dateTimeRange;
             Collection = value;
             this.Key = key;
-
+            this.operation = operation;
         }
 
-        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimeKeyPoint<TKey>> value) : this(dateTimeRange, value, default)
+        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
         {
         }
+        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value) : this(dateTimeRange, value, default, Operation.Mean)
+        {
+        }
+        public TKey Key { get; }
 
         public DateTimeRange DateTimeRange { get; }
 
-        public TKey Key { get; }
 
         public virtual DateTime DateTime => DateTimeRange.Start + (DateTimeRange.End - DateTimeRange.Start) / 2;
 
-        public virtual double Value => Collection.Average(a => a.Value);
+        //     public virtual double Value => Collection.Count>1? Collection.Average(a => a.Value): Collection.First().Value;
 
-        public ICollection<IDateTimeKeyPoint<TKey>> Collection { get; }
+        public virtual double Value
+
+           => Collection.Count > 1 ? this.operation switch
+           {
+               Operation.Mean => Collection.Average(a => a.Value),
+               Operation.Variance => Collection.Variance(a => a.Value),
+               Operation.StandardDeviation => Collection.StandardDeviation(a => a.Value),
+               Operation.Mode => Collection.Mode(a => a.Value) ?? 0,
+               Operation.Max => Collection.Max(a => a.Value),
+               Operation.Min => Collection.Min(a => a.Value),
+               Operation.Median => Collection.Median(a => a.Value),
+               _ => throw new NotImplementedException()
+           } : Collection.Single().Value;
+
+
+
+
+        public ICollection<IDateTimePoint<TKey>> Collection { get; }
 
         public DataPoint GetDataPoint()
         {
@@ -137,7 +184,7 @@ namespace OxyPlot.Reactive.Model
             return $"{DateTime:F}, {Value}";
         }
 
-        public static IDateTimeKeyPoint<TKey> Create(DateTimeRange dateTimeRange, ICollection<IDateTimeKeyPoint<TKey>> value, TKey key)
+        public static IDateTimePoint<TKey> Create(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key)
         {
             return new DateTimeRangePoint<TKey>(dateTimeRange, value, key);
         }
