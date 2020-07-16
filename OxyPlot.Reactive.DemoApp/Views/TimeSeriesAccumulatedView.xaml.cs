@@ -22,15 +22,15 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
 
             disposable = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5)).Subscribe(
-                new MultiDateTimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)); ;
+                new TimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)); ;
 
 
 
             disposable = DataSource.Observe3().Subscribe(
-                new MultiDateTimeAccumulatedModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
+                new TimeAccumulatedModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
             disposable = DataSource.Observe1000PlusMinus().Pace(TimeSpan.FromSeconds(1.5)).Subscribe(
-     new MultiDateTimeAccumulatedModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
+     new TimeAccumulatedModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
         }
 

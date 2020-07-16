@@ -11,31 +11,31 @@ using System.Threading.Tasks;
 
 namespace OxyPlot.Reactive
 {
-    public class MultiBoxPlotModel : MultiPlotModel<string, int>
+    public class BoxPlotModel : MultiPlotModel<string, int>
     {
 
 
-        public MultiBoxPlotModel(PlotModel plotModel) : base(plotModel, context: SynchronizationContext.Current)
+        public BoxPlotModel(PlotModel plotModel) : base(plotModel, context: SynchronizationContext.Current)
         {
         }
 
-        public MultiBoxPlotModel(PlotModel model, IEqualityComparer<string> comparer) : base(model, comparer, context: SynchronizationContext.Current)
+        public BoxPlotModel(PlotModel model, IEqualityComparer<string> comparer) : base(model, comparer, context: SynchronizationContext.Current)
         {
 
         }
-        public MultiBoxPlotModel(PlotModel plotModel, IScheduler scheduler) : base(plotModel, scheduler: scheduler)
+        public BoxPlotModel(PlotModel plotModel, IScheduler scheduler) : base(plotModel, scheduler: scheduler)
         {
         }
 
-        public MultiBoxPlotModel(PlotModel model, IEqualityComparer<string> comparer, IScheduler scheduler) : base(model, comparer, scheduler: scheduler)
+        public BoxPlotModel(PlotModel model, IEqualityComparer<string> comparer, IScheduler scheduler) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        public MultiBoxPlotModel(PlotModel plotModel, SynchronizationContext context) : base(plotModel, context: context)
+        public BoxPlotModel(PlotModel plotModel, SynchronizationContext context) : base(plotModel, context: context)
         {
         }
 
-        public MultiBoxPlotModel(PlotModel model, IEqualityComparer<string> comparer, SynchronizationContext context) : base(model, comparer, context: context)
+        public BoxPlotModel(PlotModel model, IEqualityComparer<string> comparer, SynchronizationContext context) : base(model, comparer, context: context)
         {
         }
 

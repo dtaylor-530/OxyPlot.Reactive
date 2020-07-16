@@ -3,9 +3,9 @@
 namespace OxyPlot.Reactive.Model
 {
 
-    public struct DateTimeUncertainPoint
+    public struct TimeUncertainPoint
     {
-        public DateTimeUncertainPoint(DateTime dateTime, double value, double deviation)
+        public TimeUncertainPoint(DateTime dateTime, double value, double deviation)
         {
             DateTime = dateTime;
             Value = value;

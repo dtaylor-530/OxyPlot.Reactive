@@ -47,7 +47,7 @@ namespace OxyPlot.Reactive.Infrastructure
         }
 
 
-        public static LineSeries Build(IEnumerable<DateTimePoint> coll, string key)
+        public static LineSeries Build(IEnumerable<TimePoint> coll, string key)
         {
             var lser = new LineSeries
             {
@@ -66,7 +66,7 @@ namespace OxyPlot.Reactive.Infrastructure
         }
 
 
-        public static LineSeries Build<T>(IEnumerable<IDateTimePoint<T>> coll, string key)
+        public static LineSeries Build<T>(IEnumerable<ITimePoint<T>> coll, string key)
         {
             var lser = new LineSeries
             {
@@ -84,7 +84,7 @@ namespace OxyPlot.Reactive.Infrastructure
             return lser;
         }
 
-        internal static IEnumerable<Series.Series> Build(IOrderedEnumerable<DateTimeUncertainPoint> points, string key)
+        internal static IEnumerable<Series.Series> Build(IOrderedEnumerable<TimeUncertainPoint> points, string key)
         {
             var color = GetColor(key);
             yield return new AreaSeries
@@ -97,10 +97,10 @@ namespace OxyPlot.Reactive.Infrastructure
                 MarkerSize = 3,
                 ItemsSource = points,
                 MarkerType = MarkerType.Plus,
-                DataFieldX = nameof(DateTimeUncertainPoint.DateTime),
-                DataFieldY = nameof(DateTimeUncertainPoint.Lower),
-                DataFieldX2 = nameof(DateTimeUncertainPoint.DateTime),
-                DataFieldY2 = nameof(DateTimeUncertainPoint.Upper)
+                DataFieldX = nameof(TimeUncertainPoint.DateTime),
+                DataFieldY = nameof(TimeUncertainPoint.Lower),
+                DataFieldX2 = nameof(TimeUncertainPoint.DateTime),
+                DataFieldY2 = nameof(TimeUncertainPoint.Upper)
             };
 
             yield return new LineSeries
@@ -109,7 +109,7 @@ namespace OxyPlot.Reactive.Infrastructure
                 StrokeThickness = 1,
                 Color = color,
                 MarkerSize = 3,
-                ItemsSource = points.Select(p => new DateTimePoint(p.DateTime, p.Value)),
+                ItemsSource = points.Select(p => new TimePoint(p.DateTime, p.Value)),
                 MarkerType = MarkerType.Plus,
                 //DataFieldX = nameof(DateTimePoint.DateTime),
                 //DataFieldY = nameof(DateTimePoint.Value)

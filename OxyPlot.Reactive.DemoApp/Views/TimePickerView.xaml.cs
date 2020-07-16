@@ -10,11 +10,11 @@ namespace OxyPlot.Reactive.DemoApp.Views
     /// <summary>
     /// Interaction logic for TimeUserControl.xaml
     /// </summary>
-    public partial class TimeView : UserControl
+    public partial class TimePickerView : UserControl
     {
         private readonly ReplaySubject<TimeSpan> timeSpanChanges = new ReplaySubject<TimeSpan>();
 
-        public TimeView()
+        public TimePickerView()
         {
             InitializeComponent();
         }

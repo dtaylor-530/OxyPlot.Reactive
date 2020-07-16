@@ -19,7 +19,7 @@ namespace OxyPlot.Reactive
 
 
 
-    public class MultiDateTimeAccumulatedGroupModel<TKey> : MultiDateTimeGroup2Model<TKey>
+    public class MultiDateTimeAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
     {
 
         public MultiDateTimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
@@ -39,7 +39,7 @@ namespace OxyPlot.Reactive
 
 
 
-    public class MultiDateTimeGroup2Model<TKey> : MultiDateTimeModel<TKey, IDateTimeRangePoint<TKey>>, IObservable<DateTimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
+    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObservable<DateTimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
     {
         private readonly Subject<DateTimeRange[]> rangesSubject = new Subject<DateTimeRange[]>();
         private RangeType rangeType = RangeType.None;
@@ -47,14 +47,14 @@ namespace OxyPlot.Reactive
         protected DateTimeRange[]? ranges;
 
 
-        public MultiDateTimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }
 
 
 
-        protected override IDateTimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
+        protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
         {
             return rangeType switch
             {
@@ -89,7 +89,7 @@ namespace OxyPlot.Reactive
 
 
 
-        protected override IEnumerable<IDateTimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
         {
             var ees = collection
                 .OrderBy(a => a.Value.Key);
@@ -98,30 +98,30 @@ namespace OxyPlot.Reactive
 
             return se;
 
-            IDateTimeRangePoint<TKey>[] Ranges()
+            ITimeRangePoint<TKey>[] Ranges()
             {
 
                 return ees
                     .GroupOn(ranges, a => a.Value.Key)
                     .Where(a => a.Any())
-                .Scan((default(DateTimeRangePoint<TKey>), default(IDateTimePoint<TKey>)), (ac, bc) =>
+                .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
                 {
-                    var ss = bc.Scan(ac.Item2, (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
-                    .Cast<IDateTimePoint<TKey>>()
+                    var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
+                    .Cast<ITimePoint<TKey>>()
                     .Skip(1)
                     .ToArray();
 
-                    return (new DateTimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
+                    return (new TimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
                 })
                 .Skip(1)
                     .Select(a=>a.Item1)
-                 .Cast<IDateTimeRangePoint<TKey>>()
+                 .Cast<ITimeRangePoint<TKey>>()
                  .ToArray();
             }
-            IDateTimeRangePoint<TKey>[] NoRanges()
+            ITimeRangePoint<TKey>[] NoRanges()
             {
-                return ees.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                    .Select(a => new DateTimeRangePoint<TKey>(new DateTimeRange(a.DateTime, a.DateTime), new IDateTimePoint<TKey>[] { a }, a.Key))
+                return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
+                    .Select(a => new TimeRangePoint<TKey>(new DateTimeRange(a.DateTime, a.DateTime), new ITimePoint<TKey>[] { a }, a.Key))
                     .Skip(1)
                     .ToArray();
             }

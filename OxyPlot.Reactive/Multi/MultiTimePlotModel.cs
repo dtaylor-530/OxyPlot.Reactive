@@ -12,30 +12,29 @@ using static System.Collections.Generic.KeyValuePair;
 
 namespace OxyPlot.Reactive.Multi
 {
-
-
-    public class MultiDateTimePlotModel<TGroupKey, TKey> : MultiDateTimePlotModel<TGroupKey, TKey, MultiDateTimeModel<TKey>>
+    public class MultiTimePlotModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeModel<TKey>>
     {
-        public MultiDateTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null):base(comparer, scheduler, synchronizationContext)
+        public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null):base(comparer, scheduler, synchronizationContext)
         {
         }
 
-        protected override MultiDateTimeModel<TKey> CreateModel(PlotModel plotModel)
+        protected override TimeModel<TKey> CreateModel(PlotModel plotModel)
         {
-            return new MultiDateTimeModel<TKey>(plotModel, this.comparer, this.Scheduler);
+            return new TimeModel<TKey>(plotModel, this.comparer, this.Scheduler);
         }
     }
 
 
-    public abstract class MultiDateTimePlotModel<TGroupKey, TKey, TType> : MultiDateTimePlotModel<TGroupKey, TKey, TType, IDateTimePoint<TKey>> where TType : MultiDateTimeModel<TKey>
+    public abstract class MultiTimePlotModel<TGroupKey, TKey, TType> : MultiTimePlotModel<TGroupKey, TKey, TType, ITimePoint<TKey>> where TType : TimeModel<TKey>
     {
-        public MultiDateTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) : base(comparer, scheduler, synchronizationContext)
+        public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) : base(comparer, scheduler, synchronizationContext)
         {
         }
     }
 
 
-    public abstract class MultiDateTimePlotModel<TGroupKey, TKey, TType, TType2> : IObserver<KeyValuePair<TGroupKey, IDateTimePoint<TKey>>>, IObservable<KeyValuePair<TGroupKey, PlotModel>>, IMixedScheduler where TType : MultiDateTimeModel<TKey, TType2> where TType2: IDateTimePoint<TKey>
+    public abstract class MultiTimePlotModel<TGroupKey, TKey, TType, TType2> : IObserver<KeyValuePair<TGroupKey, ITimePoint<TKey>>>, IObservable<KeyValuePair<TGroupKey, PlotModel>>, IMixedScheduler
+        where TType : TimeModel<TKey, TType2> where TType2: ITimePoint<TKey>
     {
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly Dictionary<TGroupKey, TType> Models = new Dictionary<TGroupKey, TType>();
@@ -46,7 +45,7 @@ namespace OxyPlot.Reactive.Multi
 
         public SynchronizationContext? Context { get; }
 
-        public MultiDateTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null)
+        public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null)
         {
             this.comparer = comparer;
             this.Scheduler = scheduler;
@@ -57,15 +56,15 @@ namespace OxyPlot.Reactive.Multi
             //throw new NotImplementedException();
         }
 
-        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiDateTimePlotModel<TGroupKey, TKey>)}", error);
+        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiTimePlotModel<TGroupKey, TKey>)}", error);
 
-        public void OnNext(KeyValuePair<TGroupKey, IDateTimePoint<TKey>> value)
+        public void OnNext(KeyValuePair<TGroupKey, ITimePoint<TKey>> value)
         {
             AddToDataPoints(value);
             refreshSubject.OnNext(Unit.Default);
         }
 
-        protected virtual void AddToDataPoints(KeyValuePair<TGroupKey, IDateTimePoint<TKey>> item)
+        protected virtual void AddToDataPoints(KeyValuePair<TGroupKey, ITimePoint<TKey>> item)
         {
             lock (Models)
             {

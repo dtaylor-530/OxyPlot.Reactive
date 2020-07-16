@@ -17,7 +17,7 @@ namespace OxyPlotEx.DemoAppCore
             InitializeComponent();
 
 
-            _ = GenerateData().Subscribe(new MultiBoxPlotModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
+            _ = GenerateData().Subscribe(new BoxPlotModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
 
         }
 

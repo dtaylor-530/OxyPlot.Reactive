@@ -21,9 +21,9 @@ namespace OxyPlotEx.DemoAppCore.Pages
             InitializeComponent();
             var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1));
 
-            pacedObs.Subscribe(new MultiDateTimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
+            pacedObs.Subscribe(new TimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
 
-            var model2 = new MultiDateTimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
+            var model2 = new TimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
 
             var obs = DataSource.Observe20();
             obs.Subscribe(model2);
@@ -46,7 +46,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
             var obs2 = pacedObs.Select(a => (KeyValuePair<string, KeyValuePair<DateTime, double>>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, KeyValuePair<DateTime, double>>?));
             ViewModelViewHost1.ViewModel = new BusyViewModel(obs2);
 
-            DataSource.Observe1000().Concat(DataSource.Observe1000()).Subscribe(new MultiDateTimeModel<string>(plotView1.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
+            DataSource.Observe1000().Concat(DataSource.Observe1000()).Subscribe(new TimeModel<string>(plotView1.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
         }
     }
 }

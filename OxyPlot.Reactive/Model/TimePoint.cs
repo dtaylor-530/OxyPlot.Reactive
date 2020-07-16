@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace OxyPlot.Reactive.Model
 {
-    public interface IDateTimePoint : IDataPointProvider
+    public interface ITimePoint : IDataPointProvider
     {
         DateTime DateTime { get; }
 
@@ -20,7 +20,7 @@ namespace OxyPlot.Reactive.Model
         TKey Key { get; }
     }
 
-    public interface IDateTimePoint<TKey> : IDateTimePoint, IKey<TKey>
+    public interface ITimePoint<TKey> : ITimePoint, IKey<TKey>
     {
     }
 
@@ -31,7 +31,7 @@ namespace OxyPlot.Reactive.Model
 
     public interface IDateTimeKeyPointCollection<TKey>
     {
-        public ICollection<IDateTimePoint<TKey>> Collection { get; }
+        public ICollection<ITimePoint<TKey>> Collection { get; }
     }
 
     public interface IDateTimeRange
@@ -39,7 +39,7 @@ namespace OxyPlot.Reactive.Model
         public DateTimeRange DateTimeRange { get; }
     }
 
-    public interface IDateTimeRangePoint<TKey> : IDateTimePoint<TKey>, IDateTimeKeyPointCollection<TKey>, IDateTimeRange
+    public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IDateTimeKeyPointCollection<TKey>, IDateTimeRange
     {
 
 
@@ -50,14 +50,14 @@ namespace OxyPlot.Reactive.Model
 
     }
 
-    public interface IDateTimeKeyPointObserver<TType, TKey> : IObserver<TType> where TType: IDateTimePoint<TKey>
+    public interface IDateTimeKeyPointObserver<TType, TKey> : IObserver<TType> where TType: ITimePoint<TKey>
     {
     }
 
-    public struct DateTimePoint : IDateTimePoint<string>
+    public struct TimePoint : ITimePoint<string>
     {
 
-        public DateTimePoint(DateTime dateTime, double value, string? key)
+        public TimePoint(DateTime dateTime, double value, string? key)
         {
             DateTime = dateTime;
             Value = value;
@@ -65,7 +65,7 @@ namespace OxyPlot.Reactive.Model
 
         }
 
-        public DateTimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
+        public TimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
         {
         }
 
@@ -85,16 +85,16 @@ namespace OxyPlot.Reactive.Model
             return $"{DateTime:F}, {Value}, {Key}";
         }
 
-        public static IDateTimePoint<string> Create(DateTime dateTime, double value, string key)
+        public static ITimePoint<string> Create(DateTime dateTime, double value, string key)
         {
-            return new DateTimePoint(dateTime, value, key);
+            return new TimePoint(dateTime, value, key);
         }
     }
 
-    public struct DateTimePoint<TKey> : IDateTimePoint<TKey>
+    public struct TimePoint<TKey> : ITimePoint<TKey>
     {
 
-        public DateTimePoint(DateTime dateTime, double value, TKey key)
+        public TimePoint(DateTime dateTime, double value, TKey key)
         {
             DateTime = dateTime;
             Value = value;
@@ -102,7 +102,7 @@ namespace OxyPlot.Reactive.Model
 
         }
 
-        public DateTimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
+        public TimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
         {
         }
 
@@ -122,17 +122,17 @@ namespace OxyPlot.Reactive.Model
             return $"{DateTime:F}, {Value}, {Key}";
         }
 
-        public static IDateTimePoint<TKey> Create(DateTime dateTime, double value, TKey key)
+        public static ITimePoint<TKey> Create(DateTime dateTime, double value, TKey key)
         {
-            return new DateTimePoint<TKey>(dateTime, value, key);
+            return new TimePoint<TKey>(dateTime, value, key);
         }
     }
 
-    public class DateTimeRangePoint<TKey> : IDateTimeRangePoint<TKey>
+    public class TimeRangePoint<TKey> : ITimeRangePoint<TKey>
     {
         private readonly Operation operation;
 
-        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key, Operation operation)
+        public TimeRangePoint(DateTimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key, Operation operation)
         {
             DateTimeRange = dateTimeRange;
             Collection = value;
@@ -140,10 +140,10 @@ namespace OxyPlot.Reactive.Model
             this.operation = operation;
         }
 
-        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
+        public TimeRangePoint(DateTimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
         {
         }
-        public DateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value) : this(dateTimeRange, value, default, Operation.Mean)
+        public TimeRangePoint(DateTimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value) : this(dateTimeRange, value, default, Operation.Mean)
         {
         }
         public TKey Key { get; }
@@ -172,7 +172,7 @@ namespace OxyPlot.Reactive.Model
 
 
 
-        public ICollection<IDateTimePoint<TKey>> Collection { get; }
+        public ICollection<ITimePoint<TKey>> Collection { get; }
 
         public DataPoint GetDataPoint()
         {
@@ -184,9 +184,9 @@ namespace OxyPlot.Reactive.Model
             return $"{DateTime:F}, {Value}";
         }
 
-        public static IDateTimePoint<TKey> Create(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key)
+        public static ITimePoint<TKey> Create(DateTimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key)
         {
-            return new DateTimeRangePoint<TKey>(dateTimeRange, value, key);
+            return new TimeRangePoint<TKey>(dateTimeRange, value, key);
         }
     }
 }

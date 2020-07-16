@@ -43,9 +43,9 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             InitializeComponent();
 
-            var model = new MultiDateTimeRangeModel<string>(PlotView1.Model ??= new PlotModel());
-            var model2 = new MultiDateTimeRangeModel<string>(PlotView2.Model ??= new PlotModel());
-            var model3 = new MultiDateTimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
+            var model = new TimeRangeModel<string>(PlotView1.Model ??= new PlotModel());
+            var model2 = new TimeRangeModel<string>(PlotView2.Model ??= new PlotModel());
+            var model3 = new TimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
 
             var obs = DataSource.Observe1000()
                  .Pace(TimeSpan.FromSeconds(1))

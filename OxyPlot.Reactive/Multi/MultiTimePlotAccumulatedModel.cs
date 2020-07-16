@@ -9,11 +9,11 @@ using static System.Collections.Generic.KeyValuePair;
 
 namespace OxyPlot.Reactive.Multi
 {
-    public class MultiDateTimePlotAccumulatedModel<TGroupKey, TKey> : MultiDateTimePlotModel<TGroupKey, TKey, MultiDateTimeAccumulatedModel<TKey>, IDateTimePoint<TKey>>
+    public class MultiTimePlotAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedModel<TKey>, ITimePoint<TKey>>
     {
         private ErrorBarModel errorBarModel;
 
-        public MultiDateTimePlotAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
+        public MultiTimePlotAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
             base(comparer, scheduler, synchronizationContext)
         {
             var plotModel = new PlotModel();
@@ -21,7 +21,7 @@ namespace OxyPlot.Reactive.Multi
             PlotModelChanges.OnNext(Create(default(TGroupKey), plotModel));
         }
 
-        protected override void AddToDataPoints(KeyValuePair<TGroupKey, IDateTimePoint<TKey>> item)
+        protected override void AddToDataPoints(KeyValuePair<TGroupKey, ITimePoint<TKey>> item)
         {
             base.AddToDataPoints(item);
             lock (Models)
@@ -30,9 +30,9 @@ namespace OxyPlot.Reactive.Multi
             }
         }
 
-        protected override MultiDateTimeAccumulatedModel<TKey> CreateModel(PlotModel plotModel)
+        protected override TimeAccumulatedModel<TKey> CreateModel(PlotModel plotModel)
         {
-            return new MultiDateTimeAccumulatedModel<TKey>(plotModel, this.comparer, this.Scheduler);
+            return new TimeAccumulatedModel<TKey>(plotModel, this.comparer, this.Scheduler);
         }
     }
 }

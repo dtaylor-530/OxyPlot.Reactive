@@ -10,13 +10,13 @@ using Exceptionless.DateTimeExtensions;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
-    public class CustomMultiDateTimeGroup2Model<TKey> : MultiDateTimeGroup2Model<TKey>
+    public class CustomMultiDateTimeGroup2Model<TKey> : TimeGroup2Model<TKey>
     {
         public CustomMultiDateTimeGroup2Model(PlotModel model, IEqualityComparer<TKey> comparer = null, IScheduler scheduler = null) : base(model, comparer, scheduler)
         {
         }
 
-        protected override IEnumerable<IDateTimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
         {
             var ees = collection
                 .OrderBy(a => a.Value.Key);
@@ -27,15 +27,15 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
                 .Where(a => a.Any())
                 .Select(ac =>
                 {
-                    var ss = ac.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                    .Cast<IDateTimePoint<TKey>>()
+                    var ss = ac.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
+                    .Cast<ITimePoint<TKey>>()
                     .Skip(1).ToArray();
                     return new CustomDateTimeRangePoint<TKey>(ac.Key, ss);
                 }).ToArray() :
 
-                ees.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                .Select(a => new CustomDateTimeRangePoint<TKey>(new DateTimeRange(a.DateTime, a.DateTime), new IDateTimePoint<TKey>[] {
-                    new DateTimePoint<TKey>(a.DateTime, a.Value, a.Key) }, a.Key))
+                ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
+                .Select(a => new CustomDateTimeRangePoint<TKey>(new DateTimeRange(a.DateTime, a.DateTime), new ITimePoint<TKey>[] {
+                    new TimePoint<TKey>(a.DateTime, a.Value, a.Key) }, a.Key))
                 //.Cast<IDateTimePoint<TKey>>()
                 .Skip(1)
                 .ToArray();
@@ -49,13 +49,13 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
         }
     }
 
-    public class CustomDateTimeRangePoint<TKey> : DateTimeRangePoint<TKey>
+    public class CustomDateTimeRangePoint<TKey> : TimeRangePoint<TKey>
     {
-        public CustomDateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value) : base(dateTimeRange, value)
+        public CustomDateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value) : base(dateTimeRange, value)
         {
         }
 
-        public CustomDateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<IDateTimePoint<TKey>> value, TKey key) : base(dateTimeRange, value, key)
+        public CustomDateTimeRangePoint(DateTimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key) : base(dateTimeRange, value, key)
         {
         }
 

@@ -12,14 +12,14 @@ using static System.Collections.Generic.KeyValuePair;
 
 namespace OxyPlot.Reactive.Multi
 {
-    public class MultiDateTimePlotGroupAccumulatedModel<TGroupKey, TKey> : MultiDateTimePlotModel<TGroupKey, TKey, MultiDateTimeAccumulatedGroupModel<TKey>, IDateTimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>
+    public class TimePlotGroupAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, MultiDateTimeAccumulatedGroupModel<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>
     {
 
         private readonly ReplaySubject<TimeSpan> timeSpan = new ReplaySubject<TimeSpan>();
         private readonly ReplaySubject<Operation> operation = new ReplaySubject<Operation>();
         private readonly ErrorBarModel errorBarModel;
 
-        public MultiDateTimePlotGroupAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
+        public TimePlotGroupAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
             base(comparer, scheduler, synchronizationContext)
         {
             var plotModel = new PlotModel();
@@ -27,7 +27,7 @@ namespace OxyPlot.Reactive.Multi
             PlotModelChanges.OnNext(Create(default(TGroupKey), plotModel));
         }
 
-        protected override void AddToDataPoints(KeyValuePair<TGroupKey, IDateTimePoint<TKey>> item)
+        protected override void AddToDataPoints(KeyValuePair<TGroupKey, ITimePoint<TKey>> item)
         {
             base.AddToDataPoints(item);
             lock (Models)

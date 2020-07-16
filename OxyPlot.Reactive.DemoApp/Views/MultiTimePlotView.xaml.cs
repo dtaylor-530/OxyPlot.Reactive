@@ -34,10 +34,10 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             var pacedObs = DataSource.Observe1000PlusMinus().Take(200).Concat(DataSource.Observe1000PlusMinus().Skip(200).Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
-                return KeyValuePair.Create(a.Key, DateTimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
+                return KeyValuePair.Create(a.Key, TimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
             });
 
-            var mplots = new MultiDateTimePlotAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new MultiTimePlotAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
             pacedObs.Subscribe(mplots);
             mplots
                .Select((a, i) => (a, i))
@@ -57,10 +57,10 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             var pacedObs = DataSource.Observe1000().Take(200).Concat(DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
-                return KeyValuePair.Create(a.Key, DateTimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
+                return KeyValuePair.Create(a.Key, TimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
             });
 
-            var mplots = new MultiDateTimePlotGroupAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new TimePlotGroupAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
             TimeView1.TimeSpanObservable.Subscribe(mplots);
             Observable.FromEventPattern(ComboBox1, nameof(ComboBox.SelectionChanged))
                 .SelectMany(a=>(a.EventArgs as SelectionChangedEventArgs).AddedItems.Cast<Operation>())
@@ -85,10 +85,10 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
             {
-                return KeyValuePair.Create(a.Key, DateTimePoint<string>.Create(a.Value.Key, a.Value.Value, new string[] { "a", "b", "c" }.Random()));
+                return KeyValuePair.Create(a.Key, TimePoint<string>.Create(a.Value.Key, a.Value.Value, new string[] { "a", "b", "c" }.Random()));
             });
 
-            var mplots = new MultiDateTimePlotModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new MultiTimePlotModel<string, string>(scheduler: RxApp.MainThreadScheduler);
             pacedObs.Subscribe(mplots);
 
             _ = mplots.ToObservableChangeSet()

@@ -46,7 +46,7 @@
                             </ObjectDataProvider.MethodParameters>
                         </ObjectDataProvider>
                     </ToolBar.Resources>
-                    <views:TimeView x:Name="TimeView1"></views:TimeView>
+                    <views:TimePickerView x:Name="TimeView1"></views:TimePickerView>
                     <hc:ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}" x:Name="ComboBox1" SelectedIndex="0"/>
                 </ToolBar>
 

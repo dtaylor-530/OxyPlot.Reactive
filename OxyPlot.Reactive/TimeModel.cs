@@ -19,29 +19,29 @@ namespace OxyPlot.Reactive
 {
 
 
-    public class MultiDateTimeModel<TKey> : MultiDateTimeModel<TKey, IDateTimePoint<TKey>>
+    public class TimeModel<TKey> : TimeModel<TKey, ITimePoint<TKey>>
     {
-        public MultiDateTimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        protected override IEnumerable<IDateTimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected override IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
             => collection
-            .Scan(new DateTimePoint<TKey>(), (xy0, xy) => new DateTimePoint<TKey>(xy.Value.Key, Combine(xy0.Value, xy.Value.Value), xy.Key))
-            .Cast<IDateTimePoint<TKey>>()
+            .Scan(new TimePoint<TKey>(), (xy0, xy) => new TimePoint<TKey>(xy.Value.Key, Combine(xy0.Value, xy.Value.Value), xy.Key))
+            .Cast<ITimePoint<TKey>>()
             .Skip(1);
 
     }
 
 
-    public abstract class MultiDateTimeModel<TKey, TType> : MultiPlotModel<TKey, DateTime>, IObservable<TType>, IObserver<int> where TType : IDateTimePoint<TKey>
+    public abstract class TimeModel<TKey, TType> : MultiPlotModel<TKey, DateTime>, IObservable<TType>, IObserver<int> where TType : ITimePoint<TKey>
     {
         readonly Subject<TType> subject = new Subject<TType>();
         protected readonly List<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> list = new List<KeyValuePair<TKey, KeyValuePair<DateTime, double>>>();
         protected int? count;
         protected DateTime min = DateTime.MaxValue, max = DateTime.MinValue;
 
-        public MultiDateTimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -181,7 +181,7 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        public void OnNext(IDateTimePoint<TKey> item)
+        public void OnNext(ITimePoint<TKey> item)
         {
             AddToDataPoints(KeyValuePair.Create(item.Key, KeyValuePair.Create(item.DateTime, item.Value)));
             refreshSubject.OnNext(Unit.Default);

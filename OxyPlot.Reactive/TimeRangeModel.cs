@@ -13,13 +13,13 @@ using Exceptionless.DateTimeExtensions;
 
 namespace OxyPlot.Reactive
 {
-    public class MultiDateTimeRangeModel<TKey> : MultiDateTimeModel<TKey>, IObserver<TimeSpan>
+    public class TimeRangeModel<TKey> : TimeModel<TKey>, IObserver<TimeSpan>
     {
         private RangeType rangeType = RangeType.None;
         private DateTimeRange? dateTimeRange;
         private TimeSpan? timeSpan;
 
-        public MultiDateTimeRangeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeRangeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -73,7 +73,7 @@ namespace OxyPlot.Reactive
                     plotModel.InvalidatePlot(true);
             });
 
-            IEnumerable<IDateTimePoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
+            IEnumerable<ITimePoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
             {
                 return rangeType switch
                 {
