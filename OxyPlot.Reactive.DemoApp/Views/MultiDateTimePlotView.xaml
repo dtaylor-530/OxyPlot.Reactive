@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:oxy="http://oxyplot.org/wpf" xmlns:hc="https://handyorg.github.io/handycontrol"
+             xmlns:oxy="http://oxyplot.org/wpf" xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -13,15 +13,15 @@
         <TabItem Header="Accumulated">
 
             <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                <ItemsControl x:Name="ItemsControl2" Style="{StaticResource LastItemBottomRowStyle}">
+                <ItemsControl x:Name="ItemsControlAccumulated" Style="{StaticResource LastItemBottomRowStyle}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Grid >
                                 <oxy:PlotView Model="{Binding model.Value}" ></oxy:PlotView>
                                 <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="70,50" >
-                                    
-                          
-                                <TextBlock FontSize="20" Text="{Binding index}" Foreground="Silver"></TextBlock>
+
+
+                                    <TextBlock FontSize="20" Text="{Binding index}" Foreground="Silver"></TextBlock>
                                     <TextBlock FontSize="20" Text="{Binding model.Key}"  Margin="30,0,0,0" Foreground="Silver"></TextBlock>
                                 </Grid>
                             </Grid>
@@ -30,9 +30,49 @@
                 </ItemsControl>
             </ScrollViewer>
         </TabItem>
+
+        
+
+        <TabItem Header="Accumulated Group">
+
+            <DockPanel>
+                <ToolBar DockPanel.Dock="Top"
+                     xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive"
+                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+                    <ToolBar.Resources>
+                        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                            <ObjectDataProvider.MethodParameters>
+                                <x:Type TypeName="m:Operation"/>
+                            </ObjectDataProvider.MethodParameters>
+                        </ObjectDataProvider>
+                    </ToolBar.Resources>
+                    <views:TimeView x:Name="TimeView1"></views:TimeView>
+                    <hc:ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}" x:Name="ComboBox1" SelectedIndex="0"/>
+                </ToolBar>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                    <ItemsControl x:Name="ItemsControlGroup" Style="{StaticResource LastItemBottomRowStyle}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid >
+                                    <oxy:PlotView Model="{Binding model.Value}" ></oxy:PlotView>
+                                    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="70,50" >
+                                        <TextBlock FontSize="20" Text="{Binding index}" Foreground="Silver"></TextBlock>
+                                        <TextBlock FontSize="20" Text="{Binding model.Key}"  Margin="30,0,0,0" Foreground="Silver"></TextBlock>
+                                    </Grid>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </TabItem>
+        
+        
+        
         <TabItem Header="Standard">
             <ScrollViewer>
-                <ItemsControl x:Name="ItemsControl1">
+                <ItemsControl x:Name="ItemsControlStandard">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel></WrapPanel>
@@ -42,11 +82,7 @@
                         <DataTemplate>
                             <Grid Height="400" Width="600">
                                 <hc:Card  BorderThickness="0"  Margin="8" Footer="{Binding }">
-                                    <!--<hc:Card.HeaderTemplate>
-                            <DataTemplate>
-                                <TextBlock HorizontalAlignment="Left" Style="{StaticResource TextBlockLargeBold}" Text="{Binding}" Margin="10"/>
-                            </DataTemplate>
-                        </hc:Card.HeaderTemplate>-->
+
                                     <Border CornerRadius="4,4,0,0" >
                                         <oxy:PlotView Model="{Binding Value}"></oxy:PlotView>
                                     </Border>
@@ -59,13 +95,13 @@
                                         </DataTemplate>
                                     </hc:Card.FooterTemplate>
                                 </hc:Card>
-                        
+
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
         </TabItem>
-     
+
     </TabControl>
 </UserControl>

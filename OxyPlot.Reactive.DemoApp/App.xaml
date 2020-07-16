@@ -27,8 +27,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/OxyPlot.Reactive.DemoApp;component/Themes/Generic.xaml"></ResourceDictionary>
 
-                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
-                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>
+                <!--<ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml"/>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml"/>-->
 
 
             </ResourceDictionary.MergedDictionaries>

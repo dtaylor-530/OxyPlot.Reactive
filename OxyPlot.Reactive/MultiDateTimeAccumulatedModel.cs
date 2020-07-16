@@ -20,10 +20,7 @@ namespace OxyPlot.Reactive
         {
             return x0 + x1;
         }
-
     }
-
-
 }
 
 

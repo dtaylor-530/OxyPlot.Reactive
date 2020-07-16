@@ -10,6 +10,8 @@ using MoreLinq;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
 using OxyPlot.Reactive.Model;
+using OxyPlot.Reactive.Multi;
+using OxyPlot.Wpf;
 using ReactiveUI;
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -24,11 +26,11 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             InitializeComponent();
 
-            Standard();
-            Accumulated();
-
+            ItemsControlAccumulated.ItemsSource = AccumulatedGroup();
+            ItemsControlStandard.ItemsSource = Standard();
+            ItemsControlGroup.ItemsSource = AccumulatedGroup();
         }
-        private void Accumulated()
+        private IReadOnlyCollection<dynamic> Accumulated()
         {
             var pacedObs = DataSource.Observe1000PlusMinus().Take(200).Concat(DataSource.Observe1000PlusMinus().Skip(200).Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
@@ -47,11 +49,39 @@ namespace OxyPlot.Reactive.DemoApp.Views
                .Bind(out var plots)
                .Subscribe();
 
-            ItemsControl2.ItemsSource = plots;
+            return plots;
         }
 
 
-        private void Standard()
+        private IReadOnlyCollection<dynamic> AccumulatedGroup()
+        {
+            var pacedObs = DataSource.Observe1000().Take(200).Concat(DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
+            {
+                return KeyValuePair.Create(a.Key, DateTimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
+            });
+
+            var mplots = new MultiDateTimePlotGroupAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            TimeView1.TimeSpanObservable.Subscribe(mplots);
+            Observable.FromEventPattern(ComboBox1, nameof(ComboBox.SelectionChanged))
+                .SelectMany(a=>(a.EventArgs as SelectionChangedEventArgs).AddedItems.Cast<Operation>())
+                .Subscribe(mplots);
+
+            pacedObs.Subscribe(mplots);
+            mplots
+               .Select((a, i) => (a, i))
+           .ToObservableChangeSet(a => a.i)
+               .ObserveOnDispatcher()
+               .SubscribeOnDispatcher()
+               .Transform(abc => new { model = abc.a, index = abc.i })
+               .Sort(DynamicData.Binding.SortExpressionComparer<dynamic>.Descending(t => t.index))
+               .Bind(out var plots)
+               .Subscribe();
+
+            return plots;
+        }
+
+
+        private IReadOnlyCollection<KeyValuePair<string,PlotModel>> Standard()
         {
             var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
             {
@@ -67,7 +97,10 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 .Bind(out var plots)
                 .Subscribe();
 
-            ItemsControl1.ItemsSource = plots;
+            return plots;
+     
         }
+
+
     }
 }

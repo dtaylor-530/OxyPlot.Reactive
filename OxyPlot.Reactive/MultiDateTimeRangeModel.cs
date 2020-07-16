@@ -73,7 +73,7 @@ namespace OxyPlot.Reactive
                     plotModel.InvalidatePlot(true);
             });
 
-            IEnumerable<IDateTimeKeyPoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
+            IEnumerable<IDateTimePoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
             {
                 return rangeType switch
                 {

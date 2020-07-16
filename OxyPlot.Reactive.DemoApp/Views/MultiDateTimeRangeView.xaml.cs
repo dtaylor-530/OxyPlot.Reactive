@@ -1,6 +1,7 @@
 ﻿using Exceptionless.DateTimeExtensions;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
+using OxyPlot.Reactive.DemoApp.ViewModels;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
@@ -92,6 +93,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
 
             this.WhenAnyValue(a => a.Value).Select(a=>(int)a).Subscribe(model3.OnNext);
+
         }
 
 

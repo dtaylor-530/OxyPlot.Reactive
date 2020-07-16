@@ -10,12 +10,9 @@
     <UserControl.Resources>
 
     </UserControl.Resources>
+    
     <UniformGrid>
-
-
-        <DockPanel>
-
-
+       <DockPanel>
             <ToolBar DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}" DockPanel.Dock="Top" Height="30">
                 <TextBlock Text="{Binding StartDate}" Margin="2"></TextBlock>
                 <TextBlock Text="{Binding MinDate}" Margin="2"></TextBlock>
@@ -79,5 +76,7 @@
                 <oxy:PlotView Name="PlotView3"/>
             </Grid>
         </DockPanel>
+
+
     </UniformGrid>
 </UserControl>

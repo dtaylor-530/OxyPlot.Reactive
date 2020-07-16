@@ -31,7 +31,7 @@ namespace OxyPlot.Reactive.Infrastructure
             });
         }
 
-        public static IEnumerable<IGrouping<DateTimeRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
+        public static IEnumerable<IGrouping<DateTimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
         {
             Grouping<T> grouping = null;
             foreach (var (a, dt) in from b in enumerable select (b, predicate.Invoke(b)))
@@ -44,7 +44,7 @@ namespace OxyPlot.Reactive.Infrastructure
         }
 
 
-        public static IEnumerable<IGrouping<DateTimeRange, T>> GroupBy<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<DateTimeRange> ranges, Func<T, DateTime> predicate)
+        public static IEnumerable<IGrouping<DateTimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<DateTimeRange> ranges, Func<T, DateTime> predicate)
         {
             return from r in ranges
                    join prod in enumerable on true equals true

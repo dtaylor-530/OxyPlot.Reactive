@@ -4,6 +4,7 @@ using MoreLinq;
 using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
+using OxyPlot.Reactive.DemoApp.ViewModels;
 using OxyPlot.Reactive.Model;
 using ReactiveUI;
 using System;
@@ -19,17 +20,24 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class MultiDateTimeGroupView : UserControl
     {
-        MultiDateTimeGroupModel<string> model;
-        MultiDateTimeGroup2Model<string> model2;
+        readonly MultiDateTimeGroupModel<string> model;
+        readonly MultiDateTimeGroup2Model<string> model2;
+        readonly CustomMultiDateTimeGroup2Model<string> model3;
+
         public MultiDateTimeGroupView()
         {
             InitializeComponent();
+
+            ComboBox1.SelectionChanged += (s, e) =>
+            {
+                model.OnNext(e.AddedItems.Cast<Operation>().Single());
+                model2.OnNext(e.AddedItems.Cast<Operation>().Single());
+            };
+
+            model = new MultiDateTimeGroupModel<string>(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            model2 = new MultiDateTimeGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
             var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.3));
-
-
-            model = new MultiDateTimeGroupModel<string>(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler);
-            model2 = new MultiDateTimeGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler);
-
             pacedObs.Subscribe(model);
             pacedObs.Subscribe(model2);
 
@@ -46,20 +54,25 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             DataGridRange.ItemsSource = rangeCollection;
 
-            (model2 as IObservable<IDateTimeKeyPoint<string>>).Subscribe(p =>
+            (model2 as IObservable<IDateTimePoint<string>>).Subscribe(p =>
             {
-                var n = rangeCollection.Select((a, i) => (key:a.Key.Start/* + (a.Key.End-a.Key.Start)/2*/, i)).SingleOrDefault(a => a.key == p.DateTime).i;
+                var n = rangeCollection.Select((a, i) => (key: a.Key.Start, i)).SingleOrDefault(a => a.key == p.DateTime).i;
                 DataGridRange.SelectedIndex = n;
                 DataGridRange.ScrollIntoView(DataGridRange.Items[n]);
             });
+
+            model3 = new CustomMultiDateTimeGroup2Model<string>(PlotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            pacedObs.Subscribe(model3);
+
+            TimeView1.TimeSpanObservable.Subscribe(x =>
+            {
+                model?.OnNext(x);
+                model2?.OnNext(x);
+                model3?.OnNext(x);
+            });
+
         }
 
-        private void IntervalBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var x = TimeUnit.Parse(NumbersBox.SelectedItem.ToString() + ((IntervalBox?.SelectedItem.ToString())?.First().ToString().ToLower() ?? "s"));
-            model?.OnNext(x);
-            model2?.OnNext(x);
-        }
 
         public class GroupViewModel<T, R, S> : ReactiveObject
         {

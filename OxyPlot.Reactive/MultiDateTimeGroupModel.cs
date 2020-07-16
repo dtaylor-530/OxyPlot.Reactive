@@ -17,11 +17,11 @@ namespace OxyPlot.Reactive
     {
         private RangeType rangeType = RangeType.None;
         private TimeSpan? timeSpan;
+        private Operation? operation;
 
         public MultiDateTimeGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
-
 
         protected override async void Refresh(IList<Unit> units)
         {
@@ -72,7 +72,7 @@ namespace OxyPlot.Reactive
                 }
             });
 
-            IEnumerable<IDateTimeKeyPoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
+            IEnumerable<IDateTimePoint<TKey>> Switch(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
             {
                 return rangeType switch
                 {
@@ -84,21 +84,19 @@ namespace OxyPlot.Reactive
             }
         }
 
-        protected override IEnumerable<IDateTimeKeyPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected override IEnumerable<IDateTimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
         {
             var ees = collection
                 .OrderBy(a => a.Value.Key);
 
-
-
-            return timeSpan.HasValue ? ees.GroupBy(timeSpan.Value, a => a.Value.Key)
+            return timeSpan.HasValue ? ees.GroupOn(timeSpan.Value, a => a.Value.Key)
                 .Select(ac =>
                 {
-                    var ss = ac.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key)).Cast<IDateTimeKeyPoint<TKey>>()
+                    var ss = ac.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key)).Cast<IDateTimePoint<TKey>>()
                     .Skip(1).ToArray();
-                    return new DateTimeRangePoint<TKey>(ac.Key, ss);
-                }).Cast<IDateTimeKeyPoint<TKey>>().ToArray() :
-                ees.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value , b.Value.Value), b.Key)).Cast<IDateTimeKeyPoint<TKey>>().Skip(1).ToArray();
+                    return new DateTimeRangePoint<TKey>(ac.Key, ss, ac.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+                }).Cast<IDateTimePoint<TKey>>().ToArray() :
+                ees.Scan(default(DateTimePoint<TKey>), (a, b) => new DateTimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key)).Cast<IDateTimePoint<TKey>>().Skip(1).ToArray();
 
         }
 
@@ -109,11 +107,10 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        enum RangeType
+        public void OnNext(Operation value)
         {
-            None,
-            Count = 1,
-            TimeSpan,
+            operation = value;
+            refreshSubject.OnNext(Unit.Default);
         }
     }
 }

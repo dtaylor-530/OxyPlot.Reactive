@@ -66,7 +66,7 @@ namespace OxyPlot.Reactive.Infrastructure
         }
 
 
-        public static LineSeries Build<T>(IEnumerable<IDateTimeKeyPoint<T>> coll, string key)
+        public static LineSeries Build<T>(IEnumerable<IDateTimePoint<T>> coll, string key)
         {
             var lser = new LineSeries
             {
