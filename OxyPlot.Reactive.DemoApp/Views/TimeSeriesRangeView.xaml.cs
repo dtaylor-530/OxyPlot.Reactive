@@ -1,21 +1,12 @@
-﻿using Exceptionless.DateTimeExtensions;
+﻿using Itenso.TimePeriod;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
-using OxyPlot.Reactive.DemoApp.ViewModels;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using static OxyPlot.Reactive.DemoApp.Factory.DataSource;
 
 namespace OxyPlot.Reactive.DemoApp.Views
@@ -87,7 +78,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                   TimeSpan = ToTimeSpan(TimeValue);
                   StartDate = ToDateTime(Start);
                   EndDate = ToDateTime(End);
-                  model.OnNext(new DateTimeRange(StartDate, EndDate));
+                  model.OnNext(new TimeRange(StartDate, EndDate));
                   model2.OnNext(ToTimeSpan(TimeValue));
               });
 

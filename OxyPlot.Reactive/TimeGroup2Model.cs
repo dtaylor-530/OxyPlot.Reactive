@@ -7,15 +7,14 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
 using MoreLinq;
-using Exceptionless.DateTimeExtensions;
 using System.Reactive.Subjects;
 
 namespace OxyPlot.Reactive
 {
-
+    using Itenso.TimePeriod;
+    using Model;
 
 
 
@@ -39,12 +38,12 @@ namespace OxyPlot.Reactive
 
 
 
-    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObservable<DateTimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
+    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObservable<ITimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
     {
-        private readonly Subject<DateTimeRange[]> rangesSubject = new Subject<DateTimeRange[]>();
+        private readonly Subject<ITimeRange[]> rangesSubject = new Subject<ITimeRange[]>();
         private RangeType rangeType = RangeType.None;
         private TimeSpan? timeSpan; private Operation? operation;
-        protected DateTimeRange[]? ranges;
+        protected ITimeRange[]? ranges;
 
 
         public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
@@ -70,19 +69,19 @@ namespace OxyPlot.Reactive
         {
             if (timeSpan.HasValue)
             {
-                ranges = await Task.Run<DateTimeRange[]>(() =>
+                ranges = await Task.Run(() =>
                 {
-                    return EnumerateDateTimeRanges(min, max, timeSpan.Value).ToArray<DateTimeRange>();
+                    return EnumerateDateTimeRanges(min, max, timeSpan.Value).ToArray();
                 });
                 rangesSubject.OnNext(ranges);
             }
 
-            static IEnumerable<DateTimeRange> EnumerateDateTimeRanges(DateTime minDateTime, DateTime maxDateTime, TimeSpan timeSpan)
+            static IEnumerable<ITimeRange> EnumerateDateTimeRanges(DateTime minDateTime, DateTime maxDateTime, TimeSpan timeSpan)
             {
-                var dtRange = new DateTimeRange(minDateTime, minDateTime += timeSpan);
+                var dtRange = new TimeRange(minDateTime, minDateTime += timeSpan);
                 while (dtRange.End < maxDateTime)
                 {
-                    yield return dtRange = new DateTimeRange(minDateTime, minDateTime += timeSpan);
+                    yield return dtRange = new TimeRange(minDateTime, minDateTime += timeSpan);
                 }
             }
         }
@@ -121,7 +120,7 @@ namespace OxyPlot.Reactive
             ITimeRangePoint<TKey>[] NoRanges()
             {
                 return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                    .Select(a => new TimeRangePoint<TKey>(new DateTimeRange(a.DateTime, a.DateTime), new ITimePoint<TKey>[] { a }, a.Key))
+                    .Select(a => new TimeRangePoint<TKey>(new TimeRange(a.DateTime, a.DateTime), new ITimePoint<TKey>[] { a }, a.Key))
                     .Skip(1)
                     .ToArray();
             }
@@ -141,7 +140,7 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        public IDisposable Subscribe(IObserver<DateTimeRange[]> observer)
+        public IDisposable Subscribe(IObserver<ITimeRange[]> observer)
         {
             return rangesSubject.Subscribe(observer);
         }

@@ -1,5 +1,5 @@
 ﻿using DynamicData;
-using Exceptionless.DateTimeExtensions;
+using Itenso.TimePeriod;
 using MoreLinq;
 using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Common;
@@ -41,12 +41,12 @@ namespace OxyPlotEx.DemoAppCore.Pages
             pacedObs.Subscribe(model);
             pacedObs.Subscribe(model2);
 
-            (model2 as IObservable<DateTimeRange[]>)
-                .CombineLatest(pacedObs, (a, b) => (a.SingleOrDefault(c => c.Start <= b.Value.Key && c.End >= b.Value.Key), b))
+            (model2 as IObservable<ITimeRange[]>)
+                .CombineLatest(pacedObs, (a, b) => (a.FirstOrDefault(c => c.Start <= b.Value.Key && c.End >= b.Value.Key), b))
                 .Where(c => c.Item1 != null)
                 .ToObservableChangeSet(a => Guid.NewGuid())
                 .Group(a => a.Item1)
-                .Transform(a => new GroupViewModel<object, DateTimeRange, Guid>(a.Key, a.Cache.Connect().Transform(a => (object)new { a.b.Key, date = a.b.Value.Key, a.b.Value.Value })))
+                .Transform(a => new GroupViewModel<object, ITimeRange, Guid>(a.Key, a.Cache.Connect().Transform(a => (object)new { a.b.Key, date = a.b.Value.Key, a.b.Value.Value })))
                 .ObserveOnDispatcher()
                   .SubscribeOnDispatcher()
                 .Bind(out var rangeCollection)

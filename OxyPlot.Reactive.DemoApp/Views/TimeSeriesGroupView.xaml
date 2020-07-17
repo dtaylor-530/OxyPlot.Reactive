@@ -13,7 +13,7 @@
         <DockPanel >
 
             <ToolBar DockPanel.Dock="Top"
-                     xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive"
+                     xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
                      xmlns:sys="clr-namespace:System;assembly=System.Runtime">
                 <ToolBar.Resources>
                     <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
@@ -35,7 +35,8 @@
                 <DataGrid x:Name="DataGridRange" Grid.Row="3"  AutoGenerateColumns="False" >
                     <DataGrid.Columns>
                         <!--<DataGridTextColumn Binding="{Binding DateTime, Mode=OneWay}" Header="DateTime"/>-->
-                        <DataGridTextColumn Binding="{Binding Key, Mode=OneWay}" Header="Key"/>
+                        <DataGridTextColumn Binding="{Binding Key.Start, Mode=OneWay}" Header="Start"/>      
+                        <DataGridTextColumn Binding="{Binding Key.End, Mode=OneWay}" Header="End"/>
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>

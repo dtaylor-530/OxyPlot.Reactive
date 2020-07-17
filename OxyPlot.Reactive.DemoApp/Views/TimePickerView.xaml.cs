@@ -1,5 +1,4 @@
-﻿using Exceptionless.DateTimeExtensions;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -23,7 +22,17 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
         private void IntervalBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var x = TimeUnit.Parse(NumbersBox.SelectedItem.ToString() + ((IntervalBox?.SelectedItem.ToString())?.First().ToString().ToLower() ?? "s"));
+            var ssx = (IntervalBox?.SelectedItem.ToString())?.First().ToString().ToLower() ?? "s";
+            var sw = NumbersBox?.SelectedItem.ToString() is { } s ? int.Parse(s) : 1;
+            var x = ssx switch
+            {
+                "s" => TimeSpan.FromSeconds(sw),
+                "m" => TimeSpan.FromMinutes(sw),
+                "h" => TimeSpan.FromHours(sw),
+                "d" => TimeSpan.FromDays(sw),
+                _ => throw new NotImplementedException(),
+            };
+
             timeSpanChanges.OnNext(x);
         }
     }

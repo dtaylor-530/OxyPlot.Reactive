@@ -1,7 +1,4 @@
-﻿#nullable enable
-
-
-using OxyPlot;
+﻿using OxyPlot;
 
 namespace OxyPlot.Reactive.Model
 {

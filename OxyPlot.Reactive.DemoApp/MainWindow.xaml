@@ -22,19 +22,19 @@
                     <Page Uri="\Views\HeatMapView.xaml"
                      Title="Heat Map Series" />
 
-                    <Page Uri="\Views\TimeView.xaml"
+                    <Page Uri="\Views\TimeSeriesView.xaml"
                      Title="Multi Line Series" />
 
-                    <Page Uri="\Views\TimeAccumulatedView.xaml"
+                    <Page Uri="\Views\TimeSeriesAccumulatedView.xaml"
                      Title="Multi Line Accumulated Series" />
 
                     <Page Uri="\Views\StackedBarView.xaml"
                      Title="Stacked Bar Series" />
 
-                    <Page Uri="\Views\TimeRangeView.xaml"
+                    <Page Uri="\Views\TimeSeriesRangeView.xaml"
                      Title="Multi Line Range" />    
                     
-                    <Page Uri="\Views\TimeGroupView.xaml"
+                    <Page Uri="\Views\TimeSeriesGroupView.xaml"
                      Title="Multi Group" />
                 </Pages>
             </x:XData>

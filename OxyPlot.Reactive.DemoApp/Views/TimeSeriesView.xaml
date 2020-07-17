@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:oxy="http://oxyplot.org/wpf"
-             xmlns:controls="clr-namespace:NMT.Wpf.Controls;assembly=WindowsProgressRing"
-             xmlns:common="clr-namespace:OxyPlot.Reactive.DemoApp.Common" xmlns:rui="http://reactiveui.net"
+             xmlns:common="clr-namespace:OxyPlot.Reactive.DemoApp.Common" 
+             xmlns:rui="http://reactiveui.net"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>

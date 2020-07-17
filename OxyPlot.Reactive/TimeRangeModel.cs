@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
-using Exceptionless.DateTimeExtensions;
+using Itenso.TimePeriod;
 
 namespace OxyPlot.Reactive
 {
     public class TimeRangeModel<TKey> : TimeModel<TKey>, IObserver<TimeSpan>
     {
         private RangeType rangeType = RangeType.None;
-        private DateTimeRange? dateTimeRange;
+        private ITimeRange? dateTimeRange;
         private TimeSpan? timeSpan;
 
         public TimeRangeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
@@ -93,7 +93,7 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        public void OnNext(DateTimeRange value)
+        public void OnNext(ITimeRange value)
         {
             dateTimeRange = value;
             rangeType = RangeType.DateTimeRange;
