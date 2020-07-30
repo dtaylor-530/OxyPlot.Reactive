@@ -16,6 +16,14 @@ using e = System.Linq.Enumerable;
 namespace OxyPlot.Reactive
 {
 
+    public abstract class MultiPlotModel<TKey, TVar, TType> : MultiPlotModel<TKey, TVar, TType, TType>, IObservable<TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
+    {
+        public MultiPlotModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+        }
+
+    }
+
 
 
     public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel<TKey, TVar>, IObservable<TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
@@ -23,7 +31,6 @@ namespace OxyPlot.Reactive
         protected readonly Subject<TType> subject = new Subject<TType>();
         protected readonly List<KeyValuePair<TKey, KeyValuePair<TVar, double>>> list = new List<KeyValuePair<TKey, KeyValuePair<TVar, double>>>();
         protected int? count;
-
 
 
         public MultiPlotModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)

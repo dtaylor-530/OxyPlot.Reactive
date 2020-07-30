@@ -10,6 +10,9 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
+                    <Page Uri="\Views\CartesianView.xaml"
+                     Title="Cartesian" />
+                    
                     <Page Uri="\Views\MultiTimePlotView.xaml"
                      Title="Multi" />
                     
