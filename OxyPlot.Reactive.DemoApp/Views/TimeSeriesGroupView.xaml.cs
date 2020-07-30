@@ -37,7 +37,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
             model = new TimeGroupModel<string>(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
             model2 = new TimeGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-            var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.3));
+            var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.3));
             pacedObs.Subscribe(model);
             pacedObs.Subscribe(model2);
 

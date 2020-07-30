@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using static OxyPlot.Reactive.DemoApp.Factory.DataSource;
+using static OxyPlot.Reactive.DemoApp.Factory.TimeDataSource;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -38,7 +38,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             var model2 = new TimeRangeModel<string>(PlotView2.Model ??= new PlotModel());
             var model3 = new TimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
 
-            var obs = DataSource.Observe1000()
+            var obs = TimeDataSource.Observe1000()
                  .Pace(TimeSpan.FromSeconds(1))
                  .Publish().RefCount();
 

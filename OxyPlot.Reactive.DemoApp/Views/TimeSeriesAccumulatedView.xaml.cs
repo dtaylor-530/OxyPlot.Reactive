@@ -21,15 +21,15 @@ namespace OxyPlotEx.DemoAppCore.Pages
             //ProduceData(out var observable1, out var observable2);
 
 
-            disposable = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5)).Subscribe(
+            disposable = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5)).Subscribe(
                 new TimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)); ;
 
 
 
-            disposable = DataSource.Observe3().Subscribe(
+            disposable = TimeDataSource.Observe3().Subscribe(
                 new TimeAccumulatedModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
-            disposable = DataSource.Observe1000PlusMinus().Pace(TimeSpan.FromSeconds(1.5)).Subscribe(
+            disposable = TimeDataSource.Observe1000PlusMinus().Pace(TimeSpan.FromSeconds(1.5)).Subscribe(
      new TimeAccumulatedModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
         }

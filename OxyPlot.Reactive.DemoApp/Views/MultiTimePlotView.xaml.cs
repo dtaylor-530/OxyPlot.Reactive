@@ -32,7 +32,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
         private IReadOnlyCollection<dynamic> Accumulated()
         {
-            var pacedObs = DataSource.Observe1000PlusMinus().Take(200).Concat(DataSource.Observe1000PlusMinus().Skip(200).Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
+            var pacedObs = TimeDataSource.Observe1000PlusMinus().Take(200).Concat(TimeDataSource.Observe1000PlusMinus().Skip(200).Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
                 return KeyValuePair.Create(a.Key, TimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
             });
@@ -55,7 +55,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
         private IReadOnlyCollection<dynamic> AccumulatedGroup()
         {
-            var pacedObs = DataSource.Observe1000().Take(200).Concat(DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
+            var pacedObs = TimeDataSource.Observe1000().Take(200).Concat(TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
                 return KeyValuePair.Create(a.Key, TimePoint<string>.Create(a.Value.Key, a.Value.Value, a.Key + Enumerable.Range(1, 3).Random()));
             });
@@ -83,7 +83,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
         private IReadOnlyCollection<KeyValuePair<string,PlotModel>> Standard()
         {
-            var pacedObs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
+            var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
             {
                 return KeyValuePair.Create(a.Key, TimePoint<string>.Create(a.Value.Key, a.Value.Value, new string[] { "a", "b", "c" }.Random()));
             });

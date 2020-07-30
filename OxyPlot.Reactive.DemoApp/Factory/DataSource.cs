@@ -7,29 +7,29 @@ using System.Reactive.Linq;
 
 namespace OxyPlot.Reactive.DemoApp.Factory
 {
-    class DataSource
+    static class DataSource
     {
-        private static Lazy<KeyValuePair<string, KeyValuePair<DateTime, double>>[]> array;
+        private static Lazy<KeyValuePair<string, KeyValuePair<int, double>>[]> array;
 
         static DataSource()
         {
-            array = new Lazy<KeyValuePair<string, KeyValuePair<DateTime, double>>[]>(() =>
+            array = new Lazy<KeyValuePair<string, KeyValuePair<int, double>>[]>(() =>
              {
                  var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
                  {
-                     return KeyValuePair.Create(o.Key, KeyValuePair.Create(DateTime.UnixEpoch.AddYears(i), o.Value));
+                     return KeyValuePair.Create(o.Key, KeyValuePair.Create(i, o.Value));
                  }).ToArray();
 
                  return array;
              });
         }
 
-        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000()
+        public static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> Observe1000()
         {
             return array.Value.ToObservable();
         }
 
-        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000PlusMinus()
+        public static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> Observe1000PlusMinus()
         {
             return array.Value.ToObservable().Select(a =>
             {
@@ -39,21 +39,20 @@ namespace OxyPlot.Reactive.DemoApp.Factory
             });
         }
 
-        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe20()
+        public static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> Observe20()
         {
             return array.Value.Take(20).ToObservable();
         }
 
-        public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe3()
+        public static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> Observe3()
         {
             return array.Value.Take(3).ToObservable();
         }
 
+        public static IObservable<KeyValuePair<string, KeyValuePair<double, double>>> ToDoubles(this IObservable<KeyValuePair<string, KeyValuePair<int, double>>> observable)
+        {
+            return observable.Select(a => KeyValuePair.Create(a.Key, KeyValuePair.Create((double)a.Value.Key, a.Value.Value)));
+        }
 
-        public static DateTime ToDateTime(double d) => DateTime.UnixEpoch.AddDays((int)d);
-
-        public static TimeSpan ToTimeSpan(double d) => DateTime.UnixEpoch.AddDays((int)d) - DateTime.UnixEpoch;
-
-        public static double FromDateTime(DateTime d) => (d - DateTime.UnixEpoch).TotalDays;
     }
 }
