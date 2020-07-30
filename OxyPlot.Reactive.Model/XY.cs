@@ -11,9 +11,7 @@ namespace OxyPlot.Reactive.Model
     //}
 
 
-    public interface IPoint<TKey> : IDoublePoint<TKey, double>, IKey<TKey>
-    {
-    }
+
 
     public struct Point<TKey> : IPoint<TKey>
     {

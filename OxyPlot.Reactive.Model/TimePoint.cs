@@ -7,75 +7,7 @@ using System.Linq;
 
 namespace OxyPlot.Reactive.Model
 {
-    public interface IValue<T>
-    {
-        T Value { get; }
 
-    }
-
-    public interface IVarPoint<T>
-    {
-        T Var { get; }
-
-    }
-
-    public interface IKey<TKey>
-    {
-        TKey Key { get; }
-    }
-
-
-    public interface IPoint<TVar, TValue> : IVarPoint<TVar>, IValue<TValue>, IDataPointProvider
-    {
-    }
-
-
-    public interface IKeyPoint<TKey, TVar, TValue> : IKey<TKey>, IPoint<TVar, TValue>
-    {
-    }
-
-    public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double>
-    {
-    }
-
-
-    public interface ITimePoint : IValue<double>, IVarPoint<DateTime>, IDataPointProvider
-    {
-    }
-
-
-    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>
-    {
-    }
-
-    public interface ICollection
-    {
-
-    }
-
-    public interface IDateTimeKeyPointCollection<TKey>
-    {
-        ICollection<ITimePoint<TKey>> Collection { get; }
-    }
-
-    public interface IDateTimeRange
-    {
-        ITimeRange TimeRange { get; }
-    }
-
-    public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IDateTimeKeyPointCollection<TKey>, IDateTimeRange
-    {
-
-    }
-
-    public interface IDataPointKeyProvider<T> : IDataPointProvider, IKey<T>
-    {
-
-    }
-
-    public interface IDateTimeKeyPointObserver<TType, TKey> : IObserver<TType> where TType : ITimePoint<TKey>
-    {
-    }
 
     public struct TimePoint : ITimePoint<string>
     {
