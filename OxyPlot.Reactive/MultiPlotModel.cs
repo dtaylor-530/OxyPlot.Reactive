@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using Kaos.Collections;
 using MoreLinq;
 using OxyPlot.Reactive.Infrastructure;
 using System;
@@ -9,10 +10,145 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
+using System.Threading.Tasks;
 using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
+
+
+
+    public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel<TKey, TVar>, IObservable<TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
+    {
+        protected readonly Subject<TType> subject = new Subject<TType>();
+        protected readonly List<KeyValuePair<TKey, KeyValuePair<TVar, double>>> list = new List<KeyValuePair<TKey, KeyValuePair<TVar, double>>>();
+        protected int? count;
+
+
+
+        public MultiPlotModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+        }
+
+        protected TVar min { get; set; }
+        protected TVar max { get; set; }
+
+        protected override async void Refresh(IList<Unit> units)
+        {
+
+            await Task.Run(() =>
+            {
+                lock (list)
+                {
+                    if (list.Any())
+                    {
+                        AddToDataPoints(list.ToArray());
+                        list.Clear();
+                    }
+                }
+            });
+
+            _ = (this as IMixedScheduler).ScheduleAction(async () =>
+            {
+                KeyValuePair<TKey, ICollection<KeyValuePair<TVar, double>>>[]? dataPoints;
+                lock (DataPoints)
+                    dataPoints = DataPoints.ToArray();
+
+                this.Modify();
+
+                foreach (var keyValue in dataPoints)
+                {
+                    _ = await Task.Run(() =>
+                    {
+                        lock (DataPoints)
+                        {
+                            return Create(Flatten(keyValue.Key, keyValue.Value));
+                        }
+                    }).ContinueWith(async points => AddToSeries(await points, keyValue.Key.ToString()));
+                }
+
+                if (showAll)
+                {
+                    _ = await Task.Run(() =>
+                    {
+                        lock (DataPoints)
+                        {
+                            return Create(Flatten(default, DataPoints.SelectMany(a => a.Value)));
+                        }
+                    }).ContinueWith(async points => AddToSeries(await points, "All"));
+                }
+                plotModel.InvalidatePlot(true);
+            });
+
+            IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> Flatten(TKey key, IEnumerable<KeyValuePair<TVar, double>> value)
+            => value.ToArray().Select(c => KeyValuePair.Create(key, c));
+        }
+
+        protected virtual TType3[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> value)
+        {
+            return count.HasValue ?
+                              Enumerable.TakeLast(ToDataPoints(value), count.Value).ToArray() :
+                              ToDataPoints(value).ToArray();
+        }
+
+        protected virtual void AddToDataPoints(ICollection<KeyValuePair<TKey, KeyValuePair<TVar, double>>> items)
+        {
+            try
+            {
+                min = CalculateMin(items);
+                max = CalculateMax(items);
+
+                lock (DataPoints)
+                {
+                    foreach (var item in items)
+                    {
+                        if (!DataPoints.ContainsKey(item.Key))
+                            DataPoints[item.Key] = new RankedMap<TVar, double>();
+                        DataPoints[item.Key].Add(item.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        protected abstract TVar CalculateMin(ICollection<KeyValuePair<TKey, KeyValuePair<TVar, double>>> items);
+        protected abstract TVar CalculateMax(ICollection<KeyValuePair<TKey, KeyValuePair<TVar, double>>> items);
+
+
+        protected virtual void Modify()
+        {
+        }
+
+        protected abstract void AddToSeries(TType3[] items, string title);
+
+        protected override void AddToDataPoints(KeyValuePair<TKey, KeyValuePair<TVar, double>> item)
+        {
+            lock (list)
+                list.Add(item);
+        }
+
+        protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> collection);
+
+        public IDisposable Subscribe(IObserver<TType> observer)
+        {
+            return subject.Subscribe(observer);
+        }
+
+        public void OnNext(int count)
+        {
+            this.count = count;
+            refreshSubject.OnNext(Unit.Default);
+        }
+
+        public abstract void OnNext(TType item);
+
+    }
+
+
+
     public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>>
     {
         public MultiPlotModel(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)

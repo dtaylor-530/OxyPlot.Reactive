@@ -40,7 +40,7 @@ namespace OxyPlot.Reactive
         }
 
 
-        protected override async void Refresh(IList<Unit> units)
+        protected override void Refresh(IList<Unit> units)
         {
             KeyValuePair<string, ICollection<KeyValuePair<int, double>>>[] arr;
 

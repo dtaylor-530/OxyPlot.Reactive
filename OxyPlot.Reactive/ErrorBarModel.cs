@@ -46,7 +46,7 @@ namespace OxyPlot.Reactive
         }
 
         //static (string key, ErrorBarItem) Selector(IGrouping<string, DataPoint<string>> grp)
-        static (string key, ErrorColumnItem) Selector(IGrouping<string, DataPoint<string>> grp)
+        static (string key, ErrorColumnItem) Selector(IGrouping<string, XY<string>> grp)
         {
             var arr = grp.Select(a => a.Y).ToArray();
             // var variance = Statistics.Variance(arr);

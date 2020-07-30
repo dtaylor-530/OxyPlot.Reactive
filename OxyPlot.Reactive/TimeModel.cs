@@ -6,14 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
-using System.Reactive.Subjects;
 using OxyPlot.Series;
 using MoreLinq;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
-using Kaos.Collections;
 
 namespace OxyPlot.Reactive
 {
@@ -34,87 +31,31 @@ namespace OxyPlot.Reactive
     }
 
 
-    public abstract class TimeModel<TKey, TType> : MultiPlotModel<TKey, DateTime>, IObservable<TType>, IObserver<int> where TType : ITimePoint<TKey>
+    public abstract class TimeModel<TKey, TType> : TimeModel<TKey, TType, TType> where TType : ITimePoint<TKey>
     {
-        readonly Subject<TType> subject = new Subject<TType>();
-        protected readonly List<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> list = new List<KeyValuePair<TKey, KeyValuePair<DateTime, double>>>();
-        protected int? count;
-        protected DateTime min = DateTime.MaxValue, max = DateTime.MinValue;
+        public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
+        {
+        }
 
+    }
+
+
+    public abstract class TimeModel<TKey, TType, TType3> : MultiPlotModel<TKey, DateTime, TType, TType3> where TType : ITimePoint<TKey> where TType3 : TType
+    {
         public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
+            min = DateTime.MaxValue;
+            max = DateTime.MinValue;
         }
 
-        protected override void ModifyPlotModel()
+        public override void OnNext(TType item)
         {
-            plotModel.Axes.Add(new DateTimeAxis());
+            AddToDataPoints(KeyValuePair.Create(item.Key, KeyValuePair.Create(item.Var, item.Value)));
+            refreshSubject.OnNext(Unit.Default);
         }
 
-        protected override async void Refresh(IList<Unit> units)
-        {
 
-            await Task.Run(() =>
-            {
-                lock (list)
-                {
-                    if (list.Any())
-                    {
-                        AddToDataPoints(list.ToArray());
-                        list.Clear();
-                    }
-                }
-            });
-
-            _ = (this as IMixedScheduler).ScheduleAction(async () =>
-              {
-                  KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[]? dataPoints;
-                  lock (DataPoints)
-                      dataPoints = DataPoints.ToArray();
-
-                  this.Modify();
-
-                  foreach (var keyValue in dataPoints)
-                  {
-                      _ = await Task.Run(() =>
-                      {
-                            lock (DataPoints)
-                            {
-                               return Create(Flatten(keyValue.Key, keyValue.Value));
-                            }
-                        }).ContinueWith(async points => AddToSeries(await points, keyValue.Key.ToString()));
-                  }
-
-                  if (showAll)
-                  {
-                      _ = await Task.Run(() =>
-                        {
-                            lock (DataPoints)
-                            {
-                               return Create(Flatten(default, DataPoints.SelectMany(a => a.Value)));
-                            }
-                        }).ContinueWith(async points => AddToSeries(await points, "All"));
-                  }
-                  plotModel.InvalidatePlot(true);
-              });
-
-            IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> Flatten(TKey key, IEnumerable<KeyValuePair<DateTime, double>> value)
-            => value.ToArray().Select(c => KeyValuePair.Create(key, c));
-        }
-
-        protected virtual TType[] Create(IEnumerable<KeyValuePair<TKey,KeyValuePair<DateTime, double>>> value)
-        {
-            return count.HasValue ?
-                              Enumerable.TakeLast(ToDataPoints(value), count.Value).ToArray() :
-                              ToDataPoints(value).ToArray();
-        }
-
-        protected virtual void Modify()
-        {
-
-        }
-   
-
-        protected virtual void AddToSeries(TType[] items, string title)
+        protected override void AddToSeries(TType3[] items, string title)
         {
             lock (plotModel)
             {
@@ -125,7 +66,7 @@ namespace OxyPlot.Reactive
                     series.ToMouseDownEvents().Subscribe(e =>
                     {
                         var time = DateTimeAxis.ToDateTime(series.InverseTransform(e.Position).X);
-                        var point = items.MinBy(a => Math.Abs((a.DateTime - time).Ticks)).First();
+                        var point = items.MinBy(a => Math.Abs((a.Var - time).Ticks)).First();
                         subject.OnNext(point);
                     });
 
@@ -136,55 +77,19 @@ namespace OxyPlot.Reactive
             }
         }
 
-        protected override void AddToDataPoints(KeyValuePair<TKey, KeyValuePair<DateTime, double>> item)
+        protected override void ModifyPlotModel()
         {
-            lock (list)
-                list.Add(item);
+            plotModel.Axes.Add(new DateTimeAxis());
         }
 
-        protected abstract IEnumerable<TType> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection);
-
-
-        protected void AddToDataPoints(ICollection<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> items)
+        protected override DateTime CalculateMax(ICollection<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> items)
         {
-            try
-            {
-                min = new DateTime(Math.Min(items.Min(a => a.Value.Key.Ticks), min.Ticks));
-                max = new DateTime(Math.Max(items.Max(a => a.Value.Key.Ticks), max.Ticks));
-
-                lock (DataPoints)
-                {
-                    foreach (var item in items)
-                    {
-                        if (!DataPoints.ContainsKey(item.Key))
-                            DataPoints[item.Key] = new RankedMap<DateTime, double>();
-                        DataPoints[item.Key].Add(item.Value);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-
-            }
+            return items.Any() ? new DateTime(Math.Max(items.Max(a => a.Value.Key.Ticks), max.Ticks)) : max;
         }
 
-
-        public IDisposable Subscribe(IObserver<TType> observer)
+        protected override DateTime CalculateMin(ICollection<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> items)
         {
-            return subject.Subscribe(observer);
-        }
-
-        public void OnNext(int count)
-        {
-            this.count = count;
-            refreshSubject.OnNext(Unit.Default);
-        }
-
-        public void OnNext(ITimePoint<TKey> item)
-        {
-            AddToDataPoints(KeyValuePair.Create(item.Key, KeyValuePair.Create(item.DateTime, item.Value)));
-            refreshSubject.OnNext(Unit.Default);
+            return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Key.Ticks), min.Ticks)) : min;
         }
     }
 }

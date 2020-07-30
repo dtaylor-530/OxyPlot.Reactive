@@ -7,11 +7,16 @@ using System.Linq;
 
 namespace OxyPlot.Reactive.Model
 {
-    public interface ITimePoint : IDataPointProvider
+    public interface IValue<T>
     {
-        DateTime DateTime { get; }
+        T Value { get; }
 
-        double Value { get; }
+    }
+
+    public interface IVarPoint<T>
+    {
+        T Var { get; }
+
     }
 
     public interface IKey<TKey>
@@ -19,7 +24,27 @@ namespace OxyPlot.Reactive.Model
         TKey Key { get; }
     }
 
-    public interface ITimePoint<TKey> : ITimePoint, IKey<TKey>
+
+    public interface IPoint<TVar, TValue> : IVarPoint<TVar>, IValue<TValue>, IDataPointProvider
+    {
+    }
+
+
+    public interface IKeyPoint<TKey, TVar, TValue> : IKey<TKey>, IPoint<TVar, TValue>
+    {
+    }
+
+    public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double>
+    {
+    }
+
+
+    public interface ITimePoint : IValue<double>, IVarPoint<DateTime>, IDataPointProvider
+    {
+    }
+
+
+    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>
     {
     }
 
@@ -57,7 +82,7 @@ namespace OxyPlot.Reactive.Model
 
         public TimePoint(DateTime dateTime, double value, string key)
         {
-            DateTime = dateTime;
+            Var = dateTime;
             Value = value;
             Key = key ?? string.Empty;
 
@@ -69,18 +94,18 @@ namespace OxyPlot.Reactive.Model
 
         public string Key { get; }
 
-        public DateTime DateTime { get; }
+        public DateTime Var { get; }
 
         public double Value { get; }
 
         public DataPoint GetDataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(DateTime), Value);
+            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
         }
 
         public override string ToString()
         {
-            return $"{DateTime:F}, {Value}, {Key}";
+            return $"{Var:F}, {Value}, {Key}";
         }
 
         public static ITimePoint<string> Create(DateTime dateTime, double value, string key)
@@ -94,7 +119,7 @@ namespace OxyPlot.Reactive.Model
 
         public TimePoint(DateTime dateTime, double value, TKey key)
         {
-            DateTime = dateTime;
+            Var = dateTime;
             Value = value;
             this.Key = key;
 
@@ -106,18 +131,18 @@ namespace OxyPlot.Reactive.Model
 
         public TKey Key { get; }
 
-        public DateTime DateTime { get; }
+        public DateTime Var { get; }
 
         public double Value { get; }
 
         public DataPoint GetDataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(DateTime), Value);
+            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
         }
 
         public override string ToString()
         {
-            return $"{DateTime:F}, {Value}, {Key}";
+            return $"{Var:F}, {Value}, {Key}";
         }
 
         public static ITimePoint<TKey> Create(DateTime dateTime, double value, TKey key)
@@ -149,7 +174,7 @@ namespace OxyPlot.Reactive.Model
         public ITimeRange TimeRange { get; }
 
 
-        public virtual DateTime DateTime => new DateTime((long)(TimeRange.Start.Ticks + (TimeRange.End - TimeRange.Start).Ticks / 2d));
+        public virtual DateTime Var => new DateTime((long)(TimeRange.Start.Ticks + (TimeRange.End - TimeRange.Start).Ticks / 2d));
 
         //     public virtual double Value => Collection.Count>1? Collection.Average(a => a.Value): Collection.First().Value;
 
@@ -180,12 +205,12 @@ namespace OxyPlot.Reactive.Model
 
         public DataPoint GetDataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(DateTime), Value);
+            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
         }
 
         public override string ToString()
         {
-            return $"{DateTime:F}, {Value}";
+            return $"{Var:F}, {Value}";
         }
 
         public static ITimePoint<TKey> Create(ITimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key)

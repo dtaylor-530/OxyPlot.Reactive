@@ -23,7 +23,7 @@ namespace OxyPlot.Reactive
         protected readonly SynchronizationContext? context;
         protected readonly IScheduler? scheduler;
         protected readonly object lck = new object();
-        protected List<DataPoint<T>> DataPoints = new List<DataPoint<T>>();
+        protected List<XY<T>> DataPoints = new List<XY<T>>();
 
 
 
@@ -59,7 +59,7 @@ namespace OxyPlot.Reactive
 
         private void AddToDataPoints(KeyValuePair<T, double> item)
         {
-            var newdp = new DataPoint<T>(item.Key, item.Value);
+            var newdp = new XY<T>(item.Key, item.Value);
             lock (lck)
             {
                 DataPoints.Add(newdp);
@@ -69,7 +69,7 @@ namespace OxyPlot.Reactive
 
         protected abstract void Refresh(IList<Unit> units);
 
-        private void RemoveByPredicate(Predicate<DataPoint<T>> predicate)
+        private void RemoveByPredicate(Predicate<XY<T>> predicate)
         {
 
             lock (lck)

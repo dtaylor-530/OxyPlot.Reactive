@@ -18,27 +18,27 @@ namespace OxyPlot.Reactive
 
 
 
-    public class MultiDateTimeAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
-    {
+    //public class MultiDateTimeAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
+    //{
 
-        public MultiDateTimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
-        {
-        }
+    //    public MultiDateTimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
+    //    {
+    //    }
 
-        public MultiDateTimeAccumulatedGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
-        {
-        }
+    //    public MultiDateTimeAccumulatedGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+    //    {
+    //    }
 
-        protected override double Combine(double x0, double x1)
-        {
-            return x0 + x1;
-        }
+    //    protected override double Combine(double x0, double x1)
+    //    {
+    //        return x0 + x1;
+    //    }
 
-    }
+    //}
 
 
 
-    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObservable<ITimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
+    public class Group2Model<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObservable<ITimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
     {
         private readonly Subject<ITimeRange[]> rangesSubject = new Subject<ITimeRange[]>();
         private RangeType rangeType = RangeType.None;
@@ -46,7 +46,7 @@ namespace OxyPlot.Reactive
         protected ITimeRange[]? ranges;
 
 
-        public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public Group2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }

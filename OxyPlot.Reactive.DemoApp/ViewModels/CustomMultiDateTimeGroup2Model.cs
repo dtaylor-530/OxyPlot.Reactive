@@ -34,8 +34,8 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
                 }).ToArray() :
 
                 ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                .Select(a => new CustomDateTimeRangePoint<TKey>(new TimeRange(a.DateTime, a.DateTime), new ITimePoint<TKey>[] {
-                    new TimePoint<TKey>(a.DateTime, a.Value, a.Key) }, a.Key))
+                .Select(a => new CustomDateTimeRangePoint<TKey>(new TimeRange(a.Var, a.Var), new ITimePoint<TKey>[] {
+                    new TimePoint<TKey>(a.Var, a.Value, a.Key) }, a.Key))
                 //.Cast<IDateTimePoint<TKey>>()
                 .Skip(1)
                 .ToArray();
@@ -61,7 +61,7 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
         public override double Value =>
             Collection.Count > 1 ?
-              Collection.Average(a => a.Value/ (a.DateTime- DateTime.UnixEpoch).TotalDays)      
+              Collection.Average(a => a.Value/ (a.Var- DateTime.UnixEpoch).TotalDays)      
             : Collection.First().Value;
     }
 }

@@ -56,7 +56,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             (model2 as IObservable<ITimePoint<string>>).Subscribe(p =>
             {
-                var n = rangeCollection.Select((a, i) => (key: a.Key.Start, i)).SingleOrDefault(a => a.key == p.DateTime).i;
+                var n = rangeCollection.Select((a, i) => (key: a.Key.Start, i)).SingleOrDefault(a => a.key == p.Var).i;
                 DataGridRange.SelectedIndex = n;
                 DataGridRange.ScrollIntoView(DataGridRange.Items[n]);
             });

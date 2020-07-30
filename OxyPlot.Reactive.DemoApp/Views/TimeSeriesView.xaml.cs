@@ -1,4 +1,5 @@
 ﻿using DynamicData;
+using MoreLinq;
 using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
@@ -36,7 +37,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             model2.Subscribe(p =>
             {
-                var n = collection.Select((a, i) => (a.Value.Key, i)).Single(a => a.Item1 == p.DateTime).i;
+                var n = collection.Index().Single(a => a.Value.Value.Key == p.Var).Key;
                 DataGrid1.SelectedIndex = n;
                 DataGrid1.ScrollIntoView(DataGrid1.Items[n]);
             });
