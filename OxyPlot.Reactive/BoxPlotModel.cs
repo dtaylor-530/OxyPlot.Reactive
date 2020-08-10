@@ -44,14 +44,14 @@ namespace OxyPlot.Reactive
         {
             KeyValuePair<string, ICollection<KeyValuePair<int, double>>>[] arr;
 
-            lock (DataPoints)
-            {
-                arr = DataPoints.ToArray();
-            }
 
             (this as IMixedScheduler).ScheduleAction(async () =>
             {
-                var botPlotItems = await Task.Run(() => Transform(arr, showAll));
+                var botPlotItems = await Task.Run(() =>
+                {
+                    lock (DataPoints)
+                        return Transform(DataPoints.ToArray(), showAll);
+                });
 
                 lock (plotModel)
                 {

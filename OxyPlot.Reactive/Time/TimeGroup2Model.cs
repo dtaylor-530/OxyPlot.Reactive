@@ -17,32 +17,12 @@ namespace OxyPlot.Reactive
     using Model;
 
 
-
-    public class MultiDateTimeAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
-    {
-
-        public MultiDateTimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
-        {
-        }
-
-        public MultiDateTimeAccumulatedGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
-        {
-        }
-
-        protected override double Combine(double x0, double x1)
-        {
-            return x0 + x1;
-        }
-
-    }
-
-
-
     public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObservable<ITimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
     {
         private readonly Subject<ITimeRange[]> rangesSubject = new Subject<ITimeRange[]>();
-        private RangeType rangeType = RangeType.None;
-        private TimeSpan? timeSpan; private Operation? operation;
+        //private RangeType rangeType = RangeType.None;
+        private TimeSpan? timeSpan; 
+        private Operation? operation;
         protected ITimeRange[]? ranges;
 
 
@@ -53,25 +33,25 @@ namespace OxyPlot.Reactive
 
 
 
-        protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
-        {
-            return rangeType switch
-            {
-                RangeType.None => ToDataPoints(col).ToArray(),
-                //RangeType.Count when count.HasValue => Enumerable.TakeLast(ToDataPoints(col), count.Value),
-                RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(col).ToArray(),
-                _ => throw new ArgumentOutOfRangeException("fdssffd")
-            };
-        }
+        //protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
+        //{
+        //    return rangeType switch
+        //    {
+        //        RangeType.None => ToDataPoints(col).ToArray(),
+        //        //RangeType.Count when count.HasValue => Enumerable.TakeLast(ToDataPoints(col), count.Value),
+        //        RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(col).ToArray(),
+        //        _ => throw new ArgumentOutOfRangeException("fdssffd")
+        //    };
+        //}
 
 
-        protected override async void Modify()
+        protected override async void PreModify()
         {
             if (timeSpan.HasValue)
             {
                 ranges = await Task.Run(() =>
                 {
-                    return EnumerateDateTimeRanges(min, max, timeSpan.Value).ToArray();
+                    return EnumerateDateTimeRanges(Min, Max, timeSpan.Value).ToArray();
                 });
                 rangesSubject.OnNext(ranges);
             }
@@ -95,41 +75,40 @@ namespace OxyPlot.Reactive
 
             var se = ranges != null ? Ranges() : NoRanges();
 
-            return se;
+            return se.ToArray();
 
-            ITimeRangePoint<TKey>[] Ranges()
+            IEnumerable<ITimeRangePoint<TKey>> Ranges()
             {
 
                 return ees
                     .GroupOn(ranges, a => a.Value.Key)
                     .Where(a => a.Any())
-                .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
-                {
-                    var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
-                    .Cast<ITimePoint<TKey>>()
-                    .Skip(1)
-                    .ToArray();
+                    .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
+                    {
+                        var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
+                        .Cast<ITimePoint<TKey>>()
+                        .Skip(1)
+                        .ToArray();
 
-                    return (new TimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
-                })
-                .Skip(1)
+                        return (new TimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
+                    })
+                    .Skip(1)
                     .Select(a => a.Item1)
-                 .Cast<ITimeRangePoint<TKey>>()
-                 .ToArray();
+                    .Cast<ITimeRangePoint<TKey>>();
             }
-            ITimeRangePoint<TKey>[] NoRanges()
+
+            IEnumerable<ITimeRangePoint<TKey>> NoRanges()
             {
                 return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
                     .Select(a => new TimeRangePoint<TKey>(new TimeRange(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key))
-                    .Skip(1)
-                    .ToArray();
+                    .Skip(1);
             }
         }
 
         public void OnNext(TimeSpan value)
         {
             timeSpan = value;
-            rangeType = RangeType.TimeSpan;
+            //rangeType = RangeType.TimeSpan;
             refreshSubject.OnNext(Unit.Default);
         }
 
@@ -143,13 +122,6 @@ namespace OxyPlot.Reactive
         public IDisposable Subscribe(IObserver<ITimeRange[]> observer)
         {
             return rangesSubject.Subscribe(observer);
-        }
-
-        enum RangeType
-        {
-            None,
-            Count = 1,
-            TimeSpan,
         }
     }
 }

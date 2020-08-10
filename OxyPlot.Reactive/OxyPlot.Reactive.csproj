@@ -5,7 +5,7 @@
     <AssemblyVersion>1.14.0.0</AssemblyVersion>
     <FileVersion>1.14.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.14.0</Version>
+    <Version>1.14.2</Version>
     <Authors>Declan Taylor</Authors>
   </PropertyGroup>
 
