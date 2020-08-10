@@ -22,16 +22,6 @@ namespace OxyPlot.Reactive
         {
         }
 
-        //protected override ITimePoint<TKey>[] CreateSingle(KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>> keyValue)
-        //{
-        //    return Switch(keyValue.Value.ToArray().Select(c => KeyValuePair.Create(keyValue.Key, c))).ToArray();
-        //}
-
-        //protected override ITimePoint<TKey>[] CreateMany(KeyValuePair<TKey, ICollection<KeyValuePair<DateTime, double>>>[] keyValues)
-        //{
-        //    return Switch(keyValues.SelectMany(a => a.Value.Select(c => KeyValuePair.Create(a.Key, c)))).ToArray();
-        //}
-
         protected override  IEnumerable<ITimePoint<TKey>> Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> value)
         {
             return rangeType switch

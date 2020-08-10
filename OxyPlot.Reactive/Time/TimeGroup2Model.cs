@@ -31,8 +31,6 @@ namespace OxyPlot.Reactive
 
         }
 
-
-
         //protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
         //{
         //    return rangeType switch
@@ -43,6 +41,7 @@ namespace OxyPlot.Reactive
         //        _ => throw new ArgumentOutOfRangeException("fdssffd")
         //    };
         //}
+
 
 
         protected override async void PreModify()

@@ -32,10 +32,15 @@
             <UniformGrid>
                 <oxy:PlotView x:Name="PlotView1" Grid.Row="1"></oxy:PlotView>
 
-                <DataGrid x:Name="DataGridRange" Grid.Row="3"  AutoGenerateColumns="False" >
+                <TextBlock >Nothing</TextBlock>
+     
+
+
+                <oxy:PlotView x:Name="PlotView2" Grid.Row="2"></oxy:PlotView>
+                <DataGrid x:Name="DataGrid2" Grid.Row="3"  AutoGenerateColumns="False" >
                     <DataGrid.Columns>
                         <!--<DataGridTextColumn Binding="{Binding DateTime, Mode=OneWay}" Header="DateTime"/>-->
-                        <DataGridTextColumn Binding="{Binding Key.Start, Mode=OneWay}" Header="Start"/>      
+                        <DataGridTextColumn Binding="{Binding Key.Start, Mode=OneWay}" Header="Start"/>
                         <DataGridTextColumn Binding="{Binding Key.End, Mode=OneWay}" Header="End"/>
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
@@ -46,20 +51,6 @@
                     </DataGrid.RowDetailsTemplate>
                 </DataGrid>
 
-
-                <oxy:PlotView x:Name="PlotView2" Grid.Row="2"></oxy:PlotView>
-
-                <DataGrid x:Name="DataGrid1" Grid.Row="4"  AutoGenerateColumns="False" >
-                    <!--<DataGrid.Columns>
-                <DataGridTextColumn Binding="{Binding DateTime, Mode=OneWay}" Header="DateTime"/>
-                <DataGridTextColumn Binding="{Binding Key, Mode=OneWay}" Header="Key"/>
-            </DataGrid.Columns>-->
-                    <DataGrid.RowDetailsTemplate>
-                        <DataTemplate>
-                            <DataGrid ItemsSource="{Binding Collection}" VerticalScrollBarVisibility="Visible"></DataGrid>
-                        </DataTemplate>
-                    </DataGrid.RowDetailsTemplate>
-                </DataGrid>
             </UniformGrid>
         </DockPanel>
 

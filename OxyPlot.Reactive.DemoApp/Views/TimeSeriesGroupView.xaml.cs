@@ -20,25 +20,26 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class MultiDateTimeGroupView : UserControl
     {
-        readonly TimeGroupModel<string> model;
-        readonly TimeGroup2Model<string> model2;
-        readonly CustomMultiDateTimeGroup2Model<string> model3;
+
 
         public MultiDateTimeGroupView()
         {
             InitializeComponent();
 
-            ComboBox1.SelectionChanged += (s, e) =>
-            {
-                model.OnNext(e.AddedItems.Cast<Operation>().Single());
-                model2.OnNext(e.AddedItems.Cast<Operation>().Single());
-            };
-
-            model = new TimeGroupModel<string>(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            model2 = new TimeGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
-
+         
+ 
             var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.3));
-            pacedObs.Subscribe(model);
+
+
+
+             var model = new TimeGroupModel<string>(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
+             pacedObs.Subscribe(model);
+
+
+
+            var model2 = new TimeGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
             pacedObs.Subscribe(model2);
 
             (model2 as IObservable<ITimeRange[]>)
@@ -52,16 +53,19 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 .Bind(out var rangeCollection)
                 .Subscribe();
 
-            DataGridRange.ItemsSource = rangeCollection;
+            DataGrid2.ItemsSource = rangeCollection;
 
             (model2 as IObservable<ITimePoint<string>>).Subscribe(p =>
             {
                 var n = rangeCollection.Select((a, i) => (key: a.Key.Start, i)).SingleOrDefault(a => a.key == p.Var).i;
-                DataGridRange.SelectedIndex = n;
-                DataGridRange.ScrollIntoView(DataGridRange.Items[n]);
+                DataGrid2.SelectedIndex = n;
+                DataGrid2.ScrollIntoView(DataGrid2.Items[n]);
             });
 
-            model3 = new CustomMultiDateTimeGroup2Model<string>(PlotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
+
+
+            CustomMultiDateTimeGroup2Model<string> model3 = new CustomMultiDateTimeGroup2Model<string>(PlotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
             pacedObs.Subscribe(model3);
 
             TimeView1.TimeSpanObservable.Subscribe(x =>
@@ -71,6 +75,13 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 model3?.OnNext(x);
             });
 
+
+            ComboBox1.SelectionChanged += (s, e) =>
+            {
+                var op = e.AddedItems.Cast<Operation>().Single();
+                model.OnNext(op);
+                model2.OnNext(op);
+            };
         }
 
 

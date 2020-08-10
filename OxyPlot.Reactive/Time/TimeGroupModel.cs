@@ -22,18 +22,6 @@ namespace OxyPlot.Reactive
         {
         }
 
-        //protected override ITimePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
-        //{
-        //    return rangeType switch
-        //    {
-        //        RangeType.None => ToDataPoints(col).ToArray(),
-        //        //RangeType.Count when count.HasValue => Enumerable.TakeLast(ToDataPoints(col), count.Value),
-        //        RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(col).ToArray(),
-        //        _ => throw new ArgumentOutOfRangeException("fdssffd")
-        //    };
-        //}
-
-
         protected override IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
         {
             var ees = collection
