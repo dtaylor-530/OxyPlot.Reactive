@@ -10,6 +10,9 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
+                    <Page Uri="\Views\CartesianSeriesGroupView.xaml"
+                     Title="Cartesian Group" />
+                    
                     <Page Uri="\Views\CartesianView.xaml"
                      Title="Cartesian" />
                     
