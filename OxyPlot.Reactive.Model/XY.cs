@@ -13,10 +13,10 @@ namespace OxyPlot.Reactive.Model
 
 
 
-    public struct Point<TKey> : IPoint<TKey>
+    public struct DoublePoint<TKey> : IDoublePoint<TKey>
     {
 
-        public Point(double var, double value, TKey key) : this()
+        public DoublePoint(double var, double value, TKey key) : this()
         {
             Var = var;
             Value = value;

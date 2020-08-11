@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Endless" Version="0.7.0-alpha1" />
     <PackageReference Include="LinqStatistics" Version="2.3.0" />
     <PackageReference Include="OxyPlot.Core" Version="2.0.0" />
     <PackageReference Include="TimePeriodLibrary.NET" Version="2.1.1" />

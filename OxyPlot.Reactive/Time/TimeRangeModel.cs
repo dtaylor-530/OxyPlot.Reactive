@@ -27,7 +27,7 @@ namespace OxyPlot.Reactive
             return rangeType switch
             {
                 RangeType.None => ToDataPoints(value),
-                RangeType.Count when count.HasValue => Enumerable.TakeLast(ToDataPoints(value), count.Value),
+                RangeType.Count when takeLastCount.HasValue => Enumerable.TakeLast(ToDataPoints(value), takeLastCount.Value),
                 RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(value.ToArray().Filter(timeSpan.Value, a => a.Value.Key)),
                 RangeType.DateTimeRange when dateTimeRange != null => ToDataPoints(value.Filter(dateTimeRange, a => a.Value.Key)),
                 _ => throw new ArgumentOutOfRangeException("fdssffd")

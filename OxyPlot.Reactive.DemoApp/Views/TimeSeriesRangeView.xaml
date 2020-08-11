@@ -10,9 +10,9 @@
     <UserControl.Resources>
 
     </UserControl.Resources>
-    
+
     <UniformGrid>
-       <DockPanel>
+        <DockPanel>
             <ToolBar DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}" DockPanel.Dock="Top" Height="30">
                 <TextBlock Text="{Binding StartDate}" Margin="2"></TextBlock>
                 <TextBlock Text="{Binding MinDate}" Margin="2"></TextBlock>
@@ -37,8 +37,8 @@
 
 
             <ToolBar DataContext="{Binding RelativeSource={RelativeSource AncestorType=UserControl}}" DockPanel.Dock="Top" Height="30">
-               
-            
+
+
                 <Slider Name="Slider1"  hc:TipElement.Visibility="Visible" IsSnapToTickEnabled="True"
                             Width="400"
                             Minimum="0" 
@@ -47,7 +47,7 @@
                             TickFrequency="10" TickPlacement="BottomRight" Margin="0"/>
 
                 <TextBlock Text="{Binding TimeSpan, StringFormat={}{0:%d}}" Margin="2"></TextBlock>
-         
+
             </ToolBar>
 
             <Grid>

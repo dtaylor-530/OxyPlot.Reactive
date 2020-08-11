@@ -4,6 +4,7 @@ using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
 using OxyPlot.Reactive.DemoApp.ViewModels;
+using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
                
 
 
-            model2.Subscribe(p =>
+            (model2 as IObservable<ITimePoint<string>>).Subscribe(p =>
             {
                 var n = collection.Index().Single(a => a.Value.Value.Key == p.Var).Key;
                 DataGrid1.SelectedIndex = n;

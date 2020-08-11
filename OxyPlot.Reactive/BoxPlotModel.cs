@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OxyPlot.Reactive
 {
-    public class BoxPlotModel : MultiPlotModel<string, int>
+    public class BoxPlotModel : MultiPlotModel2Base<string, int>
     {
 
 

@@ -1,4 +1,5 @@
 ﻿using Itenso.TimePeriod;
+using LinqStatistics;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,44 +29,121 @@ namespace OxyPlot.Reactive.Infrastructure
             });
         }
 
-        public static IEnumerable<IGrouping<ITimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
+        //public static IEnumerable<IGrouping<ITimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
+        //{
+        //    TimeGrouping1<T> grouping = null;
+        //    foreach (var (a, dt) in from b in enumerable select (b, predicate.Invoke(b)))
+        //    {
+        //        if (grouping == null || dt > grouping.Key.End)
+        //            yield return grouping = new TimeGrouping1<T>(new TimeRange(dt, dt + timeSpan), a);
+        //        else
+        //            grouping.Add(a);
+        //    }
+        //}
+
+        public static IEnumerable<IGrouping<Range<DateTime>, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, TimeSpan timeSpan, Func<T, DateTime> predicate)
         {
-            Grouping<T> grouping = null;
+            TimeGrouping<T> grouping = null;
             foreach (var (a, dt) in from b in enumerable select (b, predicate.Invoke(b)))
             {
-                if (grouping == null || dt > grouping.Key.End)
-                    yield return grouping = new Grouping<T>(new TimeRange(dt, dt + timeSpan), a);
+                if (grouping == null || dt > grouping.Key.Max)
+                    yield return grouping = new TimeGrouping<T>(new Range<DateTime>(dt, dt + timeSpan), a);
+                else
+                    grouping.Add(a);
+            }
+        }
+
+        public static IEnumerable<IGrouping<Range<double>, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, Range<double> range, Func<T, double> predicate)
+        {
+            DoubleGrouping<T> grouping = null;
+            foreach (var (a, dt) in from b in enumerable select (b, predicate.Invoke(b)))
+            {
+                if (grouping == null || dt > grouping.Key.Max)
+                    yield return grouping = new DoubleGrouping<T>(new Range<double>(dt, dt + range.Max - range.Min), a);
                 else
                     grouping.Add(a);
             }
         }
 
 
-        public static IEnumerable<IGrouping<ITimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<ITimeRange> ranges, Func<T, DateTime> predicate)
+        //public static IEnumerable<IGrouping<ITimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<ITimeRange> ranges, Func<T, DateTime> predicate)
+        //{
+        //    return from r in ranges
+        //           join prod in enumerable on true equals true
+        //           into temp
+        //           select new TimeGrouping1<T>(r, temp.Where(t => predicate.Invoke(t) >= r.Start && predicate.Invoke(t) <= r.End).ToArray());
+        //}
+
+        public static IEnumerable<IGrouping<Range<DateTime>, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<Range<DateTime>> ranges, Func<T, DateTime> predicate)
         {
             return from r in ranges
                    join prod in enumerable on true equals true
                    into temp
-                   select new Grouping<T>(r, temp.Where(t => predicate.Invoke(t) >= r.Start && predicate.Invoke(t) <= r.End).ToArray());
+                   select new TimeGrouping<T>(r, temp.Where(t => predicate.Invoke(t) >= r.Min && predicate.Invoke(t) <= r.Max).ToArray());
         }
 
-
-        class Grouping<T> : IGrouping<ITimeRange, T>
+        public static IEnumerable<IGrouping<Range<double>, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<Range<double>> ranges, Func<T, double> predicate)
         {
-
-            readonly List<T> elements = new List<T>();
-
-            public ITimeRange Key { get; }
-
-            public Grouping(ITimeRange key) => Key = key;
-
-            public Grouping(ITimeRange key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
-
-            public void Add(T element) => elements.Add(element);
-
-            public IEnumerator<T> GetEnumerator() => this.elements.GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            return from r in ranges
+                   join prod in enumerable on true equals true
+                   into temp
+                   select new DoubleGrouping<T>(r, temp.Where(t => predicate.Invoke(t) >= r.Min && predicate.Invoke(t) <= r.Max).ToArray());
         }
     }
+
+
+    class TimeGrouping1<T> : IGrouping<ITimeRange, T>
+    {
+
+        readonly List<T> elements = new List<T>();
+
+        public ITimeRange Key { get; }
+
+        public TimeGrouping1(ITimeRange key) => Key = key;
+
+        public TimeGrouping1(ITimeRange key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
+
+        public void Add(T element) => elements.Add(element);
+
+        public IEnumerator<T> GetEnumerator() => this.elements.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    class TimeGrouping<T> : IGrouping<Range<DateTime>, T>
+    {
+
+        readonly List<T> elements = new List<T>();
+
+        public Range<DateTime> Key { get; }
+
+        public TimeGrouping(Range<DateTime> key) => Key = key;
+
+        public TimeGrouping(Range<DateTime> key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
+
+        public void Add(T element) => elements.Add(element);
+
+        public IEnumerator<T> GetEnumerator() => this.elements.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
+
+    class DoubleGrouping<T> : IGrouping<Range<double>, T>
+    {
+
+        readonly List<T> elements = new List<T>();
+
+        public Range<double> Key { get; }
+
+        public DoubleGrouping(Range<double> key) => Key = key;
+
+        public DoubleGrouping(Range<double> key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
+
+        public void Add(T element) => elements.Add(element);
+
+        public IEnumerator<T> GetEnumerator() => this.elements.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+    }
 }
+

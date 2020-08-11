@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using OxyPlot.Reactive.Infrastructure;
 using System.Reactive;
 using Itenso.TimePeriod;
+using LinqStatistics;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
@@ -34,7 +35,7 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
                 }).ToArray() :
 
                 ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                .Select(a => new CustomDateTimeRangePoint<TKey>(new TimeRange(a.Var, a.Var), new ITimePoint<TKey>[] {
+                .Select(a => new CustomDateTimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] {
                     new TimePoint<TKey>(a.Var, a.Value, a.Key) }, a.Key))
                 //.Cast<IDateTimePoint<TKey>>()
                 .Skip(1)
@@ -51,11 +52,11 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
     public class CustomDateTimeRangePoint<TKey> : TimeRangePoint<TKey>
     {
-        public CustomDateTimeRangePoint(ITimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value) : base(dateTimeRange, value)
+        public CustomDateTimeRangePoint(Range<DateTime> dateTimeRange, ICollection<IPoint<DateTime, double>> value) : base(dateTimeRange, value)
         {
         }
 
-        public CustomDateTimeRangePoint(ITimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key) : base(dateTimeRange, value, key)
+        public CustomDateTimeRangePoint(Range<DateTime> dateTimeRange, ICollection<IPoint<DateTime, double>> value, TKey key) : base(dateTimeRange, value, key)
         {
         }
 

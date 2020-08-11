@@ -1,7 +1,6 @@
-﻿using Itenso.TimePeriod;
+﻿using LinqStatistics;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace OxyPlot.Reactive.Model
 {
@@ -42,12 +41,27 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface IPoint<TKey> : IDoublePoint<TKey, double>, IKey<TKey>
+    public interface IDoublePoint<TKey> : IDoublePoint<TKey, double>, IKey<TKey>
     {
     }
 
 
-    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>
+    public interface I2Point<TKey, TValue> : IDoublePoint<TKey, TValue>, IKey<TKey>
+    {
+    }
+
+
+    public interface IRange<T> where T : struct, IComparable<T>, IFormattable, IEquatable<T>
+    {
+        Range<T> Range { get; }
+    }
+
+    public interface ITimeRange<T> : IRange<DateTime>
+    {
+   
+    }
+
+    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>, IPoint<DateTime,double>
     {
     }
 
@@ -56,29 +70,40 @@ namespace OxyPlot.Reactive.Model
 
     }
 
-    public interface IDateTimeKeyPointCollection<TKey>
+    public interface ITimePointCollection<TKey>
     {
         ICollection<ITimePoint<TKey>> Collection { get; }
     }
 
-    public interface IDateTimeRange
+    public interface IDoublePointCollection<TKey>
     {
-        ITimeRange TimeRange { get; }
+        ICollection<IDoublePoint<TKey>> Collection { get; }
     }
 
-    public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IDateTimeKeyPointCollection<TKey>, IDateTimeRange
-    {
 
+    public interface IPointCollection<TVar, TValue>
+    {
+        ICollection<IPoint<TVar, TValue>> Collection { get; }
+
+    }
+
+    public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IPointCollection<DateTime, double>, ITimeRange<DateTime>
+    {
+    }
+
+    public interface IDoubleRangePoint<TKey> : IDoublePoint<TKey>, IPointCollection<double, double>, IRange<double>
+    {
+    }
+
+    public interface IRangePoint<TKey, TVar, TValue> : IKeyPoint<TKey, TVar, TValue>, IPointCollection<TVar, TValue>, IRange<TVar> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+    {
     }
 
     public interface IDataPointKeyProvider<T> : IDataPointProvider, IKey<T>
     {
-
     }
 
     public interface IDateTimeKeyPointObserver<TType, TKey> : IObserver<TType> where TType : ITimePoint<TKey>
     {
     }
-
-
 }

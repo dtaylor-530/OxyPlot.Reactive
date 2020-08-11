@@ -10,13 +10,12 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace OxyPlot.Reactive
 {
 
-    public abstract class MultiPlotModel<TKey, TVar, TType> : MultiPlotModel<TKey, TVar, TType, TType>, IObservable<TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
+    public abstract class MultiPlotModel<TKey, TVar, TType> : MultiPlotModel<TKey, TVar, TType, TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
     {
         public MultiPlotModel(PlotModel model, TVar max, TVar min, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, max, min, comparer, scheduler: scheduler)
         {
@@ -25,11 +24,12 @@ namespace OxyPlot.Reactive
 
 
 
-    public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel<TKey, TVar>, IObservable<TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
+    public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel2Base<TKey, TVar, TType3>, IObservable<TType3[]>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar> 
     {
-        protected readonly Subject<TType> subject = new Subject<TType>();
+        protected readonly Subject<TType3> subject = new Subject<TType3>();
         protected readonly List<KeyValuePair<TKey, KeyValuePair<TVar, double>>> list = new List<KeyValuePair<TKey, KeyValuePair<TVar, double>>>();
-        protected int? count;
+        private readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
+        protected int? takeLastCount;
 
 
         public MultiPlotModel(PlotModel model, TVar max, TVar min, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
@@ -59,7 +59,7 @@ namespace OxyPlot.Reactive
             _ = (this as IMixedScheduler).ScheduleAction(async () =>
             {
                 KeyValuePair<TKey, ICollection<KeyValuePair<TVar, double>>>[]? dataPoints;
-              
+
 
                 this.PreModify();
 
@@ -71,23 +71,37 @@ namespace OxyPlot.Reactive
                     {
                         return CreateSingle(keyValue).ToArray();
 
-                    }).ContinueWith(async points => AddToSeries(await points, keyValue.Key?.ToString() ?? string.Empty));
+                    }).ContinueWith(async points =>
+                    {
+                        AddToSeries(await points, keyValue.Key?.ToString() ?? string.Empty);
+                    });
                 }
 
-                if (showAll)
+                if (showAll || pointsSubject.HasObservers)
                 {
                     _ = await Task.Run(() =>
                     {
                         lock (DataPoints)
                             return CreateMany(DataPoints).ToArray();
 
-                    }).ContinueWith(async points => AddToSeries(await points, "All"));
+                    }).ContinueWith(async points =>
+                    {
+                        var taskPoints = await points;
+
+                        if (showAll)
+                            AddToSeries(taskPoints, "All");
+
+                        if (pointsSubject.HasObservers)
+                        {
+                            pointsSubject.OnNext(taskPoints);
+                        }
+                    });
                 }
                 try
                 {
                     plotModel.InvalidatePlot(true);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
 
                 }
@@ -110,8 +124,8 @@ namespace OxyPlot.Reactive
 
         protected virtual IEnumerable<TType3> Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> value)
         {
-            return count.HasValue ?
-                              Enumerable.TakeLast(ToDataPoints(value), count.Value) :
+            return takeLastCount.HasValue ?
+                              Enumerable.TakeLast(ToDataPoints(value), takeLastCount.Value) :
                               ToDataPoints(value);
         }
 
@@ -167,7 +181,7 @@ namespace OxyPlot.Reactive
         }
 
 
-        protected abstract TType OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
+        protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
 
 
         protected override void AddToDataPoints(KeyValuePair<TKey, KeyValuePair<TVar, double>> item)
@@ -180,34 +194,28 @@ namespace OxyPlot.Reactive
 
 
 
-        public IDisposable Subscribe(IObserver<TType> observer)
+        public override IDisposable Subscribe(IObserver<TType3> observer)
         {
             return subject.Subscribe(observer);
         }
 
         public void OnNext(int count)
         {
-            this.count = count;
+            this.takeLastCount = count;
             refreshSubject.OnNext(Unit.Default);
         }
 
         public abstract void OnNext(TType item);
 
+        public IDisposable Subscribe(IObserver<TType3[]> observer)
+        {
+            return pointsSubject.Subscribe(observer);
+        }
     }
 
 
 
-    public abstract class MultiPlotModel<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>>
-    {
-        public MultiPlotModel(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
-        {
-        }
 
-        public MultiPlotModel(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
-        {
-        }
-
-    }
 }
 
 

@@ -44,7 +44,7 @@ namespace OxyPlot.Reactive
             plotModel.Axes.Add(new DateTimeAxis());
         }
 
-        protected override TType OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items)
+        protected override TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items)
         {
             var time = DateTimeAxis.ToDateTime(series.InverseTransform(e.Position).X);
             var point = items.MinBy(a => Math.Abs((a.Var - time).Ticks)).First();

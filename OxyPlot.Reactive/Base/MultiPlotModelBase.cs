@@ -13,9 +13,34 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
+
+    public abstract class MultiPlotModel2Base<T, TR, TRS> : MultiPlotModelBase<T, KeyValuePair<TR, double>>, IObservable<TRS>
+    {
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        {
+        }
+
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        {
+        }
+
+        public abstract IDisposable Subscribe(IObserver<TRS> observer);
+
+    }
+
+    public abstract class MultiPlotModel2Base<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>> 
+    {
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        {
+        }
+
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        {
+        }
+    }
+
     public abstract class MultiPlotModelBase<TKey, TValue> : DataPointsModel<TKey, TValue>, IObserver<KeyValuePair<TKey, TValue>>, IObserver<bool>, IMixedScheduler
     {
-        //private readonly IEqualityComparer<TKey>? comparer;
         private readonly SynchronizationContext? context;
         public IScheduler? scheduler;
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
@@ -84,14 +109,13 @@ namespace OxyPlot.Reactive
                     RemoveFromDataPoints(names);
                 lock (plotModel)
                 {
-                    Sdf(s => names.Select(a => a.ToString()).Contains(s.Title));
+                    RemoveFromSeries(s => names.Select(a => a.ToString()).Contains(s.Title));
                     plotModel.InvalidatePlot(true);
                 }
             });
 
-            void Sdf(Predicate<Series.Series> pred)
+            void RemoveFromSeries(Predicate<Series.Series> pred)
             {
-
                 while (plotModel.Series.Any(pred.Invoke))
                     plotModel.Series.Remove(plotModel.Series.First(pred.Invoke));
             }
