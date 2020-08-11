@@ -5,15 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using OxyPlot.Reactive.Infrastructure;
-using System.Reactive;
-using Itenso.TimePeriod;
 using LinqStatistics;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
-    public class CustomMultiDateTimeGroup2Model<TKey> : TimeGroup2Model<TKey>
+    public class CustomTimeGroup2Model<TKey> : TimeGroup2Model<TKey>
     {
-        public CustomMultiDateTimeGroup2Model(PlotModel model, IEqualityComparer<TKey> comparer = null, IScheduler scheduler = null) : base(model, comparer, scheduler)
+        public CustomTimeGroup2Model(PlotModel model, IEqualityComparer<TKey> comparer = null, IScheduler scheduler = null) : base(model, comparer, scheduler)
         {
         }
 
@@ -22,31 +20,36 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
             var ees = collection
                 .OrderBy(a => a.Value.Key);
 
-            var se = ranges != null ?
+            var se = ranges != null ? Ranges() : NoRanges();
 
-                ees.GroupOn(ranges, a => a.Value.Key)
-                .Where(a => a.Any())
-                .Select(ac =>
-                {
-                    var ss = ac.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                    .Cast<ITimePoint<TKey>>()
-                    .Skip(1).ToArray();
-                    return new CustomDateTimeRangePoint<TKey>(ac.Key, ss);
-                }).ToArray() :
+            return se.ToArray();
 
-                ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
-                .Select(a => new CustomDateTimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] {
-                    new TimePoint<TKey>(a.Var, a.Value, a.Key) }, a.Key))
-                //.Cast<IDateTimePoint<TKey>>()
-                .Skip(1)
-                .ToArray();
+            IEnumerable<ITimeRangePoint<TKey>> Ranges()
+            {
 
-            return se;
-        }
+                return ees
+                    .GroupOn(ranges, a => a.Value.Key)
+                    .Where(a => a.Any())
+                    .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
+                    {
+                        var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
+                        .Cast<ITimePoint<TKey>>()
+                        .Skip(1)
+                        .ToArray();
 
-        public void Refresh()
-        {
-            refreshSubject.OnNext(Unit.Default);
+                        return (new CustomDateTimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key), ss.Last());
+                    })
+                    .Skip(1)
+                    .Select(a => a.Item1)
+                    .Cast<ITimeRangePoint<TKey>>();
+            }
+
+            IEnumerable<ITimeRangePoint<TKey>> NoRanges()
+            {
+                return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
+                    .Select(a => new CustomDateTimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key))
+                    .Skip(1);
+            }
         }
     }
 

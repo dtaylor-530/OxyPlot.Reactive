@@ -13,6 +13,7 @@ using System.Reactive.Subjects;
 
 namespace OxyPlot.Reactive
 {
+    using DynamicData;
     using LinqStatistics;
     using Model;
 
@@ -20,18 +21,31 @@ namespace OxyPlot.Reactive
     ///  Groups all points by a common ranges.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObservable<Range<DateTime>[]>, IObserver<Operation>, IObserver<TimeSpan>
+    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>, IObservable<Range<DateTime>[]>, IObservable<IChangeSet<ITimeRangePoint<TKey>>>
     {
         private readonly Subject<Range<DateTime>[]> rangesSubject = new Subject<Range<DateTime>[]>();
-        //private RangeType rangeType = RangeType.None;
         private TimeSpan? timeSpan; 
         private Operation? operation;
         protected Range<DateTime>[]? ranges;
+        protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
+        protected readonly IObservable<IChangeSet<ITimeRangePoint<TKey>>> changeSet;
+
 
 
         public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
-
+            changeSet = ObservableChangeSet.Create<ITimeRangePoint<TKey>>(sourceList =>
+            
+            (this as IObservable<ITimeRangePoint<TKey>[]>).TakeUntil(timeSpanChanges)
+          .Merge(timeSpanChanges.Select(a => this as IObservable<ITimeRangePoint<TKey>[]>).Switch())
+         .Subscribe(c =>
+         {
+             (this as IMixedScheduler).ScheduleAction(() =>
+             {
+                 sourceList.Clear();
+                 sourceList.AddRange(c);
+             });
+         }));
         }
 
         //protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
@@ -44,8 +58,6 @@ namespace OxyPlot.Reactive
         //        _ => throw new ArgumentOutOfRangeException("fdssffd")
         //    };
         //}
-
-
 
         protected override async void PreModify()
         {
@@ -111,6 +123,7 @@ namespace OxyPlot.Reactive
         {
             timeSpan = value;
             //rangeType = RangeType.TimeSpan;
+            timeSpanChanges.OnNext(value);
             refreshSubject.OnNext(Unit.Default);
         }
 
@@ -124,6 +137,11 @@ namespace OxyPlot.Reactive
         public IDisposable Subscribe(IObserver<Range<DateTime>[]> observer)
         {
             return rangesSubject.Subscribe(observer);
+        }
+
+        public IDisposable Subscribe(IObserver<IChangeSet<ITimeRangePoint<TKey>>> observer)
+        {
+            return changeSet.Subscribe(observer);
         }
     }
 }

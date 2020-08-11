@@ -29,58 +29,32 @@
             </ToolBar>
             
          
-            <UniformGrid>
+            <UniformGrid Columns="2">
                 <oxy:PlotView x:Name="PlotView1" Grid.Row="1"></oxy:PlotView>
 
-                <DataGrid x:Name="DataGrid1" Grid.Row="3"  AutoGenerateColumns="False" >
+                <TextBlock>Nothing</TextBlock>
+
+                <oxy:PlotView x:Name="PlotView2" Grid.Row="2"></oxy:PlotView>
+                <DataGrid x:Name="DataGrid2" Grid.Row="3"  AutoGenerateColumns="False"  RowDetailsVisibilityMode="Visible">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Range.Min, Mode=OneWay}" Header="Min"/>
                         <DataGridTextColumn Binding="{Binding Range.Max, Mode=OneWay}" Header="Max"/>
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>
-                            <ListBox ItemsSource="{Binding Collection}" >
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Value}"></TextBlock>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <!--<TextBlock Text="{Binding Collection.Count}"></TextBlock>-->
+                            
+                            <!--<DataGrid ItemsSource="{Binding Collection}" VerticalScrollBarVisibility="Visible" ></DataGrid>-->
+                            <TextBlock Text="{Binding Collection.Count}"></TextBlock>
                         </DataTemplate>
                     </DataGrid.RowDetailsTemplate>
                 </DataGrid>
 
-
-                <oxy:PlotView x:Name="PlotView2" Grid.Row="2"></oxy:PlotView>
-                <DataGrid x:Name="DataGrid2" Grid.Row="3"  AutoGenerateColumns="False" >
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Key.Min, Mode=OneWay}" Header="Min"/>
-                        <DataGridTextColumn Binding="{Binding Key.Max, Mode=OneWay}" Header="Max"/>
-                    </DataGrid.Columns>
-                    <DataGrid.RowDetailsTemplate>
-                        <DataTemplate>
-                            <DataGrid ItemsSource="{Binding Collection}" VerticalScrollBarVisibility="Visible" ></DataGrid>
-                            <!--<TextBlock Text="{Binding Collection.Count}"></TextBlock>-->
-                        </DataTemplate>
-                    </DataGrid.RowDetailsTemplate>
-                </DataGrid>
-
+                <oxy:PlotView Name="PlotView3"/>
+                <TextBlock>Nothing</TextBlock>
             </UniformGrid>
         </DockPanel>
 
-        <DockPanel>
-          
-
-            <Grid>
-                <oxy:PlotView Name="PlotView3"/>
-            </Grid>
-
-
-            <Grid>
-                <oxy:PlotView Name="PlotView4"/>
-            </Grid>
-        </DockPanel>
+  
 
     </UniformGrid>
 
