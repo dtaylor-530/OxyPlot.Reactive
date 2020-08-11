@@ -22,16 +22,16 @@ namespace OxyPlot.Reactive
     public class TimeGroupModel<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObserver<TimeSpan>, IObservable<IChangeSet<ITimeRangePoint<TKey>>>
     {
         private TimeSpan? timeSpan;
-        private ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
         private Operation? operation;
-        private readonly IObservable<IChangeSet<ITimeRangePoint<TKey>>> changeSet;
+        protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
+        protected readonly IObservable<IChangeSet<ITimeRangePoint<TKey>>> changeSet;
 
         public TimeGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             changeSet = ObservableChangeSet.Create<ITimeRangePoint<TKey>>(sourceList =>
-            {
-                return timeSpanChanges.Select(a=> (this as IObservable<ITimeRangePoint<TKey>[]>))
-                .Switch()
+                
+            (this as IObservable<ITimeRangePoint<TKey>[]>).TakeUntil(timeSpanChanges)
+                 .Merge(timeSpanChanges.Select(a => this as IObservable<ITimeRangePoint<TKey>[]>).Switch())
                 .Subscribe(c =>
                  {
                      (this as IMixedScheduler).ScheduleAction(() =>
@@ -39,8 +39,8 @@ namespace OxyPlot.Reactive
                          sourceList.Clear();
                          sourceList.AddRange(c);
                      });
-                 });
-            });
+                 })
+            );
         }
 
         protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)

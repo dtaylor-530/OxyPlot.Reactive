@@ -11,16 +11,22 @@ namespace OxyPlot.Reactive.DemoApp.Views
     /// </summary>
     public partial class TimePickerView : UserControl
     {
-        private readonly ReplaySubject<TimeSpan> timeSpanChanges = new ReplaySubject<TimeSpan>();
+        private readonly ReplaySubject<TimeSpan> timeSpanChanges = new ReplaySubject<TimeSpan>(1);
 
         public TimePickerView()
         {
             InitializeComponent();
+            TimeSpanObservable= timeSpanChanges.StartWith(GetTimeSpan()).AsObservable();
         }
 
-        public IObservable<TimeSpan> TimeSpanObservable => timeSpanChanges.AsObservable();
+        public IObservable<TimeSpan> TimeSpanObservable { get; }
 
         private void IntervalBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            timeSpanChanges.OnNext(GetTimeSpan());
+        }
+
+        TimeSpan GetTimeSpan()
         {
             var ssx = (IntervalBox?.SelectedItem.ToString())?.First().ToString().ToLower() ?? "s";
             var sw = NumbersBox?.SelectedItem.ToString() is { } s ? int.Parse(s) : 1;
@@ -32,8 +38,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 "d" => TimeSpan.FromDays(sw),
                 _ => throw new NotImplementedException(),
             };
-
-            timeSpanChanges.OnNext(x);
+            return x;
         }
     }
 }
