@@ -1,0 +1,84 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:OxyPlot.Reactive.View"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
+    xmlns:common="clr-namespace:OxyPlot.Reactive.View.Common">
+
+
+    <common:TrackerConverter x:Key="TrackerConverter"/>
+    <common:LastItemConverter x:Key="LastItemConverter" />
+    <common:IndexConverter x:Key="IndexConverter" />
+
+    <Style x:Key="LastItemBottomRowStyle" TargetType="{x:Type ItemsControl}">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <i:Interaction.Behaviors>
+                            <common:AdjustColumnToItemCountBehavior></common:AdjustColumnToItemCountBehavior>
+                        </i:Interaction.Behaviors>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="0"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"></RowDefinition>
+                            <RowDefinition Height="*"></RowDefinition>
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Grid.Row" Value="1" />
+                    <Setter Property="Grid.Column" >
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource IndexConverter}">
+                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}" />
+                                <Binding RelativeSource="{RelativeSource Self}"/>
+                                <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}" Path="Items.Count"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Grid.ColumnSpan" >
+                        <Setter.Value>
+                            <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}" Path="Items.Count"/>
+                        </Setter.Value>
+                    </Setter>
+
+                    <Style.Triggers>
+                        <DataTrigger Value="False">
+                            <DataTrigger.Binding>
+                                <MultiBinding Converter="{StaticResource LastItemConverter}">
+                                    <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}" />
+                                    <Binding RelativeSource="{RelativeSource Self}"/>
+                                    <Binding RelativeSource="{RelativeSource FindAncestor, AncestorType={x:Type ItemsControl}}" Path="Items.Count"/>
+                                </MultiBinding>
+                            </DataTrigger.Binding>
+                            <Setter Property="Grid.Row" Value="0"/>
+
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    
+    
+    <Style TargetType="{x:Type local:CustomControl1}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:CustomControl1}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

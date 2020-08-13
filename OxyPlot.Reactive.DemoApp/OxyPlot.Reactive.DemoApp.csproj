@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OxyPlot.Reactive.View\OxyPlot.Reactive.View.csproj" />
     <ProjectReference Include="..\OxyPlot.Reactive\OxyPlot.Reactive.csproj" />
   </ItemGroup>
 

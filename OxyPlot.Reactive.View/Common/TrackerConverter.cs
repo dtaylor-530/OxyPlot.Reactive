@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Data;
 
-namespace OxyPlot.Reactive.DemoApp.Common
+namespace OxyPlot.Reactive.View.Common
 {
     public class TrackerConverter : IValueConverter
     {

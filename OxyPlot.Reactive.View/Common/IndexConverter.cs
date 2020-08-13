@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace OxyPlot.Reactive.DemoApp.Common
+namespace OxyPlot.Reactive.View.Common
 {
 
     class IndexConverter : IMultiValueConverter
@@ -15,7 +14,7 @@ namespace OxyPlot.Reactive.DemoApp.Common
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
 
-            if (values != null && values.Length >= 2 && values[1] is System.Windows.UIElement uiElement && values[0] is ItemsControl itemsControl)
+            if (values != null && values.Length >= 2 && values[1] is UIElement uiElement && values[0] is ItemsControl itemsControl)
             {
                 var index = 0;// Grid.GetColumn(uiElement);
                 var row = Grid.GetRow(uiElement);
@@ -24,7 +23,7 @@ namespace OxyPlot.Reactive.DemoApp.Common
                 {
                     //if (i != index)
                     //{
-                    var container = (System.Windows.UIElement)itemsControl.ItemContainerGenerator.ContainerFromIndex(i);
+                    var container = (UIElement)itemsControl.ItemContainerGenerator.ContainerFromIndex(i);
 
                     if (Grid.GetRow(container) == row)
                     {

@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Test", "OxyPlot.Tes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{EA079EFF-C639-4AEE-AED1-1C47C0A22A1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OxyPlot.Reactive.Model", "OxyPlot.Reactive.Model\OxyPlot.Reactive.Model.csproj", "{3A48587F-0F05-411F-B941-CE8202F2578E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive.Model", "OxyPlot.Reactive.Model\OxyPlot.Reactive.Model.csproj", "{3A48587F-0F05-411F-B941-CE8202F2578E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OxyPlot.Reactive.View", "OxyPlot.Reactive.View\OxyPlot.Reactive.View.csproj", "{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{3A48587F-0F05-411F-B941-CE8202F2578E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A48587F-0F05-411F-B941-CE8202F2578E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A48587F-0F05-411F-B941-CE8202F2578E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
