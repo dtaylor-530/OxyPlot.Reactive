@@ -21,8 +21,6 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class CartesianSeriesGroupView : UserControl
     {
-
-
         public CartesianSeriesGroupView()
         {
 

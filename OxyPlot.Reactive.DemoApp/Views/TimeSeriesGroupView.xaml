@@ -27,11 +27,10 @@
                 <hc:ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}" x:Name="ComboBox1" SelectedIndex="0"/>
 
             </ToolBar>
-            
-         
+
+
             <UniformGrid Columns="2">
                 <oxy:PlotView x:Name="PlotView1" Grid.Row="1"></oxy:PlotView>
-
                 <TextBlock>Nothing</TextBlock>
 
                 <oxy:PlotView x:Name="PlotView2" Grid.Row="2"></oxy:PlotView>
@@ -42,7 +41,6 @@
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>
-                            
                             <!--<DataGrid ItemsSource="{Binding Collection}" VerticalScrollBarVisibility="Visible" ></DataGrid>-->
                             <TextBlock Text="{Binding Collection.Count}"></TextBlock>
                         </DataTemplate>
@@ -53,9 +51,6 @@
                 <TextBlock>Nothing</TextBlock>
             </UniformGrid>
         </DockPanel>
-
-  
-
     </UniformGrid>
 
 </UserControl>

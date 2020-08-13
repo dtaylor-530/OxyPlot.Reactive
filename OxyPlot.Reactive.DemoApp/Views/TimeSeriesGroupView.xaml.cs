@@ -24,18 +24,17 @@ namespace OxyPlotEx.DemoAppCore.Pages
     public partial class MultiDateTimeGroupView : UserControl
     {
 
-
         public MultiDateTimeGroupView()
         {
             InitializeComponent();
 
             var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.3));
 
-            var model1 = new TimeGroupModel<string>(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model1 = new TimeGroupModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             pacedObs.Subscribe(model1);
 
-            var model2 = new TimeGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model2 = new TimeGroup2Model<string>(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             pacedObs.Subscribe(model2);
 
@@ -54,12 +53,9 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 DataGrid2.ScrollIntoView(DataGrid2.Items[n]);
             });
 
-
-            var model3 = new CustomTimeGroup2Model<string>(PlotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model3 = new CustomTimeGroup2Model<string>(PlotView3.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             pacedObs.Subscribe(model3);
-
-
 
             TimeView1.TimeSpanObservable.Subscribe(x =>
             {
