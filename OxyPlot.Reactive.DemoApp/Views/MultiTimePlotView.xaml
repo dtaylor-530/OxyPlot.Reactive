@@ -19,8 +19,6 @@
                             <Grid >
                                 <oxy:PlotView Model="{Binding model.Value}" ></oxy:PlotView>
                                 <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="70,50" >
-
-
                                     <TextBlock FontSize="20" Text="{Binding index}" Foreground="Silver"></TextBlock>
                                     <TextBlock FontSize="20" Text="{Binding model.Key}"  Margin="30,0,0,0" Foreground="Silver"></TextBlock>
                                 </Grid>
