@@ -19,10 +19,8 @@ namespace OxyPlot.Reactive
         public static readonly OxyColor foreground = OxyColors.SteelBlue;
         protected readonly ISubject<KeyValuePair<(string, string), double>> refreshSubject = new Subject<KeyValuePair<(string, string), double>>();
         protected readonly PlotModel plotModel;
-        protected readonly object lck = new object();
         private readonly IComparer<string>? hNamesComparer;
         private readonly IComparer<string>? vNamesComparer;
-        protected readonly IScheduler? scheduler;
         readonly Dictionary<(string, string), double> dictionary = new Dictionary<(string, string), double>();
 
         public HeatMap(PlotModel plotModel, string? hAxisKey = null, string? vAxisKey = null, IComparer<string>? hNamesComparer = null,
@@ -34,7 +32,7 @@ namespace OxyPlot.Reactive
             if (scheduler == null)
                 this.Context = synchronisationContext ?? SynchronizationContext.Current;
             else
-                this.scheduler = scheduler;
+                this.Scheduler = scheduler;
 
             lock (plotModel)
                 this.plotModel = CreateModel(plotModel, hAxisKey, vAxisKey);
@@ -43,14 +41,11 @@ namespace OxyPlot.Reactive
 
         }
 
-
-
-
         private async void Refresh(IEnumerable<KeyValuePair<(string, string), double>> kvps)
         {
             var (data, min, max, hNames, vNames) = await Task.Run(() =>
             {
-                lock (lck)
+                lock (dictionary)
                 {
                     foreach (var kvp in kvps)
                         dictionary[kvp.Key] = kvp.Value;
@@ -81,7 +76,7 @@ namespace OxyPlot.Reactive
         }
 
 
-        public IScheduler? Scheduler => scheduler;
+        public IScheduler? Scheduler { get; }
 
         public SynchronizationContext? Context { get; }
 
