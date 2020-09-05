@@ -57,8 +57,8 @@ namespace OxyPlot.Reactive.Multi
         public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null)
         {
             this.comparer = comparer;
-            this.Scheduler = scheduler;
-            this.Context = synchronizationContext;
+            this.Scheduler = scheduler ?? System.Reactive.Concurrency.Scheduler.CurrentThread;
+            this.Context = synchronizationContext ?? SynchronizationContext.Current;
         }
         public void OnCompleted()
         {
