@@ -52,6 +52,8 @@ namespace OxyPlot.Reactive
             static IEnumerable<Range<double>> EnumerateRanges(double min, double max, double span)
             {
                 var range = new Range<double>(min, min += span);
+                yield return range;
+
                 while (range.Max < max)
                 {
                     yield return range = new Range<double>(min, min += span);
@@ -70,7 +72,7 @@ namespace OxyPlot.Reactive
 
             IEnumerable<IDoubleRangePoint<TKey>> Ranges()
             {
-                return ees
+                var se = ees
                     .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
                     .Scan((default(DoubleRangePoint<TKey>), default(IDoublePoint<TKey>)), (ac, bc) =>
@@ -85,6 +87,8 @@ namespace OxyPlot.Reactive
                     .Skip(1)
                     .Select(a => a.Item1)
                     .Cast<IDoubleRangePoint<TKey>>();
+
+                return se;
             }
 
             IEnumerable<IDoubleRangePoint<TKey>> NoRanges()

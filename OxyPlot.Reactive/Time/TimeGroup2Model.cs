@@ -71,6 +71,7 @@ namespace OxyPlot.Reactive
             static IEnumerable<Range<DateTime>> EnumerateDateTimeRanges(DateTime minDateTime, DateTime maxDateTime, TimeSpan timeSpan)
             {
                 var dtRange = new Range<DateTime>(minDateTime, minDateTime += timeSpan);
+                    yield return dtRange;
                 while (dtRange.Max < maxDateTime)
                 {
                     yield return dtRange = new Range<DateTime>(minDateTime, minDateTime += timeSpan);

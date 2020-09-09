@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using MoreLinq;
+using OxyPlot.Reactive.Common;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System;
@@ -143,7 +144,7 @@ namespace OxyPlot.Reactive
             {
                 if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
                 {
-                    series = OxyFactory.Build(items.Cast<DataPoint>(), title);
+                    series = OxyFactory.BuildWithMarker(items, title);
 
                     series
                         .ToMouseDownEvents()
@@ -151,6 +152,11 @@ namespace OxyPlot.Reactive
                         .Subscribe(subject.OnNext);
 
                     plotModel.Series.Add(series);
+                }
+                if (series is LineSeries lSeries)
+                {
+                    var count = series.ItemsSource.Count();
+                    lSeries.MarkerSize = (int)(5 / (1 + (Math.Log10(count))));
                 }
 
                 series.ItemsSource = items;
