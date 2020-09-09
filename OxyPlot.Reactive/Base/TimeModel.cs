@@ -4,7 +4,6 @@ using OxyPlot.Axes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using OxyPlot.Series;
 using MoreLinq;
@@ -46,16 +45,15 @@ namespace OxyPlot.Reactive
             return point;
         }
 
-        protected override DateTime CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items)
-        {
-            return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Var.Ticks), Min.Ticks)) : Min;
-        }
-
         protected override DateTime CalculateMax(IEnumerable<KeyValuePair<TKey, TType>> items)
         {
             return items.Any() ? new DateTime(Math.Max(items.Max(a => a.Value.Var.Ticks), Max.Ticks)) : Max;
         }
 
+        protected override DateTime CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items)
+        {
+            return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Var.Ticks), Min.Ticks)) : Min;
+        }
 
         protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection)            =>
                 collection

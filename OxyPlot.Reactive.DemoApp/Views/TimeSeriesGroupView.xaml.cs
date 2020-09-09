@@ -1,7 +1,5 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
-using Itenso.TimePeriod;
-using LinqStatistics;
 using MoreLinq;
 using OxyPlot;
 using OxyPlot.Reactive;
