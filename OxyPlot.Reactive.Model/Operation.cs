@@ -1,11 +1,9 @@
-﻿
-namespace OxyPlot.Reactive.Model
+﻿namespace OxyPlot.Reactive.Model
 {
     public enum Operation
     {
-
-        Mean, 
-        StandardDeviation, 
+        Mean,
+        StandardDeviation,
         Variance,
         Mode,
         Max,
@@ -17,7 +15,5 @@ namespace OxyPlot.Reactive.Model
         Sum,
         Middle,
         Difference,
-
-
     }
 }

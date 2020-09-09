@@ -1,15 +1,15 @@
 ﻿#nullable enable
 
+using MoreLinq;
+using OxyPlot.Reactive.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using OxyPlot.Reactive.Infrastructure;
 using System.Reactive.Concurrency;
-using MoreLinq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace OxyPlot.Reactive
 {
@@ -24,21 +24,19 @@ namespace OxyPlot.Reactive
     public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>, IObservable<Range<DateTime>[]>, IObservable<IChangeSet<ITimeRangePoint<TKey>>>
     {
         private readonly Subject<Range<DateTime>[]> rangesSubject = new Subject<Range<DateTime>[]>();
-        private TimeSpan? timeSpan; 
+        private TimeSpan? timeSpan;
         private Operation? operation;
         protected Range<DateTime>[]? ranges;
         protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
         protected readonly IObservable<IChangeSet<ITimeRangePoint<TKey>>> changeSet;
 
-
-
         public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             changeSet = ObservableChangeSet.Create<ITimeRangePoint<TKey>>(sourceList =>
-            
+
             (this as IObservable<ITimeRangePoint<TKey>[]>).TakeUntil(timeSpanChanges)
-          .Merge(timeSpanChanges.Select(a => this as IObservable<ITimeRangePoint<TKey>[]>).Switch())
-         .Subscribe(c =>
+            .Merge(timeSpanChanges.Select(a => this as IObservable<ITimeRangePoint<TKey>[]>).Switch())
+        .Subscribe(c =>
          {
              (this as IMixedScheduler).ScheduleAction(() =>
              {
@@ -83,7 +81,7 @@ namespace OxyPlot.Reactive
         protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
         {
             var ees = collection
-                 .OrderBy(a => a.Value.Key);
+                .OrderBy(a => a.Value.Key);
 
             var se = ranges != null ? Ranges() : NoRanges();
 
@@ -91,7 +89,6 @@ namespace OxyPlot.Reactive
 
             IEnumerable<ITimeRangePoint<TKey>> Ranges()
             {
-
                 return ees
                     .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
@@ -116,6 +113,7 @@ namespace OxyPlot.Reactive
                     .Skip(1);
             }
         }
+
         public void OnNext(TimeSpan value)
         {
             timeSpan = value;
@@ -123,7 +121,6 @@ namespace OxyPlot.Reactive
             timeSpanChanges.OnNext(value);
             refreshSubject.OnNext(Unit.Default);
         }
-
 
         public void OnNext(Operation value)
         {

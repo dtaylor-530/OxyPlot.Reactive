@@ -15,7 +15,6 @@
 
         public double Deviation { get; }
 
-
         public double Lower => Y - Deviation;
 
         public double Upper => Y + Deviation;
@@ -26,4 +25,3 @@
         }
     }
 }
-

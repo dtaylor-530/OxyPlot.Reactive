@@ -1,7 +1,5 @@
-﻿
-//namespace OxyPlotEx.ViewModel
+﻿//namespace OxyPlotEx.ViewModel
 //{
-
 //    using MoreLinq;
 //    using OxyPlot;
 //    using System;
@@ -24,7 +22,6 @@
 //            DataPoints = GetDataPoints();
 //        }
 
-
 //        public MultiAreaLineModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : this(dispatcher, model)
 //        {
 //            this.comparer = comparer;
@@ -32,8 +29,8 @@
 
 //        Dictionary<T, List<DateTimeUncertainPoint>> GetDataPoints()
 //        {
-//            return comparer == default ? 
-//                new Dictionary<T, List<DateTimeUncertainPoint>>() : 
+//            return comparer == default ?
+//                new Dictionary<T, List<DateTimeUncertainPoint>>() :
 //                new Dictionary<T, List<DateTimeUncertainPoint>>(comparer);
 //        }
 
@@ -60,7 +57,6 @@
 //        {
 //            lock (lck)
 //            {
-
 //                if (!DataPoints.ContainsKey(item.Key))
 //                    DataPoints[item.Key] = new List<DateTimeUncertainPoint>();
 //                var newdp = new DateTimeUncertainPoint(item.Value.date, item.Value.mean, item.Value.deviation);
@@ -71,10 +67,8 @@
 //            }
 //        }
 
-
 //        private void Refresh()
 //        {
-
 //            this.dispatcher.BeginInvoke(() =>
 //            {
 //                plotModel.Series.Clear();
@@ -100,7 +94,6 @@
 //                plotModel.InvalidatePlot(true);
 //            });
 //        }
-
 
 //        public void Reset()
 //        {
@@ -135,6 +128,4 @@
 //        }
 //    }
 
-
 //}
-

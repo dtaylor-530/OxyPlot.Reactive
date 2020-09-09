@@ -2,7 +2,6 @@
 
 namespace OxyPlot.Reactive.Model
 {
-
     public struct TimeUncertainPoint
     {
         public TimeUncertainPoint(DateTime dateTime, double value, double deviation)
@@ -22,5 +21,4 @@ namespace OxyPlot.Reactive.Model
 
         public double Upper => Value + Deviation;
     }
-
 }

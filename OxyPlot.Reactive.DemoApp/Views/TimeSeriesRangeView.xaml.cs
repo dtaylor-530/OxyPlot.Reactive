@@ -39,55 +39,51 @@ namespace OxyPlot.Reactive.DemoApp.Views
             var model3 = new TimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
 
             var obs = TimeDataSource.Observe1000()
-                 .Pace(TimeSpan.FromSeconds(1))
-                 .Publish().RefCount();
+                .Pace(TimeSpan.FromSeconds(1))
+                .Publish().RefCount();
 
             obs.Subscribe(model);
             obs.Subscribe(model2);
             obs.Subscribe(model3);
 
             obs.Scan(new HashSet<DateTime>(), (a, b) => { a.Add(b.Value.Key); return a; })
-                            .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
-                .Subscribe(c => {
-                    if (Value == c.Count-1)
+                             .ObserveOnDispatcher()
+               .SubscribeOnDispatcher()
+               .Subscribe(c =>
+                {
+                    if (Value == c.Count - 1)
                         Value = c.Count;
                     Count = c.Count;
                 });
 
             obs.ToMinMax(a => FromDateTime(a.Value.Key))
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
-                .Subscribe(a =>
-              {
+               .ObserveOnDispatcher()
+               .SubscribeOnDispatcher()
+               .Subscribe(a =>
+               {
+                   if (TimeValue == Max - Min || TimeValue == 0)
+                   {
+                       TimeValue = a.max - a.min;
+                   }
+                   var diff1 = Start - Min;
+                   var diff2 = Max - End;
+                   Min = a.min;
+                   Max = a.max;
+                   Start = Min + diff1;
+                   End = Max - diff2;
+                   MinDate = ToDateTime(Min);
+                   MaxDate = ToDateTime(Max);
+                   Time = Max - Min;
 
-                  if(TimeValue==Max-Min || TimeValue==0)
-                  {
-                      TimeValue = a.max - a.min;
-                  }
-                  var diff1 = Start - Min;
-                  var diff2 = Max - End;
-                  Min = a.min;
-                  Max = a.max;
-                  Start = Min + diff1;
-                  End = Max - diff2;
-                  MinDate = ToDateTime(Min);
-                  MaxDate = ToDateTime(Max);
-                  Time = Max - Min;
+                   TimeSpan = ToTimeSpan(TimeValue);
+                   StartDate = ToDateTime(Start);
+                   EndDate = ToDateTime(End);
+                   model.OnNext(new TimeRange(StartDate, EndDate));
+                   model2.OnNext(ToTimeSpan(TimeValue));
+               });
 
-                  TimeSpan = ToTimeSpan(TimeValue);
-                  StartDate = ToDateTime(Start);
-                  EndDate = ToDateTime(End);
-                  model.OnNext(new TimeRange(StartDate, EndDate));
-                  model2.OnNext(ToTimeSpan(TimeValue));
-              });
-
-
-            this.WhenAnyValue(a => a.Value).Select(a=>(int)a).Subscribe(model3.OnNext);
-
+            this.WhenAnyValue(a => a.Value).Select(a => (int)a).Subscribe(model3.OnNext);
         }
-
-
 
         public double Start
         {
@@ -100,7 +96,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
             get { return (double)GetValue(EndProperty); }
             set { SetValue(EndProperty, value); }
         }
-
 
         public DateTime StartDate
         {
@@ -119,7 +114,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
             get { return (double)GetValue(MinProperty); }
             set { SetValue(MinProperty, value); }
         }
-
 
         public double Max
         {
@@ -145,8 +139,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
             set { SetValue(TimeSpanProperty, value); }
         }
 
-
-
         public double Time
         {
             get { return (double)GetValue(TimeProperty); }
@@ -158,19 +150,17 @@ namespace OxyPlot.Reactive.DemoApp.Views
             get { return (double)GetValue(TimeValueProperty); }
             set { SetValue(TimeValueProperty, value); }
         }
-        
+
         public double Value
         {
             get { return (double)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
 
-
         public double Count
         {
             get { return (double)GetValue(CountProperty); }
             set { SetValue(CountProperty, value); }
         }
-
     }
 }

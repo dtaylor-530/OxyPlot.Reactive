@@ -24,7 +24,6 @@ namespace OxyPlot.Reactive.Multi
         }
     }
 
-
     public abstract class MultiTimePlotModel<TGroupKey, TKey, TType> : MultiTimePlotModel<TGroupKey, TKey, TType, ITimePoint<TKey>> where TType : TimeModel<TKey>
     {
         public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) : base(comparer, scheduler, synchronizationContext)
@@ -32,18 +31,15 @@ namespace OxyPlot.Reactive.Multi
         }
     }
 
-
     public abstract class MultiTimePlotModel<TGroupKey, TKey, TType, TType2> : MultiTimePlotModel<TGroupKey, TKey, TType, TType2, TType2> where TType2 : ITimePoint<TKey> where TType : TimeModel<TKey, TType2, TType2>
     {
         public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) : base(comparer, scheduler, synchronizationContext)
         {
-
         }
-
     }
 
     public abstract class MultiTimePlotModel<TGroupKey, TKey, TType, TType2, TType3> : IObserver<KeyValuePair<TGroupKey, TType2>>, IObservable<KeyValuePair<TGroupKey, PlotModel>>, IMixedScheduler
-   where TType : TimeModel<TKey, TType2, TType3> where TType2 : ITimePoint<TKey> where TType3 : TType2
+    where TType : TimeModel<TKey, TType2, TType3> where TType2 : ITimePoint<TKey> where TType3 : TType2
     {
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly Dictionary<TGroupKey, TType> Models = new Dictionary<TGroupKey, TType>();
@@ -60,6 +56,7 @@ namespace OxyPlot.Reactive.Multi
             this.Scheduler = scheduler ?? System.Reactive.Concurrency.Scheduler.CurrentThread;
             this.Context = synchronizationContext ?? SynchronizationContext.Current;
         }
+
         public void OnCompleted()
         {
             //throw new NotImplementedException();
@@ -92,8 +89,6 @@ namespace OxyPlot.Reactive.Multi
 
         protected abstract TType CreateModel(PlotModel plotModel);
 
-
         public IDisposable Subscribe(IObserver<KeyValuePair<TGroupKey, PlotModel>> observer) => PlotModelChanges.Subscribe(observer.OnNext);
-
     }
 }

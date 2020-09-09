@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 namespace OxyPlot.Reactive
 {
     using OxyPlot;
@@ -7,8 +8,7 @@ namespace OxyPlot.Reactive
 
     public class TimeAccumulatedModel<T> : TimeModel<T>
     {
-
-        public TimeAccumulatedModel(PlotModel model, IScheduler? scheduler=null) : base( model,scheduler: scheduler)
+        public TimeAccumulatedModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
         }
 
@@ -22,5 +22,3 @@ namespace OxyPlot.Reactive
         }
     }
 }
-
-

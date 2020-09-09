@@ -1,17 +1,16 @@
 ﻿#nullable enable
 
+using MoreLinq;
+using OxyPlot.Reactive.Model;
+using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
-using OxyPlot.Series;
-using MoreLinq;
-using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 
 namespace OxyPlot.Reactive
 {
-
     public class CartesianModel<TKey> : CartesianModel<TKey, IDoublePoint<TKey>>
     {
         public CartesianModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
@@ -28,7 +27,6 @@ namespace OxyPlot.Reactive
 
     public abstract class CartesianModel<TKey, TType, TType3> : MultiPlotModel<TKey, double, TType, TType3> where TType : IDoublePoint<TKey> where TType3 : TType
     {
-
         public CartesianModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, double.MinValue, double.MaxValue, comparer, scheduler: scheduler)
         {
         }

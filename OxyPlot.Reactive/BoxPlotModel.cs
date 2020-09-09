@@ -1,4 +1,5 @@
 ﻿# nullable enable
+
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System.Collections.Generic;
@@ -13,16 +14,14 @@ namespace OxyPlot.Reactive
 {
     public class BoxPlotModel : MultiPlotModel2Base<string, int>
     {
-
-
         public BoxPlotModel(PlotModel plotModel) : base(plotModel, context: SynchronizationContext.Current)
         {
         }
 
         public BoxPlotModel(PlotModel model, IEqualityComparer<string> comparer) : base(model, comparer, context: SynchronizationContext.Current)
         {
-
         }
+
         public BoxPlotModel(PlotModel plotModel, IScheduler scheduler) : base(plotModel, scheduler: scheduler)
         {
         }
@@ -39,11 +38,9 @@ namespace OxyPlot.Reactive
         {
         }
 
-
         protected override void Refresh(IList<Unit> units)
         {
             KeyValuePair<string, ICollection<KeyValuePair<int, double>>>[] arr;
-
 
             (this as IMixedScheduler).ScheduleAction(async () =>
             {
@@ -64,13 +61,11 @@ namespace OxyPlot.Reactive
                 }
             });
 
-
             static BoxPlotItem[] SelectBPI(IList<KeyValuePair<int, double>> dataPoints)
             {
                 return dataPoints.GroupBy(a => a.Key)
-                          .Select(Selector)
-                          .ToArray();
-
+                           .Select(Selector)
+                           .ToArray();
 
                 static BoxPlotItem Selector(IGrouping<int, KeyValuePair<int, double>> grp)
                 {
@@ -80,7 +75,6 @@ namespace OxyPlot.Reactive
                     var median = MathNet.Numerics.Statistics.Statistics.Mean(arr);
                     return new BoxPlotItem(grp.Key, median - variance, median - sd, median, median + sd, median + variance)
                     { Mean = median, Tag = "A Tag" };
-
                 };
             }
 
@@ -105,16 +99,11 @@ namespace OxyPlot.Reactive
 
                 return combinedArray;
             }
-
         }
 
         protected virtual void AddToSeries(BoxPlotItem[] points, string title)
         {
             plotModel.Series.Add(OxyFactory.Build(points, title));
         }
-
     }
 }
-
-
-

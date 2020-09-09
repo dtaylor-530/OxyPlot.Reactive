@@ -16,7 +16,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         public TimePickerView()
         {
             InitializeComponent();
-            TimeSpanObservable= timeSpanChanges.StartWith(GetTimeSpan()).AsObservable();
+            TimeSpanObservable = timeSpanChanges.StartWith(GetTimeSpan()).AsObservable();
         }
 
         public IObservable<TimeSpan> TimeSpanObservable { get; }
@@ -26,7 +26,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             timeSpanChanges.OnNext(GetTimeSpan());
         }
 
-        TimeSpan GetTimeSpan()
+        private TimeSpan GetTimeSpan()
         {
             var ssx = (IntervalBox?.SelectedItem.ToString())?.First().ToString().ToLower() ?? "s";
             var sw = NumbersBox?.SelectedItem.ToString() is { } s ? int.Parse(s) : 1;

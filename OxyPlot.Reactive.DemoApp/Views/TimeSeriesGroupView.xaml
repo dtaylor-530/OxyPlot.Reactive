@@ -1,56 +1,66 @@
-﻿<UserControl x:Class="OxyPlotEx.DemoAppCore.Pages.MultiDateTimeGroupView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:oxy="http://oxyplot.org/wpf"
-             xmlns:hc="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
-             xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="OxyPlotEx.DemoAppCore.Pages.MultiDateTimeGroupView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
 
     <UniformGrid Rows="1">
-        <DockPanel >
+        <DockPanel>
 
-            <ToolBar DockPanel.Dock="Top"
-                     xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
-                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+            <ToolBar
+                xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
+                xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                DockPanel.Dock="Top">
                 <ToolBar.Resources>
-                    <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                    <ObjectDataProvider
+                        x:Key="dataFromEnum"
+                        MethodName="GetValues"
+                        ObjectType="{x:Type sys:Enum}">
                         <ObjectDataProvider.MethodParameters>
-                            <x:Type TypeName="m:Operation"/>
+                            <x:Type TypeName="m:Operation" />
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
                 </ToolBar.Resources>
-                <views:TimePickerView x:Name="TimeView1"></views:TimePickerView>
+                <views:TimePickerView x:Name="TimeView1" />
 
-                <hc:ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}" x:Name="ComboBox1" SelectedIndex="0"/>
-
+                <hc:ComboBox
+                    x:Name="ComboBox1"
+                    ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                    SelectedIndex="0" />
             </ToolBar>
 
-
             <UniformGrid Columns="2">
-                <oxy:PlotView x:Name="PlotView1" Grid.Row="1"></oxy:PlotView>
+                <oxy:PlotView x:Name="PlotView1" Grid.Row="1" />
                 <TextBlock>Nothing</TextBlock>
 
-                <oxy:PlotView x:Name="PlotView2" Grid.Row="2"></oxy:PlotView>
-                <DataGrid x:Name="DataGrid2" Grid.Row="3"  AutoGenerateColumns="False"  RowDetailsVisibilityMode="Visible">
+                <oxy:PlotView x:Name="PlotView2" Grid.Row="2" />
+                <DataGrid
+                    x:Name="DataGrid2"
+                    Grid.Row="3"
+                    AutoGenerateColumns="False"
+                    RowDetailsVisibilityMode="Visible">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Binding="{Binding Range.Min, Mode=OneWay}" Header="Min"/>
-                        <DataGridTextColumn Binding="{Binding Range.Max, Mode=OneWay}" Header="Max"/>
+                        <DataGridTextColumn Binding="{Binding Range.Min, Mode=OneWay}" Header="Min" />
+                        <DataGridTextColumn Binding="{Binding Range.Max, Mode=OneWay}" Header="Max" />
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>
                             <!--<DataGrid ItemsSource="{Binding Collection}" VerticalScrollBarVisibility="Visible" ></DataGrid>-->
-                            <TextBlock Text="{Binding Collection.Count}"></TextBlock>
+                            <TextBlock Text="{Binding Collection.Count}" />
                         </DataTemplate>
                     </DataGrid.RowDetailsTemplate>
                 </DataGrid>
 
-                <oxy:PlotView Name="PlotView3"/>
+                <oxy:PlotView Name="PlotView3" />
                 <TextBlock>Nothing</TextBlock>
             </UniformGrid>
         </DockPanel>
     </UniformGrid>
-
 </UserControl>

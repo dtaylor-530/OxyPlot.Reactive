@@ -1,5 +1,4 @@
-﻿
-//namespace OxyPlotEx.ViewModel
+﻿//namespace OxyPlotEx.ViewModel
 //{
 //    using MoreLinq;
 //    using OxyPlot;
@@ -23,7 +22,6 @@
 //            model.Axes.Add(new OxyPlot.Axes.DateTimeAxis { });
 //            DataPoints = GetDataPoints();
 //        }
-
 
 //        public MultiTimeLineModel(IDispatcher dispatcher, PlotModel model, IEqualityComparer<T> comparer) : this(dispatcher, model)
 //        {
@@ -60,11 +58,9 @@
 //        {
 //            if(item.Key==null)
 //            {
-
 //            }
 //            lock (lck)
 //            {
-
 //                if (!DataPoints.ContainsKey(item.Key))
 //                    DataPoints[item.Key] = new List<DateTimePoint>();
 //                var newdp = new DateTimePoint(item.Value.date, item.Value.value);
@@ -75,10 +71,8 @@
 //            }
 //        }
 
-
 //        private void Refresh()
 //        {
-
 //            this.dispatcher.BeginInvoke(() =>
 //            {
 //                lock (lck)
@@ -138,6 +132,4 @@
 //        }
 //    }
 
-
 //}
-

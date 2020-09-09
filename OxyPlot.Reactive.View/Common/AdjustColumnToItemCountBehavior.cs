@@ -6,12 +6,10 @@ namespace OxyPlot.Reactive.View.Common
 {
     public class AdjustColumnToItemCountBehavior : Behavior<Grid>
     {
-
         protected override void OnAttached()
         {
             AssociatedObject.LayoutUpdated += (sender, e) =>
             {
-
                 for (int i = 0; i < AssociatedObject.Children.Count - AssociatedObject.ColumnDefinitions.Count; i++)
                 {
                     AssociatedObject.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });

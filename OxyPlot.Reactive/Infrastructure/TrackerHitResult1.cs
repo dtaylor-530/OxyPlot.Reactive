@@ -1,6 +1,5 @@
 ﻿#nullable enable
 
-using OxyPlot;
 using System.Collections.Generic;
 using System.Drawing;
 

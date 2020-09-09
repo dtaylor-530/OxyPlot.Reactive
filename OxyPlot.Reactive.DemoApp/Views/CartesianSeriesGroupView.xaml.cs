@@ -1,11 +1,9 @@
 ﻿using DynamicData;
-using Itenso.TimePeriod;
 using LinqStatistics;
 using MoreLinq;
 using OxyPlot.Reactive;
 using OxyPlot.Reactive.DemoApp.Common;
 using OxyPlot.Reactive.DemoApp.Factory;
-using OxyPlot.Reactive.DemoApp.ViewModels;
 using OxyPlot.Reactive.Model;
 using ReactiveUI;
 using System;
@@ -23,7 +21,6 @@ namespace OxyPlotEx.DemoAppCore.Pages
     {
         public CartesianSeriesGroupView()
         {
-
             InitializeComponent();
 
             var pacedObs = DataSource.Observe1000().ToDoubles().Pace(TimeSpan.FromSeconds(0.3));

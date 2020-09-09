@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using OxyPlot.Axes;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
@@ -21,7 +22,7 @@ namespace OxyPlot.Reactive
         protected readonly PlotModel plotModel;
         private readonly IComparer<string>? hNamesComparer;
         private readonly IComparer<string>? vNamesComparer;
-        readonly Dictionary<(string, string), double> dictionary = new Dictionary<(string, string), double>();
+        private readonly Dictionary<(string, string), double> dictionary = new Dictionary<(string, string), double>();
 
         public HeatMap(PlotModel plotModel, string? hAxisKey = null, string? vAxisKey = null, IComparer<string>? hNamesComparer = null,
             IComparer<string>? vNamesComparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronisationContext = null)
@@ -38,7 +39,6 @@ namespace OxyPlot.Reactive
                 this.plotModel = CreateModel(plotModel, hAxisKey, vAxisKey);
 
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(300)).Where(e.Any).Subscribe(Refresh);
-
         }
 
         private async void Refresh(IEnumerable<KeyValuePair<(string, string), double>> kvps)
@@ -75,7 +75,6 @@ namespace OxyPlot.Reactive
             });
         }
 
-
         public IScheduler? Scheduler { get; }
 
         public SynchronizationContext? Context { get; }
@@ -91,7 +90,6 @@ namespace OxyPlot.Reactive
 
         public void OnNext(KeyValuePair<(string, string), double> kvp)
         {
-
             refreshSubject.OnNext(kvp);
         }
 
@@ -176,7 +174,6 @@ namespace OxyPlot.Reactive
                         {
                             linearColorAxis.Maximum = max;
                             linearColorAxis.Minimum = min < 0 ? max > 0 ? -max : 0 : 0;
-
                         }
                         else
                         {
@@ -216,10 +213,8 @@ namespace OxyPlot.Reactive
                             }
                         }
                     }
-
                 }
         }
-
     }
 
     public static class Helper

@@ -16,9 +16,7 @@ namespace OxyPlotEx.DemoAppCore
         {
             InitializeComponent();
 
-
             _ = GenerateData().Subscribe(new BoxPlotModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
-
         }
 
         private static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> GenerateData()
@@ -38,6 +36,5 @@ namespace OxyPlotEx.DemoAppCore
             });
             return obs1;
         }
-
     }
 }

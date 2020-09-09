@@ -13,7 +13,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class StackedBarView : Page
     {
-        StackedBarModel sb1 = new StackedBarModel(), sb2 = new StackedBarModel(), sb3 = new StackedBarModel();
+        private StackedBarModel sb1 = new StackedBarModel(), sb2 = new StackedBarModel(), sb3 = new StackedBarModel();
 
         public StackedBarView()
         {
@@ -60,10 +60,9 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
         private void ToggleButton_Checked(object sender, RoutedEventArgs e)
         {
-   
             sb1?.OnNext(ToggleButton1.IsChecked ?? false);
             sb2?.OnNext(ToggleButton1.IsChecked ?? false);
-            sb3?.OnNext(ToggleButton1.IsChecked ?? false); 
+            sb3?.OnNext(ToggleButton1.IsChecked ?? false);
             //MessageBox.Show("IsStacked is " + (ToggleButton1.IsChecked?.ToString()));
         }
     }

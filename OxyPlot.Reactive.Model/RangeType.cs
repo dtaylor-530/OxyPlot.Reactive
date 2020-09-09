@@ -1,6 +1,4 @@
-﻿using OxyPlot;
-
-namespace OxyPlot.Reactive.Model
+﻿namespace OxyPlot.Reactive.Model
 {
     public enum RangeType
     {

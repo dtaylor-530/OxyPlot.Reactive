@@ -20,7 +20,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
             DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1))
                 .ToDoubles()
                 .Subscribe(model);
-
         }
     }
 }

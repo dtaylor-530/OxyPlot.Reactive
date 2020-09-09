@@ -1,13 +1,17 @@
-﻿<UserControl x:Class="OxyPlot.Reactive.DemoApp.Views.MultiDateTimePlotView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:oxy="http://oxyplot.org/wpf" xmlns:hc="https://handyorg.github.io/handycontrol" xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="OxyPlot.Reactive.DemoApp.Views.MultiDateTimePlotView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
     <UserControl.Resources>
-        <ResourceDictionary Source="/Themes/Generic.xaml"></ResourceDictionary>
+        <ResourceDictionary Source="/Themes/Generic.xaml" />
     </UserControl.Resources>
     <TabControl>
         <TabItem Header="Accumulated">
@@ -16,11 +20,21 @@
                 <ItemsControl x:Name="ItemsControlAccumulated" Style="{StaticResource LastItemBottomRowStyle}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid >
-                                <oxy:PlotView Model="{Binding model.Value}" ></oxy:PlotView>
-                                <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="70,50" >
-                                    <TextBlock FontSize="20" Text="{Binding index}" Foreground="Silver"></TextBlock>
-                                    <TextBlock FontSize="20" Text="{Binding model.Key}"  Margin="30,0,0,0" Foreground="Silver"></TextBlock>
+                            <Grid>
+                                <oxy:PlotView Model="{Binding model.Value}" />
+                                <Grid
+                                    Margin="70,50"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top">
+                                    <TextBlock
+                                        FontSize="20"
+                                        Foreground="Silver"
+                                        Text="{Binding index}" />
+                                    <TextBlock
+                                        Margin="30,0,0,0"
+                                        FontSize="20"
+                                        Foreground="Silver"
+                                        Text="{Binding model.Key}" />
                                 </Grid>
                             </Grid>
                         </DataTemplate>
@@ -29,34 +43,49 @@
             </ScrollViewer>
         </TabItem>
 
-        
-
         <TabItem Header="Accumulated Group">
 
             <DockPanel>
-                <ToolBar DockPanel.Dock="Top"
-                     xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
-                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+                <ToolBar
+                    xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+                    DockPanel.Dock="Top">
                     <ToolBar.Resources>
-                        <ObjectDataProvider x:Key="dataFromEnum" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
+                        <ObjectDataProvider
+                            x:Key="dataFromEnum"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
                             <ObjectDataProvider.MethodParameters>
-                                <x:Type TypeName="m:Operation"/>
+                                <x:Type TypeName="m:Operation" />
                             </ObjectDataProvider.MethodParameters>
                         </ObjectDataProvider>
                     </ToolBar.Resources>
-                    <views:TimePickerView x:Name="TimeView1"></views:TimePickerView>
-                    <hc:ComboBox ItemsSource="{Binding Source={StaticResource dataFromEnum}}" x:Name="ComboBox1" SelectedIndex="0"/>
+                    <views:TimePickerView x:Name="TimeView1" />
+                    <hc:ComboBox
+                        x:Name="ComboBox1"
+                        ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                        SelectedIndex="0" />
                 </ToolBar>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Visible">
                     <ItemsControl x:Name="ItemsControlGroup" Style="{StaticResource LastItemBottomRowStyle}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid >
-                                    <oxy:PlotView Model="{Binding model.Value}" ></oxy:PlotView>
-                                    <Grid VerticalAlignment="Top" HorizontalAlignment="Left" Margin="70,50" >
-                                        <TextBlock FontSize="20" Text="{Binding index}" Foreground="Silver"></TextBlock>
-                                        <TextBlock FontSize="20" Text="{Binding model.Key}"  Margin="30,0,0,0" Foreground="Silver"></TextBlock>
+                                <Grid>
+                                    <oxy:PlotView Model="{Binding model.Value}" />
+                                    <Grid
+                                        Margin="70,50"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top">
+                                        <TextBlock
+                                            FontSize="20"
+                                            Foreground="Silver"
+                                            Text="{Binding index}" />
+                                        <TextBlock
+                                            Margin="30,0,0,0"
+                                            FontSize="20"
+                                            Foreground="Silver"
+                                            Text="{Binding model.Key}" />
                                     </Grid>
                                 </Grid>
                             </DataTemplate>
@@ -65,41 +94,46 @@
                 </ScrollViewer>
             </DockPanel>
         </TabItem>
-        
-        
-        
+
         <TabItem Header="Standard">
             <ScrollViewer>
                 <ItemsControl x:Name="ItemsControlStandard">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel></WrapPanel>
+                            <WrapPanel />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid Height="400" Width="600">
-                                <hc:Card  BorderThickness="0"  Margin="8" Footer="{Binding }">
+                            <Grid Width="600" Height="400">
+                                <hc:Card
+                                    Margin="8"
+                                    BorderThickness="0"
+                                    Footer="{Binding}">
 
-                                    <Border CornerRadius="4,4,0,0" >
-                                        <oxy:PlotView Model="{Binding Value}"></oxy:PlotView>
+                                    <Border CornerRadius="4,4,0,0">
+                                        <oxy:PlotView Model="{Binding Value}" />
                                     </Border>
                                     <hc:Card.FooterTemplate>
                                         <DataTemplate>
                                             <StackPanel Margin="10">
-                                                <TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" FontWeight="Bold" FontSize="18" Text="{Binding Key}" HorizontalAlignment="Left"/>
-                                                <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left"/>-->
+                                                <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    FontSize="18"
+                                                    FontWeight="Bold"
+                                                    Text="{Binding Key}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    TextWrapping="NoWrap" />
+                                                <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
                                             </StackPanel>
                                         </DataTemplate>
                                     </hc:Card.FooterTemplate>
                                 </hc:Card>
-
                             </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
         </TabItem>
-
     </TabControl>
 </UserControl>

@@ -1,11 +1,11 @@
 ﻿#nullable enable
 
+using MoreLinq;
+using OxyPlot.Series;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Reactive.Linq;
-using OxyPlot.Series;
-using MoreLinq;
-using System.Drawing;
 
 namespace OxyPlot.Reactive.Infrastructure
 {
@@ -44,14 +44,14 @@ namespace OxyPlot.Reactive.Infrastructure
             if (first != null)
             {
                 var htr = new TrackerHitResult1(results.Where(a => a != null).ToDictionary(a => a.Text.Split('\n').First(), a =>
-                 {
-                     var c = PlotView.ActualModel.Series.OfType<LineSeries>().SingleOrDefault(s => s.Title == a.Text.Split('\n').First()).Color;
-                     return new TrackerHitResult1.ValueAndBrush
-                     {
-                         Color = Color.FromArgb(c.A, c.R, c.G, c.B),
-                         Value = a.DataPoint.Y,
-                     };
-                 }), first);
+                {
+                    var c = PlotView.ActualModel.Series.OfType<LineSeries>().SingleOrDefault(s => s.Title == a.Text.Split('\n').First()).Color;
+                    return new TrackerHitResult1.ValueAndBrush
+                    {
+                        Color = Color.FromArgb(c.A, c.R, c.G, c.B),
+                        Value = a.DataPoint.Y,
+                    };
+                }), first);
                 PlotView.ShowTracker(htr);
                 PlotView.ActualModel.RaiseTrackerChanged(htr);
             }
@@ -61,7 +61,6 @@ namespace OxyPlot.Reactive.Infrastructure
                 from series in PlotView.ActualModel.Series.OfType<XYAxisSeries>()
                 orderby series.Title == currentSeries?.Title descending
                 select GetNearestHit(series, e.Position, Snap, PointsOnly);
-
 
             bool Return()
             {

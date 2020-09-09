@@ -1,12 +1,9 @@
 ﻿using NMT.Wpf.Controls;
 using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace OxyPlot.Reactive.DemoApp.Common
 {
@@ -33,13 +30,12 @@ namespace OxyPlot.Reactive.DemoApp.Common
         {
             windowsProgressRing = this.GetTemplateChild("PART_WindowsProgressRing") as WindowsProgressRing;
             contentPresenter = this.GetTemplateChild("PART_ContentPresenter") as ContentPresenter;
-      
+
             base.OnApplyTemplate();
         }
 
         public ProgressRingHost()
         {
-
             isBusyChanges
                 .StartWith(IsBusy)
                 .ObserveOnDispatcher()

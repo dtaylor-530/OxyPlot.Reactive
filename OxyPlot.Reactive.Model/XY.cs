@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace OxyPlot.Reactive.Model
+﻿namespace OxyPlot.Reactive.Model
 {
-
     //public interface IPoint : IDataPointProvider
     //{
     //    double X { get; }
@@ -10,12 +7,8 @@ namespace OxyPlot.Reactive.Model
     //    double Y { get; }
     //}
 
-
-
-
     public struct DoublePoint<TKey> : IDoublePoint<TKey>
     {
-
         public DoublePoint(double var, double value, TKey key) : this()
         {
             Var = var;
@@ -34,10 +27,6 @@ namespace OxyPlot.Reactive.Model
             return new DataPoint(Var, Value);
         }
     }
-
-
-
-
 
     public struct XY<T>
     {
@@ -59,7 +48,6 @@ namespace OxyPlot.Reactive.Model
 
     //public struct KeyPoint<TKey> : IDataPointProvider, IPoint<TKey>
     //{
-
     //    public KeyPoint(double constant, double variable, TKey key)
     //    {
     //        X = constant;

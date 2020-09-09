@@ -1,29 +1,22 @@
 ﻿using Endless;
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 
 namespace OxyPlotEx.DemoApp
 {
     public class DataFactory
     {
-        static readonly Random random = new Random();
-        static readonly string[] arr = new[] { "a", "b", "c" };
+        private static readonly Random random = new Random();
+        private static readonly string[] arr = new[] { "a", "b", "c" };
 
-        Dictionary<string, IEnumerator<int>> xc = arr.ToDictionary(c => c, c => (IEnumerator<int>)new InfiniteIncrementSequence(random.Next(0, 3)));
-        Dictionary<string, IEnumerator<int>> xc2 = arr.ToDictionary(c => c, c => (IEnumerator<int>)new InfiniteSequence(random.Next(0, 3)));
+        private Dictionary<string, IEnumerator<int>> xc = arr.ToDictionary(c => c, c => (IEnumerator<int>)new InfiniteIncrementSequence(random.Next(0, 3)));
+        private Dictionary<string, IEnumerator<int>> xc2 = arr.ToDictionary(c => c, c => (IEnumerator<int>)new InfiniteSequence(random.Next(0, 3)));
 
         private readonly Dictionary<string, int> dict;
 
-        string NextCharacter() => arr[random.Next(0, 3)];
-
+        private string NextCharacter() => arr[random.Next(0, 3)];
 
         public DataFactory()
         {
@@ -40,6 +33,7 @@ namespace OxyPlotEx.DemoApp
                 chr = NextCharacter();
             }
         }
+
         public IEnumerable<KeyValuePair<string, double>> GetLineAscending()
         {
             var chr = NextCharacter();
@@ -78,7 +72,6 @@ namespace OxyPlotEx.DemoApp
             }
         }
 
-
         public IEnumerable<(string, string, double)> GetLine3(int change = 1)
         {
             var chr = NextCharacter();
@@ -94,14 +87,11 @@ namespace OxyPlotEx.DemoApp
         }
     }
 
-
-
-    class InfiniteIncrementSequence : IEnumerator<int>
+    internal class InfiniteIncrementSequence : IEnumerator<int>
     {
-
         // Enumerators are positioned before the first element
         // until the first MoveNext() call.
-        int position;
+        private int position;
 
         public InfiniteIncrementSequence(int seed = -1)
         {
@@ -141,12 +131,11 @@ namespace OxyPlotEx.DemoApp
         object IEnumerator.Current => Current;
     }
 
-    class InfiniteSequence : IEnumerator<int>
+    internal class InfiniteSequence : IEnumerator<int>
     {
-
         // Enumerators are positioned before the first element
         // until the first MoveNext() call.
-        int position;
+        private int position;
 
         public InfiniteSequence(int seed = -1)
         {
@@ -185,7 +174,3 @@ namespace OxyPlotEx.DemoApp
         object IEnumerator.Current => Current;
     }
 }
-
-
-
-

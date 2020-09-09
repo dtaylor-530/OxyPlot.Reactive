@@ -30,10 +30,10 @@ namespace OxyPlotEx.DemoAppCore.Pages
             var numbers = Enumerable.Range(0, 10).Select(a => a.ToString()).ToArray();
             rand = new Random();
             return Enumerable.Range(0, 300)
-                            .Select(a => ((dowArray[rand.Next(0, dowArray.Length)], numbers[rand.Next(0, numbers.Length)]), rand.NextDouble()))
-                            .GroupBy(a => a.Item1)
-                            .Select(a => (a.Key, a.First().Item2))
-                            .ToDictionary(a => a.Key, a => a.Item2).ToObservable();
+                             .Select(a => ((dowArray[rand.Next(0, dowArray.Length)], numbers[rand.Next(0, numbers.Length)]), rand.NextDouble()))
+                             .GroupBy(a => a.Item1)
+                             .Select(a => (a.Key, a.First().Item2))
+                             .ToDictionary(a => a.Key, a => a.Item2).ToObservable();
         }
 
         private IObservable<KeyValuePair<(string, string), double>> NewMethod2(out IDisposable disp)
@@ -43,20 +43,19 @@ namespace OxyPlotEx.DemoAppCore.Pages
             dowArray = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>().Select(a => a.ToString()).ToArray();
             var numbers = Enumerable.Range(0, 10).Select(a => a.ToString()).ToArray();
             var enm = Enumerable.Range(0, 300)
-                  .Select(a => ((dowArray[rand.Next(0, dowArray.Length)], numbers[rand.Next(0, numbers.Length)]), rand.Next(-70, 2000) * 1d))
-                  .GroupBy(a => a.Item1)
-                  .Select(a => (a.Key, a.First().Item2))
-                  .ToDictionary(a => a.Key, a => a.Item2).GetEnumerator();
+                    .Select(a => ((dowArray[rand.Next(0, dowArray.Length)], numbers[rand.Next(0, numbers.Length)]), rand.Next(-70, 2000) * 1d))
+                    .GroupBy(a => a.Item1)
+                    .Select(a => (a.Key, a.First().Item2))
+                    .ToDictionary(a => a.Key, a => a.Item2).GetEnumerator();
             var obs2 = Observable.Interval(TimeSpan.FromMilliseconds(600))
-         .TakeWhile(a => enm.MoveNext())
-         .Select(t => enm.Current)
-         .Skip(1);
+        .TakeWhile(a => enm.MoveNext())
+        .Select(t => enm.Current)
+        .Skip(1);
             disp = enm;
             return obs2;
         }
 
-
-        class WDComparer : IComparer<string>
+        private class WDComparer : IComparer<string>
         {
             public int Compare([AllowNull] string x, [AllowNull] string y)
             {

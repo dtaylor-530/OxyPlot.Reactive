@@ -14,24 +14,19 @@ namespace OxyPlotEx.DemoAppCore.Pages
     {
         private readonly IDisposable disposable;
 
-
         public MultiDateTimeModelAccumulatedView()
         {
             InitializeComponent();
             //ProduceData(out var observable1, out var observable2);
 
-
             disposable = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5)).Subscribe(
-                new TimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)); ;
-
-
+            new TimeAccumulatedModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler)); ;
 
             disposable = TimeDataSource.Observe3().Subscribe(
                 new TimeAccumulatedModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
 
             disposable = TimeDataSource.Observe1000PlusMinus().Pace(TimeSpan.FromSeconds(1.5)).Subscribe(
-     new TimeAccumulatedModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
-
+    new TimeAccumulatedModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System;
@@ -17,7 +18,6 @@ namespace OxyPlot.Reactive
 {
     public abstract class SinglePlotModel<T> : IObserver<KeyValuePair<T, double>>, IMixedScheduler
     {
-
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly PlotModel plotModel;
         protected readonly SynchronizationContext? context;
@@ -25,9 +25,7 @@ namespace OxyPlot.Reactive
         protected readonly object lck = new object();
         protected List<XY<T>> DataPoints = new List<XY<T>>();
 
-
-
-        public SinglePlotModel( PlotModel plotModel, SynchronizationContext? context = null, IScheduler? scheduler=null)
+        public SinglePlotModel(PlotModel plotModel, SynchronizationContext? context = null, IScheduler? scheduler = null)
         {
             this.plotModel = plotModel;
             if (scheduler == null)
@@ -36,9 +34,11 @@ namespace OxyPlot.Reactive
                 this.scheduler = scheduler;
             ModifyPlotModel();
             refreshSubject.Buffer(TimeSpan.FromMilliseconds(100)).Where(e.Any).Subscribe(Refresh);
-        }     
-        
-        protected virtual void ModifyPlotModel() { }
+        }
+
+        protected virtual void ModifyPlotModel()
+        {
+        }
 
         public void OnNext(KeyValuePair<T, double> item)
         {
@@ -52,10 +52,11 @@ namespace OxyPlot.Reactive
 
         public void Remove(ISet<T> names) => Task.Run(() => RemoveByPredicate(s => names.Contains(s.X))).ToObservable().Subscribe(refreshSubject.OnNext);
 
-        public void OnCompleted() { }
+        public void OnCompleted()
+        {
+        }
 
         public void OnError(Exception error) => throw new NotImplementedException($"Error in {nameof(SinglePlotModel<T>)}");
-
 
         private void AddToDataPoints(KeyValuePair<T, double> item)
         {
@@ -66,18 +67,15 @@ namespace OxyPlot.Reactive
             }
         }
 
-
         protected abstract void Refresh(IList<Unit> units);
 
         private void RemoveByPredicate(Predicate<XY<T>> predicate)
         {
-
             lock (lck)
             {
                 foreach (var dataPoint in DataPoints.Where(a => predicate(a)))
                     DataPoints.Remove(dataPoint);
             }
-
         }
 
         public IScheduler? Scheduler => scheduler;
@@ -85,6 +83,3 @@ namespace OxyPlot.Reactive
         public SynchronizationContext? Context { get; }
     }
 }
-
-
-

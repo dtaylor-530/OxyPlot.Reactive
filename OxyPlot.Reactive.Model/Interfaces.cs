@@ -7,13 +7,11 @@ namespace OxyPlot.Reactive.Model
     public interface IValue<T>
     {
         T Value { get; }
-
     }
 
     public interface IVar<T>
     {
         T Var { get; }
-
     }
 
     public interface IKey<TKey>
@@ -21,12 +19,9 @@ namespace OxyPlot.Reactive.Model
         TKey Key { get; }
     }
 
-
-
     public interface IPoint<TVar, TValue> : IVar<TVar>, IValue<TValue>, IDataPointProvider
     {
     }
-
 
     public interface IKeyPoint<TKey, TVar, TValue> : IKey<TKey>, IPoint<TVar, TValue>
     {
@@ -36,7 +31,6 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-
     public interface ITimePoint : IValue<double>, IVar<DateTime>, IDataPointProvider
     {
     }
@@ -45,11 +39,9 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-
     public interface I2Point<TKey, TVar> : IDoublePoint<TKey, TVar>, IKey<TKey> where TVar : IComparable<TVar>
     {
     }
-
 
     public interface IRange<T> where T : struct, IComparable<T>, IFormattable, IEquatable<T>
     {
@@ -58,7 +50,6 @@ namespace OxyPlot.Reactive.Model
 
     public interface ITimeRange<T> : IRange<DateTime>
     {
-
     }
 
     public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>, IPoint<DateTime, double>
@@ -67,7 +58,6 @@ namespace OxyPlot.Reactive.Model
 
     public interface ICollection
     {
-
     }
 
     public interface ITimePointCollection<TKey>
@@ -80,11 +70,9 @@ namespace OxyPlot.Reactive.Model
         ICollection<IDoublePoint<TKey>> Collection { get; }
     }
 
-
     public interface IPointCollection<TVar, TValue>
     {
         ICollection<IPoint<TVar, TValue>> Collection { get; }
-
     }
 
     public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IPointCollection<DateTime, double>, ITimeRange<DateTime>

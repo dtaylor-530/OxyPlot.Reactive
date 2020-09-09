@@ -3,17 +3,13 @@ using System;
 
 namespace OxyPlot.Reactive.Model
 {
-
-
     public struct TimePoint : ITimePoint<string>
     {
-
         public TimePoint(DateTime dateTime, double value, string key)
         {
             Var = dateTime;
             Value = value;
             Key = key ?? string.Empty;
-
         }
 
         public TimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
@@ -44,13 +40,11 @@ namespace OxyPlot.Reactive.Model
 
     public struct TimePoint<TKey> : ITimePoint<TKey>
     {
-
         public TimePoint(DateTime dateTime, double value, TKey key)
         {
             Var = dateTime;
             Value = value;
             this.Key = key;
-
         }
 
         public TimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
@@ -78,6 +72,4 @@ namespace OxyPlot.Reactive.Model
             return new TimePoint<TKey>(dateTime, value, key);
         }
     }
-
-   
 }

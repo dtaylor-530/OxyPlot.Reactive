@@ -1,16 +1,16 @@
 ﻿#nullable enable
 
+using DynamicData;
+using LinqStatistics;
+using MoreLinq;
+using OxyPlot.Reactive.Infrastructure;
+using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
-using MoreLinq;
-using LinqStatistics;
-using DynamicData;
+using System.Reactive.Linq;
 
 namespace OxyPlot.Reactive
 {

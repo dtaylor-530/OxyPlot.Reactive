@@ -1,23 +1,24 @@
 ﻿#nullable enable
+
+using MathNet.Numerics.Statistics;
 using OxyPlot.Axes;
+using OxyPlot.Reactive.Infrastructure;
+using OxyPlot.Reactive.Model;
 using OxyPlot.Series;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using MathNet.Numerics.Statistics;
-using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
-using System.Threading;
 using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OxyPlot.Reactive
 {
     public class ErrorBarModel : SinglePlotModel<string>
     {
-        static readonly OxyColor Positive = OxyColor.Parse("#0074D9");
-        static readonly OxyColor Negative = OxyColor.Parse("#FF4136");
+        private static readonly OxyColor Positive = OxyColor.Parse("#0074D9");
+        private static readonly OxyColor Negative = OxyColor.Parse("#FF4136");
 
         public ErrorBarModel(PlotModel plotModel, SynchronizationContext? context = null, IScheduler? scheduler = null) : base(plotModel, context: context, scheduler: scheduler)
         {
@@ -25,7 +26,6 @@ namespace OxyPlot.Reactive
 
         protected override async void Refresh(IList<Unit> units)
         {
-
             var points = await Task.Run(() =>
             {
                 lock (lck)
@@ -46,7 +46,7 @@ namespace OxyPlot.Reactive
         }
 
         //static (string key, ErrorBarItem) Selector(IGrouping<string, DataPoint<string>> grp)
-        static (string key, ErrorColumnItem) Selector(IGrouping<string, XY<string>> grp)
+        private static (string key, ErrorColumnItem) Selector(IGrouping<string, XY<string>> grp)
         {
             var arr = grp.Select(a => a.Y).ToArray();
             // var variance = Statistics.Variance(arr);
@@ -58,7 +58,6 @@ namespace OxyPlot.Reactive
 
         protected override void ModifyPlotModel()
         {
-
             var linearAxis1 = new LinearAxis
             {
                 //linearAxis1.AbsoluteMinimum = 0;
@@ -71,7 +70,6 @@ namespace OxyPlot.Reactive
 
             base.ModifyPlotModel();
         }
-
 
         //protected virtual void AddToSeries((string key, ErrorBarItem)[] points, string title)
         protected virtual void AddToSeries((string key, ErrorColumnItem)[] points, string title)
@@ -99,6 +97,3 @@ namespace OxyPlot.Reactive
         }
     }
 }
-
-
-

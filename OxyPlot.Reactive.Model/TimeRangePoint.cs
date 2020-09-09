@@ -14,19 +14,16 @@ namespace OxyPlot.Reactive.Model
         public TimeRangePoint(Range<DateTime> dateTimeRange, ICollection<IPoint<DateTime, double>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
         {
         }
+
         public TimeRangePoint(Range<DateTime> dateTimeRange, ICollection<IPoint<DateTime, double>> value) : this(dateTimeRange, value, default, Operation.Mean)
         {
         }
 
         public override DateTime Var => new DateTime((long)(Range.Min.Ticks + (Range.Max - Range.Min).Ticks / 2d));
 
-
         public override DataPoint GetDataPoint()
         {
             return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
         }
-
     }
-
-   
 }

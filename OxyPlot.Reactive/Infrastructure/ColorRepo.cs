@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace OxyPlot.Reactive.Infrastructure
 {
-    class ColorRepo
+    internal class ColorRepo
     {
         //private static Dictionary<string, string> ColorsMatch = new Dictionary<string, string>();
         //private static IEnumerator<KeyValuePair<string, string>> Colors2;
@@ -18,8 +17,7 @@ namespace OxyPlot.Reactive.Infrastructure
         //{
         //    Colors2.MoveNext(); return OxyColor.Parse(Colors2.Current.Value);
         //}
-        public static OxyColor GetColor(int? key) => LazyColors[key ?? random.Next(0,1000)];
-
+        public static OxyColor GetColor(int? key) => LazyColors[key ?? random.Next(0, 1000)];
 
         /// <summary>
         /// A nicer color palette for the web.
@@ -35,7 +33,6 @@ namespace OxyPlot.Reactive.Infrastructure
         //    }
         //    return Colors.Value[ColorsMatch[key]];
         //}
-
 
         private static phirSOFT.LazyDictionary.LazyDictionary<int, OxyColor> LazyColors = new phirSOFT.LazyDictionary.LazyDictionary<int, OxyColor>(a =>
         {
@@ -53,31 +50,29 @@ namespace OxyPlot.Reactive.Infrastructure
         /// https://github.com/mrmrs/colors
         /// </summary>
         private static Lazy<Dictionary<int, OxyColor>> NiceColors = new Lazy<Dictionary<int, OxyColor>>(() =>
-            new Dictionary<string, string> {
-            { "navy", "#001F3F"} ,
+            new Dictionary<string, string>
+            {
+                { "navy", "#001F3F"} ,
 
-             { "blue", "#0074D9"} ,
-              { "aqua", "#7FDBFF"} ,
-                                  { "teal", "#39CCCC"} ,
-                                  { "olive", "#3D9970"} ,
-                                  { "green", "#2ECC40"} ,
-                                  { "lime", "#01FF70"} ,
-                                  {  "yellow", "#FFDC00"} ,
-                                  {  "orange", "#FF851B"} ,
-                                  { "red", "#FF4136"} ,
-               { "fuchsia", "#F012BE"} ,
+                { "blue", "#0074D9"} ,
+                { "aqua", "#7FDBFF"} ,
+                { "teal", "#39CCCC"} ,
+                { "olive", "#3D9970"} ,
+                { "green", "#2ECC40"} ,
+                { "lime", "#01FF70"} ,
+                {  "yellow", "#FFDC00"} ,
+                {  "orange", "#FF851B"} ,
+                { "red", "#FF4136"} ,
+                { "fuchsia", "#F012BE"} ,
 
-             { "purple", "#B10DC9"} ,
+                { "purple", "#B10DC9"} ,
 
-             { "maroon", "#85144B"} ,
-              //{ "white", "#FFFFFF"} ,
-                                  //{ "gray", "#AAAAAA"} ,
-                                  { "silver", "#DDDDDD"} ,
-                                  { "black", "#111111"}
-
-                              }.Index().ToDictionary(a => a.Key, a => OxyColor.Parse(a.Value.Value)));
-
-
+                { "maroon", "#85144B"} ,
+                //{ "white", "#FFFFFF"} ,
+                //{ "gray", "#AAAAAA"} ,
+                { "silver", "#DDDDDD"} ,
+                { "black", "#111111"}
+            }.Index().ToDictionary(a => a.Key, a => OxyColor.Parse(a.Value.Value)));
 
         /// <summary>Blends the specified colors together.</summary>
         /// <param name="color">Color to blend onto the background color.</param>
@@ -94,9 +89,8 @@ namespace OxyPlot.Reactive.Infrastructure
             return OxyColor.FromArgb(a, r, g, b);
         }
 
-
         /// <summary>
-        /// Returns two numbers unique to <see cref="num"/> between 0 and <see cref="mod"/> 
+        /// Returns two numbers unique to <see cref="num"/> between 0 and <see cref="mod"/>
         /// </summary>
         /// <param name="num"></param>
         /// <param name="mod"></param>
@@ -109,6 +103,5 @@ namespace OxyPlot.Reactive.Infrastructure
 
             return (first, second);
         }
-
     }
 }

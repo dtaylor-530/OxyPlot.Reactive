@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -20,8 +19,8 @@ namespace OxyPlot.Reactive.Infrastructure
             foreach (var item in source)
             {
                 someObjectType
-                         .GetProperty(item.Key)
-                         .SetValue(someObject, item.Value, null);
+                    .GetProperty(item.Key)
+                        .SetValue(someObject, item.Value, null);
             }
 
             return someObject;
@@ -34,7 +33,6 @@ namespace OxyPlot.Reactive.Infrastructure
                 propInfo => propInfo.Name,
                 propInfo => propInfo.GetValue(source, null)
             );
-
         }
 
         public static string AsString(IDictionary<string, object> keyValuePairs)

@@ -54,16 +54,14 @@ namespace OxyPlot.Reactive.Model
         public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, double>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
         {
         }
+
         public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, double>> value) : this(dateTimeRange, value, default, Operation.Mean)
         {
         }
 
-
-
         public override double Value => Collection.Count > 1 ? GetValue() : Collection.Single().Value;
 
-
-        double GetValue()
+        private double GetValue()
         {
             switch (this.operation)
             {
@@ -89,5 +87,4 @@ namespace OxyPlot.Reactive.Model
             return $"{Var:F}, {Value}";
         }
     }
-
 }

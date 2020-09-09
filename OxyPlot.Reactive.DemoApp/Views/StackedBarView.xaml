@@ -1,56 +1,81 @@
-﻿<Page x:Class="OxyPlotEx.DemoAppCore.Pages.StackedBarView"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:oxy="http://oxyplot.org/wpf"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="StackedBarView" FontSize="17">
+﻿<Page
+    x:Class="OxyPlotEx.DemoAppCore.Pages.StackedBarView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    Title="StackedBarView"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    FontSize="17"
+    mc:Ignorable="d">
 
-    <DockPanel >
+    <DockPanel>
         <ToolBar DockPanel.Dock="Top">
             <Label>Is Stacked</Label>
-            <ToggleButton Grid.Row="3" x:Name="ToggleButton1" ToolTip="Is Stacked"
-                          Content="{Binding RelativeSource={RelativeSource Self},Path=IsChecked}"
-                          IsChecked="True"
-                          Width="100" Height="30" Checked="ToggleButton_Checked" Unchecked="ToggleButton_Checked"></ToggleButton>
+            <ToggleButton
+                x:Name="ToggleButton1"
+                Grid.Row="3"
+                Width="100"
+                Height="30"
+                Checked="ToggleButton_Checked"
+                Content="{Binding RelativeSource={RelativeSource Self}, Path=IsChecked}"
+                IsChecked="True"
+                ToolTip="Is Stacked"
+                Unchecked="ToggleButton_Checked" />
         </ToolBar>
 
         <UniformGrid>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <oxy:PlotView x:Name="plotView1" ></oxy:PlotView>
-                <TextBlock Grid.Row="1" Height="25" HorizontalAlignment="Center">Dynamic</TextBlock>
-                <Button Grid.Row="2" Content="Reset" Width="100" Height="30" Click="Button_Click"></Button>
-
-
+                <oxy:PlotView x:Name="plotView1" />
+                <TextBlock
+                    Grid.Row="1"
+                    Height="25"
+                    HorizontalAlignment="Center">
+                    Dynamic
+                </TextBlock>
+                <Button
+                    Grid.Row="2"
+                    Width="100"
+                    Height="30"
+                    Click="Button_Click"
+                    Content="Reset" />
             </Grid>
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <oxy:PlotView x:Name="plotView2" ></oxy:PlotView>
-                <TextBlock Grid.Row="1" Height="25" HorizontalAlignment="Center">Static</TextBlock>
-
+                <oxy:PlotView x:Name="plotView2" />
+                <TextBlock
+                    Grid.Row="1"
+                    Height="25"
+                    HorizontalAlignment="Center">
+                    Static
+                </TextBlock>
             </Grid>
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <oxy:PlotView x:Name="plotView3" ></oxy:PlotView>
-                <TextBlock Grid.Row="1" Height="25" HorizontalAlignment="Center">Grouped</TextBlock>
-
+                <oxy:PlotView x:Name="plotView3" />
+                <TextBlock
+                    Grid.Row="1"
+                    Height="25"
+                    HorizontalAlignment="Center">
+                    Grouped
+                </TextBlock>
             </Grid>
         </UniformGrid>
     </DockPanel>

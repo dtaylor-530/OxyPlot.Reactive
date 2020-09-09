@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using System.Collections.Generic;
 
 namespace OxyPlot.Reactive
@@ -41,11 +42,8 @@ namespace OxyPlot.Reactive
         protected virtual Dictionary<TKey, ICollection<TValue>> GetDataPoints()
         {
             return comparer == default ?
-                  new Dictionary<TKey, ICollection<TValue>>() :
+                   new Dictionary<TKey, ICollection<TValue>>() :
                 new Dictionary<TKey, ICollection<TValue>>(comparer);
         }
     }
 }
-
-
-

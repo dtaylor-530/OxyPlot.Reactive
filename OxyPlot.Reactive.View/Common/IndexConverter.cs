@@ -7,13 +7,10 @@ using System.Windows.Data;
 
 namespace OxyPlot.Reactive.View.Common
 {
-
-    class IndexConverter : IMultiValueConverter
+    internal class IndexConverter : IMultiValueConverter
     {
-
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-
             if (values != null && values.Length >= 2 && values[1] is UIElement uiElement && values[0] is ItemsControl itemsControl)
             {
                 var index = 0;// Grid.GetColumn(uiElement);

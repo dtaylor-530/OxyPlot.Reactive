@@ -25,16 +25,14 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             pacedObs.Subscribe(new TimeModel<string>(plotView.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
 
-            var model2 = new TimeModel<string>(plotView2.Model??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
+            var model2 = new TimeModel<string>(plotView2.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
 
             var obs = TimeDataSource.Observe20();
             obs.Subscribe(model2);
             obs
-                  .ToObservableChangeSet()
+                .ToObservableChangeSet()
                 .Bind(out var collection)
                 .Subscribe();
-               
-
 
             (model2 as IObservable<ITimePoint<string>>).Subscribe(p =>
             {

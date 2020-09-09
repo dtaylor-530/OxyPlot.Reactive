@@ -1,11 +1,11 @@
-﻿using MoreLinq;
+﻿using LinqStatistics;
+using MoreLinq;
+using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
-using OxyPlot.Reactive.Infrastructure;
-using LinqStatistics;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
@@ -15,11 +15,10 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
         {
         }
 
-
         protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
         {
             var ees = collection
-                  .OrderBy(a => a.Value.Key);
+                    .OrderBy(a => a.Value.Key);
 
             var se = ranges != null ? Ranges() : NoRanges();
 
@@ -27,7 +26,6 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
             IEnumerable<ITimeRangePoint<TKey>> Ranges()
             {
-
                 return ees
                     .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
@@ -66,7 +64,7 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
         public override double Value =>
             Collection.Count > 1 ?
-              Collection.Average(a => a.Value/ (a.Var- DateTime.UnixEpoch).TotalDays)      
+                Collection.Average(a => a.Value / (a.Var - DateTime.UnixEpoch).TotalDays)
             : Collection.First().Value;
     }
 }

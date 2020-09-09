@@ -21,7 +21,6 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class MultiDateTimeGroupView : UserControl
     {
-
         public MultiDateTimeGroupView()
         {
             InitializeComponent();
@@ -69,7 +68,6 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 model2.OnNext(op);
             };
         }
-
 
         public class GroupViewModel<T, R, S> : ReactiveObject
         {

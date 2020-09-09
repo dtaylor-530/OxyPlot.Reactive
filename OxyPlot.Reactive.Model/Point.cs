@@ -2,17 +2,13 @@
 
 namespace OxyPlot.Reactive.Model
 {
-
-
     public struct Point<TVar> : I2Point<string, TVar> where TVar : IComparable<TVar>
     {
-
         public Point(TVar dateTime, double value, string key)
         {
             Var = dateTime;
             Value = value;
             Key = key ?? string.Empty;
-
         }
 
         public Point(TVar dateTime, double value) : this(dateTime, value, default)
@@ -40,6 +36,4 @@ namespace OxyPlot.Reactive.Model
             return new TimePoint(dateTime, value, key);
         }
     }
-
-
 }

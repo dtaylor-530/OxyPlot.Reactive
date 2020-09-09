@@ -7,9 +7,8 @@ namespace OxyPlot.Reactive.Infrastructure
 {
     using static ColorRepo;
 
-    static class OxyFactory
+    internal static class OxyFactory
     {
-
         static OxyFactory()
         {
             //Colors2 = Colors.Value.OrderBy(a => Guid.NewGuid()).Cycle().GetEnumerator();
@@ -46,7 +45,6 @@ namespace OxyPlot.Reactive.Infrastructure
             return lser;
         }
 
-
         public static LineSeries Build(IEnumerable<TimePoint> coll, string key)
         {
             var lser = new LineSeries
@@ -64,7 +62,6 @@ namespace OxyPlot.Reactive.Infrastructure
 
             return lser;
         }
-
 
         public static LineSeries Build<T>(IEnumerable<ITimePoint<T>> coll, string key)
         {
@@ -126,7 +123,6 @@ namespace OxyPlot.Reactive.Infrastructure
             };
         }
 
-
         //internal static Series.Series Build(ErrorBarItem[] points, string title)
         //{
         //    return new ErrorBarSeries
@@ -141,7 +137,7 @@ namespace OxyPlot.Reactive.Infrastructure
         //    };
 
         //}
-        
+
         internal static Series.Series Build(ErrorColumnItem[] points, string title)
         {
             return new ErrorColumnSeries
@@ -157,4 +153,3 @@ namespace OxyPlot.Reactive.Infrastructure
         }
     }
 }
-

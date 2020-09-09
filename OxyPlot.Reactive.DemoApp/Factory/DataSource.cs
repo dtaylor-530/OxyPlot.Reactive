@@ -7,21 +7,21 @@ using System.Reactive.Linq;
 
 namespace OxyPlot.Reactive.DemoApp.Factory
 {
-    static class DataSource
+    internal static class DataSource
     {
         private static Lazy<KeyValuePair<string, KeyValuePair<int, double>>[]> array;
 
         static DataSource()
         {
             array = new Lazy<KeyValuePair<string, KeyValuePair<int, double>>[]>(() =>
-             {
-                 var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
-                 {
-                     return KeyValuePair.Create(o.Key, KeyValuePair.Create(i, o.Value));
-                 }).ToArray();
+            {
+                var array = new DataFactory().GetLine().Take(1000).Select((o, i) =>
+                {
+                    return KeyValuePair.Create(o.Key, KeyValuePair.Create(i, o.Value));
+                }).ToArray();
 
-                 return array;
-             });
+                return array;
+            });
         }
 
         public static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> Observe1000()
@@ -53,6 +53,5 @@ namespace OxyPlot.Reactive.DemoApp.Factory
         {
             return observable.Select(a => KeyValuePair.Create(a.Key, KeyValuePair.Create((double)a.Value.Key, a.Value.Value)));
         }
-
     }
 }

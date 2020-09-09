@@ -12,6 +12,7 @@ namespace OxyPlot.Reactive.Model
         public DoubleRangePoint(Range<double> dateTimeRange, ICollection<IPoint<double, double>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
         {
         }
+
         public DoubleRangePoint(Range<double> dateTimeRange, ICollection<IPoint<double, double>> value) : this(dateTimeRange, value, default, Operation.Mean)
         {
         }

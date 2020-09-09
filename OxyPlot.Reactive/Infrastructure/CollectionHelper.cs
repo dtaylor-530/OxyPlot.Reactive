@@ -65,7 +65,6 @@ namespace OxyPlot.Reactive.Infrastructure
             }
         }
 
-
         //public static IEnumerable<IGrouping<ITimeRange, T>> GroupOn<T>(this IOrderedEnumerable<T> enumerable, IEnumerable<ITimeRange> ranges, Func<T, DateTime> predicate)
         //{
         //    return from r in ranges
@@ -91,17 +90,18 @@ namespace OxyPlot.Reactive.Infrastructure
         }
     }
 
-
-    class TimeGrouping1<T> : IGrouping<ITimeRange, T>
+    internal class TimeGrouping1<T> : IGrouping<ITimeRange, T>
     {
-
-        readonly List<T> elements = new List<T>();
+        private readonly List<T> elements = new List<T>();
 
         public ITimeRange Key { get; }
 
         public TimeGrouping1(ITimeRange key) => Key = key;
 
-        public TimeGrouping1(ITimeRange key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
+        public TimeGrouping1(ITimeRange key, params T[] elements) : this(key)
+        {
+            foreach (var elem in elements) Add(elem);
+        }
 
         public void Add(T element) => elements.Add(element);
 
@@ -110,16 +110,18 @@ namespace OxyPlot.Reactive.Infrastructure
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
-    class TimeGrouping<T> : IGrouping<Range<DateTime>, T>
+    internal class TimeGrouping<T> : IGrouping<Range<DateTime>, T>
     {
-
-        readonly List<T> elements = new List<T>();
+        private readonly List<T> elements = new List<T>();
 
         public Range<DateTime> Key { get; }
 
         public TimeGrouping(Range<DateTime> key) => Key = key;
 
-        public TimeGrouping(Range<DateTime> key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
+        public TimeGrouping(Range<DateTime> key, params T[] elements) : this(key)
+        {
+            foreach (var elem in elements) Add(elem);
+        }
 
         public void Add(T element) => elements.Add(element);
 
@@ -128,16 +130,18 @@ namespace OxyPlot.Reactive.Infrastructure
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
-    class DoubleGrouping<T> : IGrouping<Range<double>, T>
+    internal class DoubleGrouping<T> : IGrouping<Range<double>, T>
     {
-
-        readonly List<T> elements = new List<T>();
+        private readonly List<T> elements = new List<T>();
 
         public Range<double> Key { get; }
 
         public DoubleGrouping(Range<double> key) => Key = key;
 
-        public DoubleGrouping(Range<double> key, params T[] elements) : this(key) { foreach (var elem in elements) Add(elem); }
+        public DoubleGrouping(Range<double> key, params T[] elements) : this(key)
+        {
+            foreach (var elem in elements) Add(elem);
+        }
 
         public void Add(T element) => elements.Add(element);
 
@@ -146,4 +150,3 @@ namespace OxyPlot.Reactive.Infrastructure
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
-

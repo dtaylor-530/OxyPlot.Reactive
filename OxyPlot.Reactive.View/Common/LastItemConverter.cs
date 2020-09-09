@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using System.Windows;
 using System.Windows.Data;
 
 namespace OxyPlot.Reactive.View.Common
 {
-    class LastItemConverter : IMultiValueConverter
+    internal class LastItemConverter : IMultiValueConverter
     {
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-
             if (values != null && values.Length == 3 && values[2] is int count && count > 0)
             {
                 System.Windows.Controls.ItemsControl itemsControl = values[0] as System.Windows.Controls.ItemsControl;
@@ -30,5 +27,4 @@ namespace OxyPlot.Reactive.View.Common
             throw new NotImplementedException();
         }
     }
-
 }

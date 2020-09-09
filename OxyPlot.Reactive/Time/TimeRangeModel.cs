@@ -1,14 +1,14 @@
 ﻿#nullable enable
 
+using Itenso.TimePeriod;
+using OxyPlot.Reactive.Infrastructure;
+using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
 using System.Reactive.Concurrency;
-using Itenso.TimePeriod;
+using System.Reactive.Linq;
 
 namespace OxyPlot.Reactive
 {
@@ -21,6 +21,7 @@ namespace OxyPlot.Reactive
         public TimeRangeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
+
         protected override IEnumerable<ITimePoint<TKey>> Create(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> value)
         {
             return rangeType switch
@@ -47,7 +48,7 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        enum RangeType
+        private enum RangeType
         {
             None,
             Count = 1,

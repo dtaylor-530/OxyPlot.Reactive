@@ -14,7 +14,6 @@ namespace OxyPlot.Reactive.Multi
 {
     public class TimePlotGroupAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedGroupModel<TKey>, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>
     {
-
         private readonly ReplaySubject<TimeSpan> timeSpan = new ReplaySubject<TimeSpan>();
         private readonly ReplaySubject<Operation> operation = new ReplaySubject<Operation>();
         private readonly ErrorBarModel errorBarModel;

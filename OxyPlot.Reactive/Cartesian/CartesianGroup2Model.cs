@@ -1,21 +1,20 @@
 ﻿#nullable enable
 
+using MoreLinq;
+using OxyPlot.Reactive.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using OxyPlot.Reactive.Infrastructure;
 using System.Reactive.Concurrency;
-using MoreLinq;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using System.Threading.Tasks;
 
 namespace OxyPlot.Reactive
 {
     using LinqStatistics;
     using Model;
-
 
     public class CartesianGroup2Model<TKey> : CartesianModel<TKey, IDoublePoint<TKey>, IDoubleRangePoint<TKey>>, IObservable<(double size, Range<double>[] ranges)>, IObserver<Operation>, IObserver<int>
     {
@@ -24,10 +23,8 @@ namespace OxyPlot.Reactive
         private Operation? operation;
         protected Range<double>[]? ranges;
 
-
         public CartesianGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
-
         }
 
         //protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
@@ -73,7 +70,6 @@ namespace OxyPlot.Reactive
 
             IEnumerable<IDoubleRangePoint<TKey>> Ranges()
             {
-
                 return ees
                     .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
@@ -104,7 +100,6 @@ namespace OxyPlot.Reactive
             span = value;
             refreshSubject.OnNext(Unit.Default);
         }
-
 
         public void OnNext(Operation value)
         {

@@ -1,26 +1,9 @@
 ﻿#nullable enable
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Threading.Tasks;
-using OxyPlot.Reactive.Infrastructure;
-using System.Reactive.Concurrency;
-using MoreLinq;
-using System.Reactive.Subjects;
-
 namespace OxyPlot.Reactive
 {
-    using Itenso.TimePeriod;
-    using Model;
-
-
-
     //public class MultiDateTimeAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
     //{
-
     //    public MultiDateTimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
     //    {
     //    }
@@ -36,8 +19,6 @@ namespace OxyPlot.Reactive
 
     //}
 
-
-
     //public class Group2Model<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObservable<ITimeRange[]>, IObserver<Operation>, IObserver<TimeSpan>
     //{
     //    private readonly Subject<ITimeRange[]> rangesSubject = new Subject<ITimeRange[]>();
@@ -45,13 +26,9 @@ namespace OxyPlot.Reactive
     //    private TimeSpan? timeSpan; private Operation? operation;
     //    protected ITimeRange[]? ranges;
 
-
     //    public Group2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
     //    {
-
     //    }
-
-
 
     //    protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
     //    {
@@ -63,7 +40,6 @@ namespace OxyPlot.Reactive
     //            _ => throw new ArgumentOutOfRangeException("fdssffd")
     //        };
     //    }
-
 
     //    protected override async void Modify()
     //    {
@@ -86,8 +62,6 @@ namespace OxyPlot.Reactive
     //        }
     //    }
 
-
-
     //    protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
     //    {
     //        var ees = collection
@@ -99,7 +73,6 @@ namespace OxyPlot.Reactive
 
     //        ITimeRangePoint<TKey>[] Ranges()
     //        {
-
     //            return ees
     //                .GroupOn(ranges, a => a.Value.Key)
     //                .Where(a => a.Any())
@@ -132,7 +105,6 @@ namespace OxyPlot.Reactive
     //        rangeType = RangeType.TimeSpan;
     //        refreshSubject.OnNext(Unit.Default);
     //    }
-
 
     //    public void OnNext(Operation value)
     //    {

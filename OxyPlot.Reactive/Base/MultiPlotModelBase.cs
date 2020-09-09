@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using MoreLinq;
 using OxyPlot.Reactive.Infrastructure;
 using System;
@@ -13,7 +14,6 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
-
     public abstract class MultiPlotModel2Base<T, TR, TRS, TRS2> : MultiPlotModelBase<T, TRS>, IObservable<TRS2>
     {
         public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
@@ -25,10 +25,9 @@ namespace OxyPlot.Reactive
         }
 
         public abstract IDisposable Subscribe(IObserver<TRS2> observer);
-
     }
 
-    public abstract class MultiPlotModel2Base<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>> 
+    public abstract class MultiPlotModel2Base<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>>
     {
         public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
@@ -47,7 +46,6 @@ namespace OxyPlot.Reactive
         protected readonly PlotModel plotModel;
         protected readonly object lck = new object();
         protected bool showAll;
-
 
         public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default) : this(plotModel, comparer, refreshRate)
         {
@@ -69,7 +67,9 @@ namespace OxyPlot.Reactive
                 CongfigureBindings(plotController);
         }
 
-        protected virtual void ModifyPlotModel() { }
+        protected virtual void ModifyPlotModel()
+        {
+        }
 
         public virtual void OnNext(KeyValuePair<TKey, TValue> item)
         {
@@ -97,7 +97,6 @@ namespace OxyPlot.Reactive
                     plotModel.InvalidatePlot(true);
                 }
             });
-
         }
 
         public void Remove(ISet<TKey> names)
@@ -127,9 +126,7 @@ namespace OxyPlot.Reactive
 
         public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiPlotModelBase<TKey, TValue>)}", error);
 
-
         protected abstract void Refresh(IList<Unit> units);
-
 
         protected void CongfigureBindings(IController pc)
         {
@@ -138,16 +135,12 @@ namespace OxyPlot.Reactive
             //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Shift);
 
             pc.BindMouseDown(OxyMouseButton.Left, new DelegatePlotCommand<OxyMouseDownEventArgs>(
-                         (view, controller, args) =>
-                            controller.AddMouseManipulator(view, new TrackerManipulator1(view), args)));
+                             (view, controller, args) =>
+                             controller.AddMouseManipulator(view, new TrackerManipulator1(view), args)));
         }
-
 
         IScheduler? IMixedScheduler.Scheduler => scheduler;
 
         SynchronizationContext? IMixedScheduler.Context => context;
     }
 }
-
-
-

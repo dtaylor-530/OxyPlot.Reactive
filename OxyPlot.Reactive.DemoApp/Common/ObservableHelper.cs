@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
-using System.Text;
 
 namespace OxyPlot.Reactive.DemoApp.Common
 {
-    static class ObservableHelper
+    internal static class ObservableHelper
     {
         // James World
         //http://www.zerobugbuild.com/?p=323
@@ -24,12 +23,10 @@ namespace OxyPlot.Reactive.DemoApp.Common
         public static IObservable<(double min, double max)> ToMinMax<T>(this IObservable<T> source, Func<T, double> func)
         {
             return source.Select(func).Scan((min: double.MaxValue, max: double.MinValue), (a, b) =>
-              {
-                  return (Math.Min(a.min, b), Math.Max(a.max, b));
-              }).Skip(1);
+                {
+                    return (Math.Min(a.min, b), Math.Max(a.max, b));
+                }).Skip(1);
         }
-
-
 
         /// <summary>
         /// https://stackoverflow.com/questions/7597773/does-reactive-extensions-support-rolling-buffers?noredirect=1
@@ -125,8 +122,5 @@ namespace OxyPlot.Reactive.DemoApp.Common
                 };
             });
         }
-
-
     }
 }
-

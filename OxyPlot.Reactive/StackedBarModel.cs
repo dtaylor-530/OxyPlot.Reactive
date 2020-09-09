@@ -1,4 +1,5 @@
 ﻿#nullable enable
+
 using OxyPlot.Axes;
 using OxyPlot.Series;
 using System;
@@ -19,13 +20,13 @@ namespace OxyPlot.Reactive
         private readonly ReplaySubject<bool> stackSubject = new ReplaySubject<bool>();
         private readonly SynchronizationContext scheduler;
         private IDisposable? disposable;
-        readonly object lck = new object();
+        private readonly object lck = new object();
+
         public StackedBarModel(SynchronizationContext? scheduler = null)
         {
             this.scheduler = scheduler ?? SynchronizationContext.Current;
             model = new Lazy<PlotModel>(() => PlotBuilder.Build());
             Init();
-
         }
 
         private void Init()
@@ -56,7 +57,6 @@ namespace OxyPlot.Reactive
             //throw new NotImplementedException();
         }
 
-
         public void OnNext(bool value)
         {
             stackSubject.OnNext(value);
@@ -66,7 +66,6 @@ namespace OxyPlot.Reactive
         {
             itemSubject.OnNext(value);
         }
-
 
         public Unit Combine(IList<(string groupkey, string key, double value)> items, bool stack)
         {
@@ -94,7 +93,6 @@ namespace OxyPlot.Reactive
 
                         s.Items.Add(new ColumnItem(newVal));
                     }
-
                 }
                 if (model.Value.DefaultXAxis is CategoryAxis axis)
                 {
@@ -110,7 +108,7 @@ namespace OxyPlot.Reactive
             }
         }
 
-        int columnCount = 0;
+        private int columnCount = 0;
 
         private ColumnSeries FindSeries(string key, IEnumerable<ColumnSeries> series, bool stack)
         {
@@ -135,8 +133,7 @@ namespace OxyPlot.Reactive
             return cSerie;
         }
 
-
-        IEnumerable<ColumnSeries> EnumerateColumnSeries(bool stack)
+        private IEnumerable<ColumnSeries> EnumerateColumnSeries(bool stack)
         {
             for (int i = 0; i < columnCount; i++)
             {
@@ -164,11 +161,7 @@ namespace OxyPlot.Reactive
                 }
             }, null);
         }
-
-
     }
-
-
 
     public static class PlotBuilder
     {
@@ -180,10 +173,8 @@ namespace OxyPlot.Reactive
 
             return model;
 
-
             static PlotModel Construct(Axis xaxis, Axis yaxis, List<Series.Series> s1)
             {
-
                 xaxis.MajorGridlineStyle = LineStyle.Solid;
                 xaxis.MinorGridlineStyle = LineStyle.Dot;
                 yaxis.MajorGridlineStyle = LineStyle.Dot;
@@ -216,9 +207,5 @@ namespace OxyPlot.Reactive
                 return (xaxis, yaxis, s1);
             }
         }
-
-
-
-
     }
 }

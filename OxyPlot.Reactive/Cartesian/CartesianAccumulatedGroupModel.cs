@@ -7,7 +7,6 @@ namespace OxyPlot.Reactive
 {
     public class CartesianAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
     {
-
         public CartesianAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
         }
@@ -20,6 +19,5 @@ namespace OxyPlot.Reactive
         {
             return x0 + x1;
         }
-
     }
 }
