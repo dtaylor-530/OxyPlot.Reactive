@@ -15,7 +15,9 @@ using System.Threading.Tasks;
 namespace OxyPlot.Reactive
 {
 
-    public abstract class MultiPlotModel<TKey, TVar, TType> : MultiPlotModel<TKey, TVar, TType, TType>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar>
+    public abstract class MultiPlotModel<TKey, TVar, TType> : MultiPlotModel<TKey, TVar, TType, TType>, IObserver<int>
+        where TType : Model.IDoublePoint<TKey, TVar>
+         where TVar : IComparable<TVar>
     {
         public MultiPlotModel(PlotModel model, TVar max, TVar min, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, max, min, comparer, scheduler: scheduler)
         {
@@ -24,10 +26,12 @@ namespace OxyPlot.Reactive
 
 
 
-    public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel2Base<TKey, TVar, TType3>, IObservable<TType3[]>, IObserver<int> where TType : Model.IDoublePoint<TKey, TVar> 
+    public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel2Base<TKey, TVar, TType, TType3>, IObservable<TType3[]>, IObserver<int>
+        where TType : Model.IDoublePoint<TKey, TVar>
+        where TVar : IComparable<TVar>
     {
         protected readonly Subject<TType3> subject = new Subject<TType3>();
-        protected readonly List<KeyValuePair<TKey, KeyValuePair<TVar, double>>> list = new List<KeyValuePair<TKey, KeyValuePair<TVar, double>>>();
+        protected readonly List<KeyValuePair<TKey, TType>> list = new List<KeyValuePair<TKey, TType>>();
         private readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
         protected int? takeLastCount;
 
@@ -58,7 +62,7 @@ namespace OxyPlot.Reactive
 
             _ = (this as IMixedScheduler).ScheduleAction(async () =>
             {
-                KeyValuePair<TKey, ICollection<KeyValuePair<TVar, double>>>[]? dataPoints;
+                KeyValuePair<TKey, ICollection<TType>>[]? dataPoints;
 
 
                 this.PreModify();
@@ -81,8 +85,7 @@ namespace OxyPlot.Reactive
                 {
                     _ = await Task.Run(() =>
                     {
-                        lock (DataPoints)
-                            return CreateMany(DataPoints).ToArray();
+                        return CreateMany(dataPoints).ToArray();
 
                     }).ContinueWith(async points =>
                     {
@@ -109,51 +112,36 @@ namespace OxyPlot.Reactive
 
         }
 
-        protected virtual IEnumerable<TType3> CreateSingle(KeyValuePair<TKey, ICollection<KeyValuePair<TVar, double>>> keyValue)
+        protected virtual IEnumerable<TType3> CreateSingle(KeyValuePair<TKey, ICollection<TType>> keyValue)
         {
             return Create(Flatten(keyValue.Value, keyValue.Key));
         }
 
-        protected virtual IEnumerable<TType3> CreateMany(IEnumerable<KeyValuePair<TKey, ICollection<KeyValuePair<TVar, double>>>> keyValues)
+        protected virtual IEnumerable<TType3> CreateMany(IEnumerable<KeyValuePair<TKey, ICollection<TType>>> keyValues)
         {
             return Create(Flatten(keyValues.SelectMany(a => a.Value)));
         }
 
-        IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> Flatten(IEnumerable<KeyValuePair<TVar, double>> value, TKey key = default)
+        IEnumerable<KeyValuePair<TKey, TType>> Flatten(IEnumerable<TType> value, TKey key = default)
         => value.ToArray().Select(c => KeyValuePair.Create(key, c));
 
-        protected virtual IEnumerable<TType3> Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> value)
+        protected virtual IEnumerable<TType3> Create(IEnumerable<KeyValuePair<TKey, TType>> value)
         {
             return takeLastCount.HasValue ?
                               Enumerable.TakeLast(ToDataPoints(value), takeLastCount.Value) :
                               ToDataPoints(value);
         }
 
-        protected virtual void AddToDataPoints(ICollection<KeyValuePair<TKey, KeyValuePair<TVar, double>>> items)
+        protected override void AddToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> items)
         {
-            try
-            {
-                Min = CalculateMin(items);
-                Max = CalculateMax(items);
-
-                lock (DataPoints)
-                {
-                    foreach (var item in items)
-                    {
-                        if (!DataPoints.ContainsKey(item.Key))
-                            DataPoints[item.Key] = new RankedMap<TVar, double>();
-                        DataPoints[item.Key].Add(item.Value);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            Min = CalculateMin(items);
+            Max = CalculateMax(items);
+            base.AddToDataPoints(items);
         }
 
-        protected abstract TVar CalculateMin(ICollection<KeyValuePair<TKey, KeyValuePair<TVar, double>>> items);
-        protected abstract TVar CalculateMax(ICollection<KeyValuePair<TKey, KeyValuePair<TVar, double>>> items);
+
+        protected abstract TVar CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items);
+        protected abstract TVar CalculateMax(IEnumerable<KeyValuePair<TKey, TType>> items);
 
 
         protected virtual void PreModify()
@@ -180,18 +168,10 @@ namespace OxyPlot.Reactive
             }
         }
 
-
         protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
 
 
-        protected override void AddToDataPoints(KeyValuePair<TKey, KeyValuePair<TVar, double>> item)
-        {
-            lock (list)
-                list.Add(item);
-        }
-
-        protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<TVar, double>>> collection);
-
+        protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection);
 
 
         public override IDisposable Subscribe(IObserver<TType3> observer)
@@ -205,17 +185,17 @@ namespace OxyPlot.Reactive
             refreshSubject.OnNext(Unit.Default);
         }
 
-        public abstract void OnNext(TType item);
-
+        public override void OnNext(KeyValuePair<TKey, TType> item)
+        {
+            lock (list)
+                list.Add(item);
+            refreshSubject.OnNext(Unit.Default);
+        }
         public IDisposable Subscribe(IObserver<TType3[]> observer)
         {
             return pointsSubject.Subscribe(observer);
         }
     }
-
-
-
-
 }
 
 

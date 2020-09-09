@@ -14,7 +14,7 @@ using e = System.Linq.Enumerable;
 namespace OxyPlot.Reactive
 {
 
-    public abstract class MultiPlotModel2Base<T, TR, TRS> : MultiPlotModelBase<T, KeyValuePair<TR, double>>, IObservable<TRS>
+    public abstract class MultiPlotModel2Base<T, TR, TRS, TRS2> : MultiPlotModelBase<T, TRS>, IObservable<TRS2>
     {
         public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
@@ -24,7 +24,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        public abstract IDisposable Subscribe(IObserver<TRS> observer);
+        public abstract IDisposable Subscribe(IObserver<TRS2> observer);
 
     }
 
@@ -71,9 +71,9 @@ namespace OxyPlot.Reactive
 
         protected virtual void ModifyPlotModel() { }
 
-        public void OnNext(KeyValuePair<TKey, TValue> item)
+        public virtual void OnNext(KeyValuePair<TKey, TValue> item)
         {
-            this.AddToDataPoints(item);
+            this.AddToDataPoints(new[] { item });
             refreshSubject.OnNext(Unit.Default);
         }
 
@@ -103,7 +103,6 @@ namespace OxyPlot.Reactive
         public void Remove(ISet<TKey> names)
         {
             (this as IMixedScheduler).ScheduleAction(() =>
-
             {
                 lock (DataPoints)
                     RemoveFromDataPoints(names);

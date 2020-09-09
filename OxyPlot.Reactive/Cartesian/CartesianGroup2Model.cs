@@ -62,14 +62,12 @@ namespace OxyPlot.Reactive
             }
         }
 
-
-
-        protected override IEnumerable<IDoubleRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<double, double>>> collection)
+        protected override IEnumerable<IDoubleRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, IDoublePoint<TKey>>> collection)
         {
             var ees = collection
                 .OrderBy(a => a.Value.Key);
 
-            var se = ranges != null ? Ranges() : NoRanges();
+            var se = (ranges != null) ? Ranges() : NoRanges();
 
             return se.ToArray();
 
@@ -77,11 +75,11 @@ namespace OxyPlot.Reactive
             {
 
                 return ees
-                    .GroupOn(ranges, a => a.Value.Key)
+                    .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
                     .Scan((default(DoubleRangePoint<TKey>), default(IDoublePoint<TKey>)), (ac, bc) =>
                     {
-                        var ss = bc.Scan(ac.Item2, (a, b) => new DoublePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
+                        var ss = bc.Scan(ac.Item2, (a, b) => new DoublePoint<TKey>(b.Value.Var, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
                         .Cast<IDoublePoint<TKey>>()
                         .Skip(1)
                         .ToArray();
@@ -95,7 +93,7 @@ namespace OxyPlot.Reactive
 
             IEnumerable<IDoubleRangePoint<TKey>> NoRanges()
             {
-                return ees.Scan(default(DoublePoint<TKey>), (a, b) => new DoublePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
+                return ees.Scan(default(DoublePoint<TKey>), (a, b) => new DoublePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key))
                     .Select(a => new DoubleRangePoint<TKey>(new Range<double>(a.Var, a.Var), new IDoublePoint<TKey>[] { a }, a.Key))
                     .Skip(1);
             }

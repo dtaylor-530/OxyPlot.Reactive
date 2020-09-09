@@ -32,7 +32,7 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double>
+    public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double> where TVar : IComparable<TVar>
     {
     }
 
@@ -46,7 +46,7 @@ namespace OxyPlot.Reactive.Model
     }
 
 
-    public interface I2Point<TKey, TValue> : IDoublePoint<TKey, TValue>, IKey<TKey>
+    public interface I2Point<TKey, TVar> : IDoublePoint<TKey, TVar>, IKey<TKey> where TVar : IComparable<TVar>
     {
     }
 
@@ -58,10 +58,10 @@ namespace OxyPlot.Reactive.Model
 
     public interface ITimeRange<T> : IRange<DateTime>
     {
-   
+
     }
 
-    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>, IPoint<DateTime,double>
+    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>, IPoint<DateTime, double>
     {
     }
 

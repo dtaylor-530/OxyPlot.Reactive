@@ -34,11 +34,6 @@ namespace OxyPlot.Reactive
         {
         }
 
-        public override void OnNext(TType item)
-        {
-            AddToDataPoints(KeyValuePair.Create(item.Key, KeyValuePair.Create(item.Var, item.Value)));
-            refreshSubject.OnNext(Unit.Default);
-        }
         protected override void ModifyPlotModel()
         {
             plotModel.Axes.Add(new DateTimeAxis());
@@ -51,21 +46,21 @@ namespace OxyPlot.Reactive
             return point;
         }
 
-        protected override DateTime CalculateMax(ICollection<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> items)
+        protected override DateTime CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items)
         {
-            return items.Any() ? new DateTime(Math.Max(items.Max(a => a.Value.Key.Ticks), Max.Ticks)) : Max;
+            return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Var.Ticks), Min.Ticks)) : Min;
         }
 
-        protected override DateTime CalculateMin(ICollection<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> items)
+        protected override DateTime CalculateMax(IEnumerable<KeyValuePair<TKey, TType>> items)
         {
-            return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Key.Ticks), Min.Ticks)) : Min;
+            return items.Any() ? new DateTime(Math.Max(items.Max(a => a.Value.Var.Ticks), Max.Ticks)) : Max;
         }
 
-        protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)    => 
-            collection
-            .Scan(new TimePoint<TKey>(), (xy0, xy) => new TimePoint<TKey>(xy.Value.Key, Combine(xy0.Value, xy.Value.Value), xy.Key))         
-            .Cast<TType3>()
-            .Skip(1);
 
+        protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection)            =>
+                collection
+                .Scan(new TimePoint<TKey>(), (xy0, xy) => new TimePoint<TKey>(xy.Value.Var, Combine(xy0.Value, xy.Value.Value), xy.Key))
+                .Cast<TType3>()
+                .Skip(1);
     }
 }

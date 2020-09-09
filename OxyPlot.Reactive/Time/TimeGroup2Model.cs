@@ -80,12 +80,10 @@ namespace OxyPlot.Reactive
             }
         }
 
-
-
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
         {
             var ees = collection
-                .OrderBy(a => a.Value.Key);
+                 .OrderBy(a => a.Value.Key);
 
             var se = ranges != null ? Ranges() : NoRanges();
 
@@ -95,11 +93,11 @@ namespace OxyPlot.Reactive
             {
 
                 return ees
-                    .GroupOn(ranges, a => a.Value.Key)
+                    .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
                     .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
                     {
-                        var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
+                        var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
                         .Cast<ITimePoint<TKey>>()
                         .Skip(1)
                         .ToArray();
@@ -113,12 +111,11 @@ namespace OxyPlot.Reactive
 
             IEnumerable<ITimeRangePoint<TKey>> NoRanges()
             {
-                return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key))
+                return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key))
                     .Select(a => new TimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key))
                     .Skip(1);
             }
         }
-
         public void OnNext(TimeSpan value)
         {
             timeSpan = value;

@@ -21,15 +21,14 @@ namespace OxyPlot.Reactive
         public TimeRangeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
-
-        protected override  IEnumerable<ITimePoint<TKey>> Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> value)
+        protected override IEnumerable<ITimePoint<TKey>> Create(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> value)
         {
             return rangeType switch
             {
                 RangeType.None => ToDataPoints(value),
                 RangeType.Count when takeLastCount.HasValue => Enumerable.TakeLast(ToDataPoints(value), takeLastCount.Value),
-                RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(value.ToArray().Filter(timeSpan.Value, a => a.Value.Key)),
-                RangeType.DateTimeRange when dateTimeRange != null => ToDataPoints(value.Filter(dateTimeRange, a => a.Value.Key)),
+                RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(value.ToArray().Filter(timeSpan.Value, a => a.Value.Var)),
+                RangeType.DateTimeRange when dateTimeRange != null => ToDataPoints(value.Filter(dateTimeRange, a => a.Value.Var)),
                 _ => throw new ArgumentOutOfRangeException("fdssffd")
             };
         }

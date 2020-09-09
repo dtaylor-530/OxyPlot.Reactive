@@ -35,7 +35,7 @@ namespace OxyPlot.Reactive.Multi
 
     public abstract class MultiTimePlotModel<TGroupKey, TKey, TType, TType2> : MultiTimePlotModel<TGroupKey, TKey, TType, TType2, TType2> where TType2 : ITimePoint<TKey> where TType : TimeModel<TKey, TType2, TType2>
     {
-        public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null):base(comparer, scheduler, synchronizationContext)
+        public MultiTimePlotModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) : base(comparer, scheduler, synchronizationContext)
         {
 
         }
@@ -85,7 +85,7 @@ namespace OxyPlot.Reactive.Multi
                         Models[item.Key] = CreateModel(plotModel);
                         PlotModelChanges.OnNext(Create(item.Key, plotModel));
                     }
-                    Models[item.Key].OnNext(item.Value);
+                    Models[item.Key].OnNext(KeyValuePair.Create(item.Value.Key, item.Value));
                 });
             }
         }

@@ -4,10 +4,10 @@ namespace OxyPlot.Reactive.Model
 {
 
 
-    public struct Point<T> : I2Point<string, T>
+    public struct Point<TVar> : I2Point<string, TVar> where TVar : IComparable<TVar>
     {
 
-        public Point(T dateTime, double value, string key)
+        public Point(TVar dateTime, double value, string key)
         {
             Var = dateTime;
             Value = value;
@@ -15,13 +15,13 @@ namespace OxyPlot.Reactive.Model
 
         }
 
-        public Point(T dateTime, double value) : this(dateTime, value, default)
+        public Point(TVar dateTime, double value) : this(dateTime, value, default)
         {
         }
 
         public string Key { get; }
 
-        public T Var { get; }
+        public TVar Var { get; }
 
         public double Value { get; }
 

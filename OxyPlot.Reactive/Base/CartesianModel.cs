@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using OxyPlot.Series;
 using MoreLinq;
@@ -34,12 +33,6 @@ namespace OxyPlot.Reactive
         {
         }
 
-        public override void OnNext(TType item)
-        {
-            AddToDataPoints(KeyValuePair.Create(item.Key, KeyValuePair.Create(item.Var, item.Value)));
-            refreshSubject.OnNext(Unit.Default);
-        }
-
         protected override TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items)
         {
             var x = series.InverseTransform(e.Position).X;
@@ -47,20 +40,19 @@ namespace OxyPlot.Reactive
             return point;
         }
 
-        protected override double CalculateMax(ICollection<KeyValuePair<TKey, KeyValuePair<double, double>>> items)
+        protected override double CalculateMax(IEnumerable<KeyValuePair<TKey, TType>> items)
         {
-            return items.Any() ? Math.Max(items.Max(a => a.Value.Key), Max) : Max;
+            return items.Any() ? Math.Max(items.Max(a => a.Value.Var), Max) : Max;
         }
 
-        protected override double CalculateMin(ICollection<KeyValuePair<TKey, KeyValuePair<double, double>>> items)
+        protected override double CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items)
         {
-            return items.Any() ? Math.Min(items.Min(a => a.Value.Key), Min) : Min;
+            return items.Any() ? Math.Min(items.Min(a => a.Value.Var), Min) : Min;
         }
 
-
-        protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<double, double>>> collection)
+        protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection)
             => collection
-            .Scan(new DoublePoint<TKey>(), (xy0, xy) => new DoublePoint<TKey>(xy.Value.Key, Combine(xy0.Value, xy.Value.Value), xy.Key))
+            .Scan(new DoublePoint<TKey>(), (xy0, xy) => new DoublePoint<TKey>(xy.Value.Var, Combine(xy0.Value, xy.Value.Value), xy.Key))
             .Cast<TType3>()
             .Skip(1);
     }

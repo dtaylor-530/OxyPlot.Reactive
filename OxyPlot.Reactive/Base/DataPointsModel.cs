@@ -14,14 +14,17 @@ namespace OxyPlot.Reactive
             this.comparer = comparer;
         }
 
-        protected virtual void AddToDataPoints(KeyValuePair<TKey, TValue> item)
+        protected virtual void AddToDataPoints(IEnumerable<KeyValuePair<TKey, TValue>> items)
         {
-            var newdp = item.Value;
             lock (DataPoints)
             {
-                if (!DataPoints.ContainsKey(item.Key))
-                    DataPoints[item.Key] = new List<TValue>();
-                DataPoints[item.Key].Add(newdp);
+                foreach (var item in items)
+                {
+                    var newdp = item.Value;
+                    if (!DataPoints.ContainsKey(item.Key))
+                        DataPoints[item.Key] = new List<TValue>();
+                    DataPoints[item.Key].Add(newdp);
+                }
             }
         }
 

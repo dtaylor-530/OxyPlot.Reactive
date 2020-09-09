@@ -18,7 +18,7 @@ namespace OxyPlot.Reactive
     /// Groups each series individually
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class TimeGroupModel<TKey> : TimeModel<TKey, ITimeRangePoint<TKey>>, IObserver<TimeSpan>
+    public class TimeGroupModel<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<TimeSpan>
     {
         private TimeSpan? timeSpan;
         private Operation? operation;
@@ -27,24 +27,24 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
         {
             var ordered = collection
                 .OrderBy(a => a.Value.Key);
 
             if (timeSpan.HasValue)
             {
-                var arr = ordered.GroupOn(timeSpan.Value, a => a.Value.Key).ToArray();
+                var arr = ordered.GroupOn(timeSpan.Value, a => a.Value.Var).ToArray();
                 return arr.Select(ac =>
                 {
-                    var ss = ac.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value), b.Key)).Cast<ITimePoint<TKey>>()
+                    var ss = ac.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key)).Cast<ITimePoint<TKey>>()
                     .Skip(1).ToArray();
                     return new TimeRangePoint<TKey>(ac.Key, ss, ac.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
                 }).Cast<ITimeRangePoint<TKey>>().ToArray();
             }
 
             return ordered
-                .Scan(default(TimeRangePoint<TKey>), (a, b) => new TimeRangePoint<TKey>(new Range<DateTime>(b.Value.Key, b.Value.Key), new ITimePoint<TKey>[] { new TimePoint<TKey>(b.Value.Key, Combine(a.Value, b.Value.Value)) }, b.Key))
+                .Scan(default(TimeRangePoint<TKey>), (a, b) => new TimeRangePoint<TKey>(new Range<DateTime>(b.Value.Var, b.Value.Var), new ITimePoint<TKey>[] { new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value)) }, b.Key))
                 .Cast<ITimeRangePoint<TKey>>().Skip(1).ToArray();
         }
 
