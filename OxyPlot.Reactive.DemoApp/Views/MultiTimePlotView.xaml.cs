@@ -2,8 +2,8 @@
 using Endless;
 using MoreLinq;
 using OxyPlot.Axes;
-using OxyPlot.Reactive.DemoApp.Common;
-using OxyPlot.Reactive.DemoApp.Factory;
+using OxyPlot.Data.Factory;
+using OxyPlot.Data.Common;
 using OxyPlot.Reactive.Model;
 using OxyPlot.Reactive.Multi;
 using ReactiveUI;
@@ -40,7 +40,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             pacedObs.Subscribe(mplots);
             mplots
                 .Select((a, i) => (a, i))
-            .ToObservableChangeSet(a => a.i)
+                .ToObservableChangeSet(a => a.i)
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
                 .Transform(abc => new { model = abc.a, index = abc.i })

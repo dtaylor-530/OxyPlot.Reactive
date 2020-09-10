@@ -2,8 +2,8 @@
 using LinqStatistics;
 using MoreLinq;
 using OxyPlot.Reactive;
-using OxyPlot.Reactive.DemoApp.Common;
-using OxyPlot.Reactive.DemoApp.Factory;
+using OxyPlot.Data.Factory;
+using OxyPlot.Data.Common;
 using OxyPlot.Reactive.Model;
 using ReactiveUI;
 using System;

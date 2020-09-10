@@ -1,5 +1,5 @@
-﻿using OxyPlot.Reactive.DemoApp.Common;
-using OxyPlot.Reactive.DemoApp.Factory;
+﻿using OxyPlot.Data.Common;
+using OxyPlot.Data.Factory;
 using ReactiveUI;
 using System;
 using System.Windows.Controls;

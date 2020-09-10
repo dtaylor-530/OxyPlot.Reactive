@@ -1,13 +1,13 @@
 ﻿using Itenso.TimePeriod;
-using OxyPlot.Reactive.DemoApp.Common;
-using OxyPlot.Reactive.DemoApp.Factory;
+using OxyPlot.Data.Common;
+using OxyPlot.Data.Factory;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using static OxyPlot.Reactive.DemoApp.Factory.TimeDataSource;
+using static OxyPlot.Data.Factory.TimeDataSource;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
