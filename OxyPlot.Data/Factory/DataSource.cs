@@ -1,13 +1,12 @@
 ﻿using Endless;
-using OxyPlotEx.DemoApp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace OxyPlot.Reactive.DemoApp.Factory
+namespace OxyPlot.Data.Factory
 {
-    internal static class DataSource
+    public static class DataSource
     {
         private static Lazy<KeyValuePair<string, KeyValuePair<int, double>>[]> array;
 

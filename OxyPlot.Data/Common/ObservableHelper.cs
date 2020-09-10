@@ -4,9 +4,9 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace OxyPlot.Reactive.DemoApp.Common
+namespace OxyPlot.Data.Common
 {
-    internal static class ObservableHelper
+    public static class ObservableHelper
     {
         // James World
         //http://www.zerobugbuild.com/?p=323

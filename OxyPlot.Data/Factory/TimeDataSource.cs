@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace OxyPlot.Reactive.DemoApp.Factory
+namespace OxyPlot.Data.Factory
 {
-    internal static class TimeDataSource
+    public static class TimeDataSource
     {
         public static IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> Observe1000PlusMinus() => DataSource.Observe1000PlusMinus().ToDateTimeObservable();
 

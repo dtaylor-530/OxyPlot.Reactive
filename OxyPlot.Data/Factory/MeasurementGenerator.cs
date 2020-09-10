@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OxyPlotEx.DemoApp
+namespace OxyPlot.Data.Factory
 {
     internal static class MeasurementGenerator
     {
