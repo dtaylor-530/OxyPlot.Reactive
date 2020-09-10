@@ -64,35 +64,9 @@ namespace OxyPlot.Reactive
 
                 lock (DataPoints)
                     dataPoints = DataPoints.ToArray();
-                foreach (var keyValue in dataPoints)
-                {
-                    _ = await Task.Run(() =>
-                    {
-                        return CreateSingle(keyValue).ToArray();
-                    }).ContinueWith(async points =>
-                    {
-                        AddToSeries(await points, keyValue.Key?.ToString() ?? string.Empty);
-                    });
-                }
 
-                if (showAll || pointsSubject.HasObservers)
-                {
-                    _ = await Task.Run(() =>
-                    {
-                        return CreateMany(dataPoints).ToArray();
-                    }).ContinueWith(async points =>
-                    {
-                        var taskPoints = await points;
+                await AddAllPointsToSeries(dataPoints);
 
-                        if (showAll)
-                            AddToSeries(taskPoints, "All");
-
-                        if (pointsSubject.HasObservers)
-                        {
-                            pointsSubject.OnNext(taskPoints);
-                        }
-                    });
-                }
                 try
                 {
                     plotModel.InvalidatePlot(true);
@@ -101,6 +75,40 @@ namespace OxyPlot.Reactive
                 {
                 }
             });
+        }
+
+
+        protected virtual async Task AddAllPointsToSeries(KeyValuePair<TKey, ICollection<TType>>[] dataPoints)
+        {
+            foreach (var keyValue in dataPoints)
+            {
+                _ = await Task.Run(() =>
+                {
+                    return CreateSingle(keyValue).ToArray();
+                }).ContinueWith(async points =>
+                {
+                    AddToSeries(await points, keyValue.Key?.ToString() ?? string.Empty);
+                });
+            }
+
+            if (showAll || pointsSubject.HasObservers)
+            {
+                _ = await Task.Run(() =>
+                {
+                    return CreateMany(dataPoints).ToArray();
+                }).ContinueWith(async points =>
+                {
+                    var taskPoints = await points;
+
+                    if (showAll)
+                        AddToSeries(taskPoints, "All");
+
+                    if (pointsSubject.HasObservers)
+                    {
+                        pointsSubject.OnNext(taskPoints);
+                    }
+                });
+            }
         }
 
         protected virtual IEnumerable<TType3> CreateSingle(KeyValuePair<TKey, ICollection<TType>> keyValue)
