@@ -6,12 +6,18 @@
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"
-    xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
+    xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views" xmlns:local="clr-namespace:OxyPlot.Reactive.DemoApp"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <ResourceDictionary Source="/Themes/Generic.xaml" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <local:Converter x:Key="Converter"></local:Converter>
+            <local:DefaultConverter x:Key="DefaultConverter"></local:DefaultConverter>
+        </ResourceDictionary>
     </UserControl.Resources>
     <TabControl>
         <TabItem Header="Accumulated">
@@ -20,23 +26,44 @@
                 <ItemsControl x:Name="ItemsControlAccumulated" Style="{StaticResource LastItemBottomRowStyle}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
-                                <oxy:PlotView Model="{Binding model.Value}" />
-                                <Grid
+                            <TabControl>
+
+                                <TabItem Header="Plot">
+                                    <Grid>
+                                        <oxy:PlotView Model="{Binding model.Value}" />
+                                        <Grid
                                     Margin="70,50"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Top">
-                                    <TextBlock
+                                            <TextBlock
                                         FontSize="20"
                                         Foreground="Silver"
                                         Text="{Binding index}" />
-                                    <TextBlock
+                                            <TextBlock
                                         Margin="30,0,0,0"
                                         FontSize="20"
                                         Foreground="Silver"
                                         Text="{Binding model.Key}" />
-                                </Grid>
-                            </Grid>
+                                        </Grid>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem Header="Data">
+                                    <ListBox ItemsSource="{Binding model.Value, Converter={StaticResource Converter}}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <ItemsControl ItemsSource="{Binding ItemsSource}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding Orientation}"></TextBlock>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                                <!--<Ellipse Fill="Red" Height="20" Width="20"></Ellipse>-->
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ListBox>
+                                </TabItem>
+                            </TabControl>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -71,23 +98,44 @@
                     <ItemsControl x:Name="ItemsControlGroup" Style="{StaticResource LastItemBottomRowStyle}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Grid>
-                                    <oxy:PlotView Model="{Binding model.Value}" />
-                                    <Grid
-                                        Margin="70,50"
-                                        HorizontalAlignment="Left"
-                                        VerticalAlignment="Top">
-                                        <TextBlock
-                                            FontSize="20"
-                                            Foreground="Silver"
-                                            Text="{Binding index}" />
-                                        <TextBlock
-                                            Margin="30,0,0,0"
-                                            FontSize="20"
-                                            Foreground="Silver"
-                                            Text="{Binding model.Key}" />
-                                    </Grid>
-                                </Grid>
+                                <TabControl>
+
+                                    <TabItem Header="Plot">
+                                        <Grid>
+                                            <oxy:PlotView Model="{Binding model.Value}" />
+                                            <Grid
+                                    Margin="70,50"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Top">
+                                                <TextBlock
+                                        FontSize="20"
+                                        Foreground="Silver"
+                                        Text="{Binding index}" />
+                                                <TextBlock
+                                        Margin="30,0,0,0"
+                                        FontSize="20"
+                                        Foreground="Silver"
+                                        Text="{Binding model.Key}" />
+                                            </Grid>
+                                        </Grid>
+                                    </TabItem>
+                                    <TabItem Header="Data">
+                                        <ListBox ItemsSource="{Binding model.Value, Converter={StaticResource Converter}}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <ItemsControl ItemsSource="{Binding ItemsSource}">
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <TextBlock Text="{Binding Key}"></TextBlock>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+                                                    <!--<Ellipse Fill="Red" Height="20" Width="20"></Ellipse>-->
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ListBox>
+                                    </TabItem>
+                                </TabControl>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

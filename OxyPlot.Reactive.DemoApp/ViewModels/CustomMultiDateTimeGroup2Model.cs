@@ -31,10 +31,12 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
                     .Where(a => a.Any())
                     .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
                     {
-                        var ss = bc.Scan(ac.Item2, (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
-                        .Cast<ITimePoint<TKey>>()
-                        .Skip(1)
-                        .ToArray();
+                        var ss = bc
+                                  .Select(a => a.Value)
+                                  .Scan(ac.Item2, (a, b) => CreatePoint(a, b))
+                                  .Cast<ITimePoint<TKey>>()
+                                  .Skip(1)
+                                  .ToArray();
 
                         return (new CustomDateTimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key), ss.Last());
                     })
@@ -45,10 +47,17 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
             IEnumerable<ITimeRangePoint<TKey>> NoRanges()
             {
-                return ees.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key))
-                    .Select(a => new CustomDateTimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key))
-                    .Skip(1);
+                return base.ToDataPoints(collection)
+                     .Select(a => new CustomDateTimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key))
+                     .Skip(1);
             }
+
+
+        }
+
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return base.CreatePoint(xy0, xy);
         }
     }
 
