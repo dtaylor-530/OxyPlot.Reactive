@@ -112,7 +112,6 @@ namespace OxyPlot.Reactive
             IEnumerable<ITimeRangePoint<TKey>> NoRanges()
             {
                 return base.ToDataPoints(collection)
-                    //.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key))
                     .Select(a => new TimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key));
             }
         }

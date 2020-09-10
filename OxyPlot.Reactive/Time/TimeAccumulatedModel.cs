@@ -21,10 +21,5 @@ namespace OxyPlot.Reactive
         {
             return (ITimePoint<TKey>)new TimePoint<TKey>(xy.Var, xy0?.Value ?? 0 + xy.Value, xy.Key);
         }
-
-        //protected override double Combine(double x0, double x1)
-        //{
-        //    return x0 + x1;
-        //}
     }
 }
