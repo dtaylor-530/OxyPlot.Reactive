@@ -3,22 +3,28 @@
 namespace OxyPlot.Reactive
 {
     using OxyPlot;
+    using OxyPlot.Reactive.Model;
     using System.Collections.Generic;
     using System.Reactive.Concurrency;
 
-    public class TimeAccumulatedModel<T> : TimeModel<T>
+    public class TimeAccumulatedModel<TKey> : TimeModel<TKey>
     {
         public TimeAccumulatedModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
         }
 
-        public TimeAccumulatedModel(PlotModel model, IEqualityComparer<T>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeAccumulatedModel(PlotModel model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        protected override double Combine(double x0, double x1)
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {
-            return x0 + x1;
+            return (ITimePoint<TKey>)new TimePoint<TKey>(xy.Var, xy0?.Value ?? 0 + xy.Value, xy.Key);
         }
+
+        //protected override double Combine(double x0, double x1)
+        //{
+        //    return x0 + x1;
+        //}
     }
 }

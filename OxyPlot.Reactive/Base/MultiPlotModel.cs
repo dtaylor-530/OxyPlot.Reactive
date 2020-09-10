@@ -165,7 +165,16 @@ namespace OxyPlot.Reactive
 
         protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
 
-        protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection);
+        protected virtual IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection) =>
+            collection
+            .Select(a => a.Value)
+            .Scan(seed: default(TType), CreatePoint)
+            .Skip(1)
+            .Cast<TType3>();
+
+
+        protected abstract TType CreatePoint(TType xy0, TType xy);
+
 
         public override IDisposable Subscribe(IObserver<TType3> observer)
         {

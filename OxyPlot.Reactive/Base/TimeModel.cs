@@ -54,10 +54,9 @@ namespace OxyPlot.Reactive
             return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Var.Ticks), Min.Ticks)) : Min;
         }
 
-        protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection) =>
-                  collection
-                  .Scan(new TimePoint<TKey>(), (xy0, xy) => new TimePoint<TKey>(xy.Value.Var, Combine(xy0.Value, xy.Value.Value), xy.Key))
-                  .Cast<TType3>()
-                  .Skip(1);
+        protected override TType CreatePoint(TType xy0, TType xy)
+        {
+            return (TType)((ITimePoint<TKey>)new TimePoint<TKey>(xy.Var, xy.Value, xy.Key));
+        }
     }
 }

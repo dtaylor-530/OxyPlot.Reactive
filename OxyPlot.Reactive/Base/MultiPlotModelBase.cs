@@ -82,8 +82,6 @@ namespace OxyPlot.Reactive
             this.showAll = showAll;
         }
 
-        protected virtual double Combine(double x0, double x1) => x1;
-
         public void Reset()
         {
             (this as IMixedScheduler).ScheduleAction(() =>

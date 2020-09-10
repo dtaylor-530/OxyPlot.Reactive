@@ -2,6 +2,7 @@
 
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
+using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Threading;
@@ -32,7 +33,27 @@ namespace OxyPlot.Reactive.Multi
 
         protected override TimeAccumulatedModel<TKey> CreateModel(PlotModel plotModel)
         {
-            return new TimeAccumulatedModel<TKey>(plotModel, this.comparer, this.Scheduler);
+            return new TimeAccumulatedModel(plotModel, CreatePoint, this.comparer, this.Scheduler);
+        }
+
+        protected virtual ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key);
+        }
+
+        internal class TimeAccumulatedModel : TimeAccumulatedModel<TKey>
+        {
+            private readonly Func<ITimePoint<TKey>, ITimePoint<TKey>, ITimePoint<TKey>> func;
+
+            public TimeAccumulatedModel(PlotModel model, Func<ITimePoint<TKey>, ITimePoint<TKey>, ITimePoint<TKey>> func, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
+            {
+                this.func = func;
+            }
+
+            protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+            {
+                return func(xy0, xy);
+            }
         }
     }
 }

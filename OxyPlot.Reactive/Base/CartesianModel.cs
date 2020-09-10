@@ -48,10 +48,9 @@ namespace OxyPlot.Reactive
             return items.Any() ? Math.Min(items.Min(a => a.Value.Var), Min) : Min;
         }
 
-        protected override IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TKey, TType>> collection)
-            => collection
-            .Scan(new DoublePoint<TKey>(), (xy0, xy) => new DoublePoint<TKey>(xy.Value.Var, Combine(xy0.Value, xy.Value.Value), xy.Key))
-            .Cast<TType3>()
-            .Skip(1);
+        protected override TType CreatePoint(TType xy0, TType xy)
+        {
+            return (TType)((IDoublePoint<TKey>)new DoublePoint<TKey>(xy.Var, xy.Value, xy.Key));
+        }
     }
 }

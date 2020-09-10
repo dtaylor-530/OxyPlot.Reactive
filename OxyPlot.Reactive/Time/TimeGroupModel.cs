@@ -37,15 +37,22 @@ namespace OxyPlot.Reactive
                 var arr = ordered.GroupOn(timeSpan.Value, a => a.Value.Var).ToArray();
                 return arr.Select(ac =>
                 {
-                    var ss = ac.Scan(default(TimePoint<TKey>), (a, b) => new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key)).Cast<ITimePoint<TKey>>()
-                    .Skip(1).ToArray();
+                    var ss = ac
+                    .Select(a => a.Value)
+                    .Scan(default(ITimePoint<TKey>), (a, b) => CreatePoint(a, b))
+                    .Cast<ITimePoint<TKey>>()
+                    .Skip(1)
+                    .ToArray();
                     return new TimeRangePoint<TKey>(ac.Key, ss, ac.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
                 }).Cast<ITimeRangePoint<TKey>>().ToArray();
             }
 
             return ordered
-                .Scan(default(TimeRangePoint<TKey>), (a, b) => new TimeRangePoint<TKey>(new Range<DateTime>(b.Value.Var, b.Value.Var), new ITimePoint<TKey>[] { new TimePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value)) }, b.Key))
-                .Cast<ITimeRangePoint<TKey>>().Skip(1).ToArray();
+                 .Select(a => a.Value)
+                .Scan(default(TimeRangePoint<TKey>), (a, b) => new TimeRangePoint<TKey>(new Range<DateTime>(b.Var, b.Var), new ITimePoint<TKey>[] { CreatePoint(a, b) }, b.Key))
+                .Cast<ITimeRangePoint<TKey>>()
+                .Skip(1)
+                .ToArray();
         }
 
         public void OnNext(TimeSpan value)

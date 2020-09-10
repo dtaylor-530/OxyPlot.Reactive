@@ -77,7 +77,9 @@ namespace OxyPlot.Reactive
                     .Where(a => a.Any())
                     .Scan((default(DoubleRangePoint<TKey>), default(IDoublePoint<TKey>)), (ac, bc) =>
                     {
-                        var ss = bc.Scan(ac.Item2, (a, b) => new DoublePoint<TKey>(b.Value.Var, Combine(a?.Value ?? 0, b.Value.Value), b.Key))
+                        var ss = bc
+                        .Select(a => a.Value)
+                        .Scan(ac.Item2, (a, b) => CreatePoint(a, b))
                         .Cast<IDoublePoint<TKey>>()
                         .Skip(1)
                         .ToArray();
@@ -93,9 +95,8 @@ namespace OxyPlot.Reactive
 
             IEnumerable<IDoubleRangePoint<TKey>> NoRanges()
             {
-                return ees.Scan(default(DoublePoint<TKey>), (a, b) => new DoublePoint<TKey>(b.Value.Var, Combine(a.Value, b.Value.Value), b.Key))
-                    .Select(a => new DoubleRangePoint<TKey>(new Range<double>(a.Var, a.Var), new IDoublePoint<TKey>[] { a }, a.Key))
-                    .Skip(1);
+                return base.ToDataPoints(collection)
+                          .Select(a => new DoubleRangePoint<TKey>(new Range<double>(a.Var, a.Var), new IDoublePoint<TKey>[] { a }, a.Key));
             }
         }
 
