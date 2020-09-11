@@ -36,7 +36,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 return KeyValuePair.Create(a.Key, (ITimePoint<string>)new TimeDemoPoint(a.Key + Enumerable.Range(1, 3).Random(), a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotAccumulatedModel();
+            var mplots = new MultiTimePlotAccumulatedDemoModel();
             pacedObs.Subscribe(mplots);
             mplots
                 .Select((a, i) => (a, i))
@@ -98,7 +98,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
 
 
-        public class MultiTimePlotAccumulatedModel : MultiTimePlotAccumulatedModel<string, string>
+        public class MultiTimePlotAccumulatedDemoModel : MultiTimePlotAccumulatedModel<string, string>
         {
             protected override ITimePoint<string> CreatePoint(ITimePoint<string> xy0, ITimePoint<string> xy)
             {
