@@ -33,6 +33,19 @@ namespace OxyPlot.Data.Factory
             }
         }
 
+        public IEnumerable<KeyValuePair<string, double>> GetXCubed()
+        {
+            var chr = NextCharacter();
+
+            while (xc[chr].MoveNext())
+            {
+                var next = (1 + xc[chr].Current + (1 + random.NextDouble())) / 4;
+                var pow3= Math.Pow(next, 3);
+                yield return new KeyValuePair<string, double>(chr, pow3);
+                chr = NextCharacter();
+            }
+        }
+
         public IEnumerable<KeyValuePair<string, double>> GetLineAscending()
         {
             var chr = NextCharacter();
