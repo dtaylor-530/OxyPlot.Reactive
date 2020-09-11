@@ -6,7 +6,7 @@ using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
-    public class CartesianAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
+    public class CartesianAccumulatedGroupModel<TKey> : CartesianGroup2Model<TKey>
     {
         public CartesianAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
@@ -15,9 +15,10 @@ namespace OxyPlot.Reactive
         public CartesianAccumulatedGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+
+        protected override IDoublePoint<TKey> CreatePoint(IDoublePoint<TKey> xy0, IDoublePoint<TKey> xy)
         {
-            return new TimePoint<TKey>(xy.Var, (xy0?.Value ?? 0 ) + xy.Value, xy.Key);
+            return new DoublePoint<TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key);
         }
     }
 }
