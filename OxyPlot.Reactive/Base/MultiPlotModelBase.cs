@@ -14,7 +14,21 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
-    public abstract class MultiPlotModel2Base<TKey, TR, TRS, TRS2> : MultiPlotModelBase<TKey, TRS>, IObservable<TRS2>
+
+    public abstract class MultiPlotModel2Base<TGroupKey, TKey, TR, TRS, TRS2> : MultiPlotModelBase<TGroupKey, TKey, TRS>, IObservable<TRS2>
+    {
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        {
+        }
+
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        {
+        }
+
+        public abstract IDisposable Subscribe(IObserver<TRS2> observer);
+    }
+
+    public abstract class MultiPlotModel2Base<TKey, TR, TRS, TRS2> : MultiPlotModelBase<TKey, TKey, TRS>, IObservable<TRS2>
     {
         public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
@@ -27,7 +41,7 @@ namespace OxyPlot.Reactive
         public abstract IDisposable Subscribe(IObserver<TRS2> observer);
     }
 
-    public abstract class MultiPlotModel2Base<TKey, TR> : MultiPlotModelBase<TKey, KeyValuePair<TR, double>>
+    public abstract class MultiPlotModel2Base<TKey, TR> : MultiPlotModelBase<TKey, TKey, KeyValuePair<TR, double>>
     {
         public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
@@ -38,7 +52,7 @@ namespace OxyPlot.Reactive
         }
     }
 
-    public abstract class MultiPlotModelBase<TKey, TValue> : DataPointsModel<TKey, TValue>, IObserver<KeyValuePair<TKey, TValue>>, IObserver<bool>, IMixedScheduler
+    public abstract class MultiPlotModelBase<TGroupKey, TKey, TValue> : DataPointsModel<TGroupKey, TValue>, IObserver<KeyValuePair<TGroupKey, TValue>>, IObserver<bool>, IMixedScheduler
     {
         private readonly SynchronizationContext? context;
         public IScheduler? scheduler;
@@ -47,17 +61,17 @@ namespace OxyPlot.Reactive
         protected readonly object lck = new object();
         protected bool showAll;
 
-        public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default) : this(plotModel, comparer, refreshRate)
+        public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default) : this(plotModel, comparer, refreshRate)
         {
             this.scheduler = scheduler ?? Scheduler.CurrentThread;
         }
 
-        public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = default) : this(plotModel, comparer, refreshRate)
+        public MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = default) : this(plotModel, comparer, refreshRate)
         {
             this.context = context ?? SynchronizationContext.Current;
         }
 
-        private MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100) : base(comparer)
+        private MultiPlotModelBase(PlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100) : base(comparer)
         {
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
             ModifyPlotModel();
@@ -71,7 +85,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        public virtual void OnNext(KeyValuePair<TKey, TValue> item)
+        public virtual void OnNext(KeyValuePair<TGroupKey, TValue> item)
         {
             this.AddToDataPoints(new[] { item });
             refreshSubject.OnNext(Unit.Default);
@@ -97,7 +111,7 @@ namespace OxyPlot.Reactive
             });
         }
 
-        public void Remove(ISet<TKey> names)
+        public void Remove(ISet<TGroupKey> names)
         {
             (this as IMixedScheduler).ScheduleAction(() =>
             {
@@ -122,7 +136,7 @@ namespace OxyPlot.Reactive
             //throw new NotImplementedException();
         }
 
-        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiPlotModelBase<TKey, TValue>)}", error);
+        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiPlotModelBase<TGroupKey, TKey, TValue>)}", error);
 
         protected abstract void Refresh(IList<Unit> units);
 

@@ -19,6 +19,13 @@ namespace OxyPlot.Reactive
         }
     }
 
+    public class TimeGroupKeyModel<TGroupKey, TKey> : TimeModel<TGroupKey, TKey, ITimePoint<TKey>, ITimePoint<TKey>>
+    {
+        public TimeGroupKeyModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+        }
+    }
+
     public abstract class TimeModel<TKey, TType> : TimeModel<TKey, TType, TType> where TType : ITimePoint<TKey>
     {
         public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
@@ -26,9 +33,19 @@ namespace OxyPlot.Reactive
         }
     }
 
-    public abstract class TimeModel<TKey, TType, TType3> : MultiPlotModel<TKey, DateTime, TType, TType3> where TType : ITimePoint<TKey> where TType3 : TType
+    public abstract class TimeModel<TKey, TType, TType3> : TimeModel<TKey, TKey, TType, TType3> 
+        where TType : ITimePoint<TKey> 
+        where TType3 : TType
     {
-        public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, DateTime.MinValue, DateTime.MaxValue, comparer, scheduler: scheduler)
+        public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
+        {
+        }
+    }
+
+
+    public abstract class TimeModel<TGroupKey, TKey, TType, TType3> : MultiPlotModel<TGroupKey, TKey, DateTime, TType, TType3> where TType : ITimePoint<TKey> where TType3 : TType
+    {
+        public TimeModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, DateTime.MinValue, DateTime.MaxValue, comparer, scheduler: scheduler)
         {
         }
 
@@ -44,12 +61,12 @@ namespace OxyPlot.Reactive
             return point;
         }
 
-        protected override DateTime CalculateMax(IEnumerable<KeyValuePair<TKey, TType>> items)
+        protected override DateTime CalculateMax(IEnumerable<KeyValuePair<TGroupKey, TType>> items)
         {
             return items.Any() ? new DateTime(Math.Max(items.Max(a => a.Value.Var.Ticks), Max.Ticks)) : Max;
         }
 
-        protected override DateTime CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items)
+        protected override DateTime CalculateMin(IEnumerable<KeyValuePair<TGroupKey, TType>> items)
         {
             return items.Any() ? new DateTime(Math.Min(items.Min(a => a.Value.Var.Ticks), Min.Ticks)) : Min;
         }

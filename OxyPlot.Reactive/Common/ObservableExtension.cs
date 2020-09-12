@@ -22,5 +22,13 @@ namespace OxyPlot.Reactive
                 .Subscribe(a =>
                 model.OnNext(a));
         }
+
+        public static IDisposable Subscribe<TGroupKey, TKey>(this IObservable<KeyValuePair<TGroupKey, KeyValuePair<DateTime, double>>> observable, TimeGroupKeyModel<TGroupKey, TKey> model, Func<TKey> keyFunc)
+        {
+            return observable
+                .Select(a => KeyValuePair.Create(a.Key, (ITimePoint<TKey>)new TimePoint<TKey>(a.Value.Key, a.Value.Value, keyFunc())))
+                .Subscribe(a =>
+                model.OnNext(a));
+        }
     }
 }
