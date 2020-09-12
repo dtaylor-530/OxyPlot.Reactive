@@ -38,8 +38,8 @@ namespace OxyPlot.Reactive
 
         public override void OnNext(KeyValuePair<TGroupKey, ITimePoint<TKey>> item)
         {
-            lock (list)
-                list.Add(KeyValuePair.Create(CreateGroupKey(item.Value), CreatePoint(null, item.Value)));
+            lock (temporaryCollection)
+                temporaryCollection.Add(KeyValuePair.Create(CreateGroupKey(item.Value), CreatePoint(null, item.Value)));
 
             refreshSubject.OnNext(Unit.Default);
         }

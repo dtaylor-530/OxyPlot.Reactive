@@ -7,6 +7,7 @@ using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Series;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -39,7 +40,7 @@ namespace OxyPlot.Reactive
         where TVar : IComparable<TVar>
     {
         protected readonly Subject<TType3> subject = new Subject<TType3>();
-        protected readonly List<KeyValuePair<TGroupKey, TType>> list = new List<KeyValuePair<TGroupKey, TType>>();
+        protected readonly Collection<KeyValuePair<TGroupKey, TType>> temporaryCollection = new Collection<KeyValuePair<TGroupKey, TType>>();
         protected readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
         protected readonly Subject<Exception> exceptionSubject = new Subject<Exception>();
         protected int? takeLastCount;
@@ -84,12 +85,12 @@ namespace OxyPlot.Reactive
         {
             await Task.Run(() =>
             {
-                lock (list)
+                lock (temporaryCollection)
                 {
-                    if (list.Any())
+                    if (temporaryCollection.Any())
                     {
-                        AddToDataPoints(list.ToArray());
-                        list.Clear();
+                        AddToDataPoints(temporaryCollection.ToArray());
+                        temporaryCollection.Clear();
                     }
                 }
             });
@@ -219,8 +220,8 @@ namespace OxyPlot.Reactive
 
         public override void OnNext(KeyValuePair<TGroupKey, TType> item)
         {
-            lock (list)
-                list.Add(item);
+            lock (temporaryCollection)
+                temporaryCollection.Add(item);
             refreshSubject.OnNext(Unit.Default);
         }
 
