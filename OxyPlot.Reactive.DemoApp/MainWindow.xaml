@@ -13,6 +13,8 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
+                    <Page Title="Time Key Group" Uri="\Views\TimeKeyGroupView.xaml" />
+                    
                     <Page Title="Cartesian Group" Uri="\Views\CartesianSeriesGroupView.xaml" />
 
                     <Page Title="Cartesian" Uri="\Views\CartesianView.xaml" />

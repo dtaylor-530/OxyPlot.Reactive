@@ -14,26 +14,26 @@ using e = System.Linq.Enumerable;
 
 namespace OxyPlot.Reactive
 {
-    public abstract class MultiPlotModel2Base<T, TR, TRS, TRS2> : MultiPlotModelBase<T, TRS>, IObservable<TRS2>
+    public abstract class MultiPlotModel2Base<TKey, TR, TRS, TRS2> : MultiPlotModelBase<TKey, TRS>, IObservable<TRS2>
     {
-        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
         }
 
-        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
         {
         }
 
         public abstract IDisposable Subscribe(IObserver<TRS2> observer);
     }
 
-    public abstract class MultiPlotModel2Base<T, TR> : MultiPlotModelBase<T, KeyValuePair<TR, double>>
+    public abstract class MultiPlotModel2Base<TKey, TR> : MultiPlotModelBase<TKey, KeyValuePair<TR, double>>
     {
-        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
         }
 
-        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<T>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        public MultiPlotModel2Base(PlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
         {
         }
     }

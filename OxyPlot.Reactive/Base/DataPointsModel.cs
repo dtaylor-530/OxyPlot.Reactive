@@ -23,11 +23,16 @@ namespace OxyPlot.Reactive
                 {
                     var newdp = item.Value;
                     if (!DataPoints.ContainsKey(item.Key))
-                        DataPoints[item.Key] = new List<TValue>();
+
+                        DataPoints[item.Key] = CreateCollection();
                     DataPoints[item.Key].Add(newdp);
                 }
             }
         }
+
+        protected virtual ICollection<TValue> CreateCollection() => new List<TValue>();
+
+
 
         protected virtual void RemoveFromDataPoints(IEnumerable<TKey> keys)
         {

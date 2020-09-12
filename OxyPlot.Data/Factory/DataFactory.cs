@@ -40,7 +40,7 @@ namespace OxyPlot.Data.Factory
             while (xc[chr].MoveNext())
             {
                 var next = (1 + xc[chr].Current + (1 + random.NextDouble())) / 4;
-                var pow3= Math.Pow(next, 3);
+                var pow3 = Math.Pow(next, 3);
                 yield return new KeyValuePair<string, double>(chr, pow3);
                 chr = NextCharacter();
             }
@@ -68,6 +68,17 @@ namespace OxyPlot.Data.Factory
                 yield return xx;
                 chr = NextCharacter();
             }
+        }
+
+        public IEnumerable<KeyValuePair<int, double>> GetLineX()
+        {
+            int i = 0;
+            while (xc2.First().Value.MoveNext())
+            {
+                var xx = KeyValuePair.Create(++i,  random.NextDouble());
+                yield return xx;
+            }
+
         }
 
         public IEnumerable<(string, string, double)> GetLine2(int change = 1)

@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using Kaos.Collections;
 using MoreLinq;
 using OxyPlot.Reactive.Common;
 using OxyPlot.Reactive.Infrastructure;
@@ -24,13 +25,14 @@ namespace OxyPlot.Reactive
         }
     }
 
-    public abstract class MultiPlotModel<TKey, TVar, TType, TType3> : MultiPlotModel2Base<TKey, TVar, TType, TType3>, IObservable<TType3[]>, IObserver<int>
+    public abstract class MultiPlotModel< TKey, TVar, TType, TType3> : MultiPlotModel2Base<TKey, TVar, TType, TType3>, IObservable<TType3[]>, IObserver<int>, IObservable<Exception>
         where TType : Model.IDoublePoint<TKey, TVar>
         where TVar : IComparable<TVar>
     {
         protected readonly Subject<TType3> subject = new Subject<TType3>();
         protected readonly List<KeyValuePair<TKey, TType>> list = new List<KeyValuePair<TKey, TType>>();
-        private readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
+        protected readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
+        protected readonly Subject<Exception> exceptionSubject = new Subject<Exception>();
         protected int? takeLastCount;
 
         public MultiPlotModel(PlotModel model, TVar max, TVar min, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
@@ -44,17 +46,7 @@ namespace OxyPlot.Reactive
 
         protected override sealed async void Refresh(IList<Unit> units)
         {
-            await Task.Run(() =>
-            {
-                lock (list)
-                {
-                    if (list.Any())
-                    {
-                        AddToDataPoints(list.ToArray());
-                        list.Clear();
-                    }
-                }
-            });
+            await AddToDataPointsAsync();
 
             _ = (this as IMixedScheduler).ScheduleAction(async () =>
             {
@@ -73,10 +65,26 @@ namespace OxyPlot.Reactive
                 }
                 catch (Exception e)
                 {
+                    exceptionSubject.OnNext(e);
+                    refreshSubject.OnNext(Unit.Default);
                 }
             });
         }
 
+        protected virtual async Task AddToDataPointsAsync()
+        {
+            await Task.Run(() =>
+            {
+                lock (list)
+                {
+                    if (list.Any())
+                    {
+                        AddToDataPoints(list.ToArray());
+                        list.Clear();
+                    }
+                }
+            });
+        }
 
         protected virtual async Task AddAllPointsToSeries(KeyValuePair<TKey, ICollection<TType>>[] dataPoints)
         {
@@ -136,6 +144,11 @@ namespace OxyPlot.Reactive
             Min = CalculateMin(items);
             Max = CalculateMax(items);
             base.AddToDataPoints(items);
+        }
+
+        protected override ICollection<TType> CreateCollection()
+        {
+            return new RankedSet<TType>(Comparer<TType>.Create((a, b) => a.Var.CompareTo(b.Var)));
         }
 
         protected abstract TVar CalculateMin(IEnumerable<KeyValuePair<TKey, TType>> items);
@@ -205,6 +218,11 @@ namespace OxyPlot.Reactive
         public IDisposable Subscribe(IObserver<TType3[]> observer)
         {
             return pointsSubject.Subscribe(observer);
+        }
+
+        public IDisposable Subscribe(IObserver<Exception> observer)
+        {
+            return exceptionSubject.Subscribe(observer);
         }
     }
 }
