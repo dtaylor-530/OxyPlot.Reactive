@@ -26,20 +26,27 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             ComboBox1.SelectionChanged += ComboBox1_SelectionChanged;
 
-            var df = new DataFactory().GetLineX()
+            var dis = new DataFactory().GetLineX()
                 .Take(200)
                 .Select(x => KeyValuePair.Create(string.Empty,
                 KeyValuePair.Create(DateTime.UnixEpoch.AddDays(x.Key), x.Value * 100)));
 
-            var pacedObs = df.ToObservable().Take(100).Merge(df.ToObservable().Skip(100).Pace(TimeSpan.FromSeconds(2)));
+            var pacedObs = dis.ToObservable().Take(100).Merge(dis.ToObservable().Skip(100).Pace(TimeSpan.FromSeconds(2)));
 
-            var model1 = new TimeKeyDoubleGroupModel(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
+            var model1 = new TimeKeyDoubleGroupModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             subject.Subscribe(model1.OnNext);
 
-            pacedObs.Subscribe(model1);
+            pacedObs.Subscribe(model1, ()=> string.Empty);
 
-            ObservableExtension.Subscribe(pacedObs, model1);
+            //-------------------
+
+            var model2 = new TimeKeyValueGroupModel(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
+            subject.Subscribe(model2.OnNext);
+
+            pacedObs.Subscribe(model2);
         }
 
         private void ComboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -50,11 +57,12 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
     public static class ObservableExtension
     {
+        static readonly Random random = new Random();
 
-        public static IDisposable Subscribe(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeKeyDoubleGroupModel model)
+        public static IDisposable Subscribe(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeKeyValueGroupModel model)
         {
             return observable
-                .Select(a => KeyValuePair.Create(a.Key, (ITimePoint<string>)new TimePoint<string>(a.Value.Key, a.Value.Value, a.Key)))
+                .Select(a => KeyValuePair.Create(a.Key, (ITimePoint<double>)new TimePoint<double>(a.Value.Key, a.Value.Value, random.NextDouble() * 100)))
                 .Subscribe(a =>
                 model.OnNext(a));
         }
