@@ -4,9 +4,10 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:local="clr-namespace:OxyPlot.Reactive.DemoApp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:oxy="http://oxyplot.org/wpf"
-    xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views" xmlns:local="clr-namespace:OxyPlot.Reactive.DemoApp"
+    xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -15,13 +16,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Themes/Generic.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <local:Converter x:Key="Converter"></local:Converter>
-            <local:DefaultConverter x:Key="DefaultConverter"></local:DefaultConverter>
+            <local:Converter x:Key="Converter" />
+            <local:DefaultConverter x:Key="DefaultConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <TabControl>
         <TabItem Header="Accumulated">
-
             <ScrollViewer HorizontalScrollBarVisibility="Visible">
                 <ItemsControl x:Name="ItemsControlAccumulated" Style="{StaticResource LastItemBottomRowStyle}">
                     <ItemsControl.ItemTemplate>
@@ -32,18 +32,18 @@
                                     <Grid>
                                         <oxy:PlotView Model="{Binding model.Value}" />
                                         <Grid
-                                    Margin="70,50"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top">
+                                            Margin="70,50"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Top">
                                             <TextBlock
-                                        FontSize="20"
-                                        Foreground="Silver"
-                                        Text="{Binding index}" />
+                                                FontSize="20"
+                                                Foreground="Silver"
+                                                Text="{Binding index}" />
                                             <TextBlock
-                                        Margin="30,0,0,0"
-                                        FontSize="20"
-                                        Foreground="Silver"
-                                        Text="{Binding model.Key}" />
+                                                Margin="30,0,0,0"
+                                                FontSize="20"
+                                                Foreground="Silver"
+                                                Text="{Binding model.Key}" />
                                         </Grid>
                                     </Grid>
                                 </TabItem>
@@ -54,7 +54,7 @@
                                                 <ItemsControl ItemsSource="{Binding ItemsSource}">
                                                     <ItemsControl.ItemTemplate>
                                                         <DataTemplate>
-                                                            <TextBlock Text="{Binding Orientation}"></TextBlock>
+                                                            <TextBlock Text="{Binding Orientation}" />
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
                                                 </ItemsControl>
@@ -104,18 +104,18 @@
                                         <Grid>
                                             <oxy:PlotView Model="{Binding model.Value}" />
                                             <Grid
-                                    Margin="70,50"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Top">
+                                                Margin="70,50"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Top">
                                                 <TextBlock
-                                        FontSize="20"
-                                        Foreground="Silver"
-                                        Text="{Binding index}" />
+                                                    FontSize="20"
+                                                    Foreground="Silver"
+                                                    Text="{Binding index}" />
                                                 <TextBlock
-                                        Margin="30,0,0,0"
-                                        FontSize="20"
-                                        Foreground="Silver"
-                                        Text="{Binding model.Key}" />
+                                                    Margin="30,0,0,0"
+                                                    FontSize="20"
+                                                    Foreground="Silver"
+                                                    Text="{Binding model.Key}" />
                                             </Grid>
                                         </Grid>
                                     </TabItem>
@@ -126,7 +126,7 @@
                                                     <ItemsControl ItemsSource="{Binding ItemsSource}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text="{Binding Key}"></TextBlock>
+                                                                <TextBlock Text="{Binding Key}" />
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
