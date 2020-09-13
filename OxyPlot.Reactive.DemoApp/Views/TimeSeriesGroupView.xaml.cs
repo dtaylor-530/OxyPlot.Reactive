@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
 
-namespace OxyPlotEx.DemoAppCore.Pages
+namespace OxyPlot.Reactive.DemoApp.Views
 {
     /// <summary>
     /// Interaction logic for LineView.xaml
