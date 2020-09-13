@@ -17,7 +17,11 @@ namespace OxyPlot.Reactive.Infrastructure
         //{
         //    Colors2.MoveNext(); return OxyColor.Parse(Colors2.Current.Value);
         //}
-        public static OxyColor GetColor(int? key) => LazyColors[key ?? random.Next(0, 1000)];
+        public static OxyColor GetColor(int? key)
+        {
+                lock (LazyColors)
+                    return LazyColors[key ?? random.Next(0, 1000)];
+        }
 
         /// <summary>
         /// A nicer color palette for the web.
