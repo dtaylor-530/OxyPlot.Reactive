@@ -26,14 +26,16 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             ItemsControlAccumulated.ItemsSource = Accumulated();
             ItemsControlStandard.ItemsSource = Standard();
-            ItemsControlGroup.ItemsSource = AccumulatedGroup();
+            ItemsControlAccumulatedGroup.ItemsSource = AccumulatedGroup();
+            ItemsControlValueKey.ItemsSource = ValueKey();
         }
 
         private IReadOnlyCollection<dynamic> Accumulated()
         {
             var pacedObs = TimeDataSource.Observe1000PlusMinus().Take(200).Concat(TimeDataSource.Observe1000PlusMinus().Skip(200).Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
-                return KeyValuePair.Create(a.Key, (ITimePoint<string>)new TimeDemoPoint(a.Key + Enumerable.Range(1, 3).Random(), a.Value.Key, a.Value.Value));
+                var r = a.Key + Enumerable.Range(1, 3).Random();
+                return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, string>)new TimeDemoPoint(r, r, a.Value.Key, a.Value.Value));
             });
 
             var mplots = new MultiTimePlotAccumulatedDemoModel();
@@ -55,16 +57,21 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             var pacedObs = TimeDataSource.Observe1000().Take(200).Concat(TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
-                return KeyValuePair.Create(a.Key, (ITimePoint<string>)new TimeDemoPoint(new string[] { "a", "b", "c" }.Random(), a.Value.Key, a.Value.Value));
+                var r = a.Key + Enumerable.Range(1, 3).Random();
+                return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, string>)new TimeDemoPoint(r, r, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new TimePlotGroupAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new MultiTimePlotGroupAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+
+            pacedObs.Subscribe(a => mplots.OnNext(a));
+
             TimeView1.TimeSpanObservable.Subscribe(mplots);
+
+
             Observable.FromEventPattern(ComboBox1, nameof(ComboBox.SelectionChanged))
                 .SelectMany(a => (a.EventArgs as SelectionChangedEventArgs).AddedItems.Cast<Operation>())
                 .Subscribe(mplots);
 
-            pacedObs.Subscribe(mplots);
             mplots
                 .Select((a, i) => (a, i))
                 .ToObservableChangeSet(a => a.i)
@@ -82,11 +89,12 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
             {
-                return KeyValuePair.Create(a.Key, (ITimePoint<string>)new TimeDemoPoint(new string[] { "a", "b", "c" }.Random(), a.Value.Key, a.Value.Value));
+                return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, string>)new TimeDemoPoint(a.Key, a.Key, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotModel<string, string>(scheduler: RxApp.MainThreadScheduler);
-            pacedObs.Subscribe(mplots);
+            var mplots = new MultiTimePlotAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            // pacedObs.SubscribeX<string,string,TimeGroupPoint<string,string>>(mplots);
+            pacedObs.Subscribe(a => mplots.OnNext(a));
 
             _ = mplots.ToObservableChangeSet()
                 .ObserveOnDispatcher()
@@ -98,25 +106,86 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
 
 
+
+
+        private IReadOnlyCollection<KeyValuePair<string, PlotModel>> ValueKey()
+        {
+            Random random = new Random();
+
+            var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
+            {
+                var r = random.NextDouble() * 100;
+                return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, double>)new TimeDemoDoublePoint(a.Key, r, a.Value.Key, a.Value.Value));
+            });
+
+            var mplots = new MultiTimePlotKeyValueGroupAccumulatedModel(scheduler: RxApp.MainThreadScheduler);
+            // pacedObs.SubscribeX<string,string,TimeGroupPoint<string,string>>(mplots);
+            pacedObs.Subscribe(a => mplots.OnNext(a));
+
+            _ = mplots.ToObservableChangeSet()
+                .ObserveOnDispatcher()
+                .SubscribeOnDispatcher()
+                .Bind(out var plots)
+                .Subscribe();
+
+            return plots;
+        }
+
         public class MultiTimePlotAccumulatedDemoModel : MultiTimePlotAccumulatedModel<string, string>
         {
-            protected override ITimePoint<string> CreatePoint(ITimePoint<string> xy0, ITimePoint<string> xy)
+            protected override ITimeGroupPoint<string, string> CreatePoint(ITimeGroupPoint<string, string> xy0, ITimeGroupPoint<string, string> xy)
             {
-                return new TimeDemoPoint(xy.Key, xy.Var, (xy0?.Value??0) + xy.Value);
+                return new TimeDemoPoint(xy.GroupKey, xy.Key, xy.Var, (xy0?.Value ?? 0) + xy.Value);
             }
 
         }
 
 
-        public class TimeDemoPoint : ITimePoint<string>
+        public class TimeDemoDoublePoint : ITimeGroupPoint<string, double>
         {
-            public TimeDemoPoint(string key, DateTime dateTime, double value) 
+            public TimeDemoDoublePoint(string groupKey, double key, DateTime dateTime, double value)
             {
+                GroupKey = groupKey;
                 Key = key;
                 Var = dateTime;
                 Value = value;
-                Orientation = new [] { Orientation.Horizontal, Orientation.Vertical }.Random();
+                Orientation = new[] { Orientation.Horizontal, Orientation.Vertical }.Random();
             }
+
+            public string GroupKey { get; }
+
+            public double Key { get; }
+
+            public DateTime Var { get; }
+
+            public double Value { get; }
+            public Orientation Orientation { get; }
+
+            public DataPoint GetDataPoint()
+            {
+                return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            }
+
+            public override string ToString()
+            {
+                return $"{Var:F}, {Value}, {Key}";
+            }
+
+        }
+
+
+        public class TimeDemoPoint : ITimeGroupPoint<string, string>
+        {
+            public TimeDemoPoint(string groupKey, string key, DateTime dateTime, double value)
+            {
+                GroupKey = groupKey;
+                Key = key;
+                Var = dateTime;
+                Value = value;
+                Orientation = new[] { Orientation.Horizontal, Orientation.Vertical }.Random();
+            }
+
+            public string GroupKey { get; }
 
             public string Key { get; }
 

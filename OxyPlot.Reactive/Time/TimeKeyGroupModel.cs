@@ -23,7 +23,7 @@ namespace OxyPlot.Reactive
     /// Groups each series individually
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class TimeKeyGroupModel<TGroupKey, TKey> : TimeGroupKeyModel<TGroupKey, TKey>
+    public abstract class TimeKeyGroupModel<TGroupKey, TKey> : TimeModel<TGroupKey, TKey, ITimePoint<TKey>, ITimePoint<TKey>>
     {
         public TimeKeyGroupModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {

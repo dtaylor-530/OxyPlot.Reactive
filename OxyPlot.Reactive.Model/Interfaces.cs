@@ -19,6 +19,11 @@ namespace OxyPlot.Reactive.Model
         TKey Key { get; }
     }
 
+    public interface IGroupKey<TKey>
+    {
+        TKey GroupKey { get; }
+    }
+
     public interface IPoint<TVar, TValue> : IVar<TVar>, IValue<TValue>, IDataPointProvider
     {
     }
@@ -31,7 +36,7 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITimePoint : IValue<double>, IVar<DateTime>, IDataPointProvider
+    public interface ITimePoint :IValue<double>, IVar<DateTime>, IDataPointProvider
     {
     }
 
@@ -52,7 +57,15 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>, IPoint<DateTime, double>
+    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>,IPoint<DateTime, double>
+    {
+    }
+
+    public interface ITimeGroupPoint<TGroupKey, TKey> : ITimePoint<TKey>, IGroupKey<TGroupKey>
+    {
+    }
+
+    public interface ITimeGroupPoint<TKey> : ITimePoint<TKey>, IGroupKey<TKey>
     {
     }
 
@@ -76,6 +89,10 @@ namespace OxyPlot.Reactive.Model
     }
 
     public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IPointCollection<DateTime, double>, ITimeRange<DateTime>
+    {
+    }  
+    
+    public interface ITimeGroupRangePoint<TGroupKey,TKey> : ITimeGroupPoint<TGroupKey,TKey>, IPointCollection<DateTime, double>, ITimeRange<DateTime>
     {
     }
 

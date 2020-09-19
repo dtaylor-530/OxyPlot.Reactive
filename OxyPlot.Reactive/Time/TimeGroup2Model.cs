@@ -21,7 +21,20 @@ namespace OxyPlot.Reactive
     ///  Groups all points by a common ranges.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class TimeGroup2Model<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>, IObservable<Range<DateTime>[]>, IObservable<IChangeSet<ITimeRangePoint<TKey>>>
+    public class TimeGroup2Model<TKey> : TimeGroup2Model<TKey, TKey>
+    {
+
+        public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+
+        }
+    }
+
+    /// <summary>
+    ///  Groups all points by a common ranges.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    public class TimeGroup2Model<TGroupKey, TKey> : TimeModel<TGroupKey, TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>, IObservable<Range<DateTime>[]>, IObservable<IChangeSet<ITimeRangePoint<TKey>>>
     {
         private readonly Subject<Range<DateTime>[]> rangesSubject = new Subject<Range<DateTime>[]>();
         private TimeSpan? timeSpan;
@@ -30,7 +43,7 @@ namespace OxyPlot.Reactive
         protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
         protected readonly IObservable<IChangeSet<ITimeRangePoint<TKey>>> changeSet;
 
-        public TimeGroup2Model(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroup2Model(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             changeSet = ObservableChangeSet.Create<ITimeRangePoint<TKey>>(sourceList =>
 
@@ -79,7 +92,7 @@ namespace OxyPlot.Reactive
             }
         }
 
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, ITimePoint<TKey>>> collection)
         {
             var ees = collection
                 .OrderBy(a => a.Value.Key);
@@ -102,7 +115,7 @@ namespace OxyPlot.Reactive
                         .Skip(1)
                         .ToArray();
 
-                        return (new TimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
+                        return (new TimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
                     })
                     .Skip(1)
                     .Select(a => a.Item1)

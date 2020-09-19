@@ -33,7 +33,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var pacedObs = dis.ToObservable().Take(100).Merge(dis.ToObservable().Skip(100).Pace(TimeSpan.FromSeconds(2)));
 
-
             var model1 = new TimeKeyDoubleGroupModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             subject.Subscribe(model1.OnNext);

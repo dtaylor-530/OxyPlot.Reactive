@@ -95,7 +95,7 @@
                 </ToolBar>
 
                 <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                    <ItemsControl x:Name="ItemsControlGroup" Style="{StaticResource LastItemBottomRowStyle}">
+                    <ItemsControl x:Name="ItemsControlAccumulatedGroup" Style="{StaticResource LastItemBottomRowStyle}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TabControl>
@@ -108,13 +108,15 @@
                                                 HorizontalAlignment="Left"
                                                 VerticalAlignment="Top">
                                                 <TextBlock
+                                                    VerticalAlignment="Top"
                                                     FontSize="20"
                                                     Foreground="Silver"
                                                     Text="{Binding index}" />
                                                 <TextBlock
+                                                    VerticalAlignment="Bottom"
                                                     Margin="30,0,0,0"
                                                     FontSize="20"
-                                                    Foreground="Silver"
+                                                    Foreground="DarkGray"
                                                     Text="{Binding model.Key}" />
                                             </Grid>
                                         </Grid>
@@ -146,6 +148,47 @@
         <TabItem Header="Standard">
             <ScrollViewer>
                 <ItemsControl x:Name="ItemsControlStandard">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="600" Height="400">
+                                <hc:Card
+                                    Margin="8"
+                                    BorderThickness="0"
+                                    Footer="{Binding}">
+
+                                    <Border CornerRadius="4,4,0,0">
+                                        <oxy:PlotView Model="{Binding Value}" />
+                                    </Border>
+                                    <hc:Card.FooterTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Margin="10">
+                                                <TextBlock
+                                                    HorizontalAlignment="Left"
+                                                    FontSize="18"
+                                                    FontWeight="Bold"
+                                                    Text="{Binding Key}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    TextWrapping="NoWrap" />
+                                                <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </hc:Card.FooterTemplate>
+                                </hc:Card>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </TabItem>
+
+        <TabItem Header="ValueKey">
+            <ScrollViewer>
+                <ItemsControl x:Name="ItemsControlValueKey">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />

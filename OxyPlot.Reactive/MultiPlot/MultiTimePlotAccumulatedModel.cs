@@ -10,11 +10,21 @@ using static System.Collections.Generic.KeyValuePair;
 
 namespace OxyPlot.Reactive.Multi
 {
-    public class MultiTimePlotAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedModel<TKey>, ITimePoint<TKey>>
+
+    public class MultiTimePlotAccumulatedModel<TKey> : MultiTimePlotAccumulatedModel<TKey, TKey>
+    {
+        public MultiTimePlotAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
+          base(comparer, scheduler, synchronizationContext)
+        {
+
+        }
+    }
+
+    public class MultiTimePlotAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedAModel<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>>
     {
         private ErrorBarModel errorBarModel;
 
-        public MultiTimePlotAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
+        public MultiTimePlotAccumulatedModel(IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
             base(comparer, scheduler, synchronizationContext)
         {
             var plotModel = new PlotModel();
@@ -22,7 +32,7 @@ namespace OxyPlot.Reactive.Multi
             PlotModelChanges.OnNext(Create(default(TGroupKey), plotModel));
         }
 
-        protected override void AddToDataPoints(KeyValuePair<TGroupKey, ITimePoint<TKey>> item)
+        protected override void AddToDataPoints(KeyValuePair<TGroupKey, ITimeGroupPoint<TGroupKey, TKey>> item)
         {
             base.AddToDataPoints(item);
             lock (Models)
@@ -31,29 +41,30 @@ namespace OxyPlot.Reactive.Multi
             }
         }
 
-        protected override TimeAccumulatedModel<TKey> CreateModel(PlotModel plotModel)
+        protected override TimeAccumulatedAModel<TGroupKey, TKey> CreateModel(PlotModel plotModel)
         {
-            return new TimeAccumulatedModel(plotModel, CreatePoint, this.comparer, this.Scheduler);
+            return new TimeAccumulatedAModel<TGroupKey, TKey>(plotModel, CreatePoint, this.comparer, this.Scheduler);
         }
 
-        protected virtual ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        protected virtual ITimeGroupPoint<TGroupKey, TKey> CreatePoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
         {
-            return new TimePoint<TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key);
+            return new TimeGroupPoint<TGroupKey, TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key, xy.GroupKey);
+        }
+    }
+
+
+    public class TimeAccumulatedAModel<TGroupKey, TKey> : TimeGroupKeyModel<TGroupKey, TKey>
+    {
+        private readonly Func<ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>> func;
+
+        public TimeAccumulatedAModel(PlotModel model, Func<ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>> func, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
+        {
+            this.func = func;
         }
 
-        internal class TimeAccumulatedModel : TimeAccumulatedModel<TKey>
+        protected override ITimeGroupPoint<TGroupKey, TKey> CreatePoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
         {
-            private readonly Func<ITimePoint<TKey>, ITimePoint<TKey>, ITimePoint<TKey>> func;
-
-            public TimeAccumulatedModel(PlotModel model, Func<ITimePoint<TKey>, ITimePoint<TKey>, ITimePoint<TKey>> func, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
-            {
-                this.func = func;
-            }
-
-            protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
-            {
-                return func(xy0, xy);
-            }
+            return func(xy0, xy);
         }
     }
 }

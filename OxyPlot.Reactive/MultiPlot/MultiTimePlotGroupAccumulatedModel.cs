@@ -12,13 +12,13 @@ using static System.Collections.Generic.KeyValuePair;
 
 namespace OxyPlot.Reactive.Multi
 {
-    public class TimePlotGroupAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedGroupModel<TKey>, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>
+    public class MultiTimePlotGroupAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedGroupModel<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>
     {
         private readonly ReplaySubject<TimeSpan> timeSpan = new ReplaySubject<TimeSpan>();
         private readonly ReplaySubject<Operation> operation = new ReplaySubject<Operation>();
         private readonly ErrorBarModel errorBarModel;
 
-        public TimePlotGroupAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
+        public MultiTimePlotGroupAccumulatedModel(IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
             base(comparer, scheduler, synchronizationContext)
         {
             var plotModel = new PlotModel();
@@ -26,7 +26,7 @@ namespace OxyPlot.Reactive.Multi
             PlotModelChanges.OnNext(Create(default(TGroupKey), plotModel));
         }
 
-        protected override void AddToDataPoints(KeyValuePair<TGroupKey, ITimePoint<TKey>> item)
+        protected override void AddToDataPoints(KeyValuePair<TGroupKey, ITimeGroupPoint<TGroupKey, TKey>> item)
         {
             base.AddToDataPoints(item);
             lock (Models)
@@ -35,9 +35,9 @@ namespace OxyPlot.Reactive.Multi
             }
         }
 
-        protected override TimeAccumulatedGroupModel<TKey> CreateModel(PlotModel plotModel)
+        protected override TimeAccumulatedGroupModel<TGroupKey, TKey> CreateModel(PlotModel plotModel)
         {
-            var model = new TimeAccumulatedGroupModel<TKey>(plotModel, this.comparer, this.Scheduler);
+            var model = new TimeAccumulatedGroupModel<TGroupKey, TKey>(plotModel, this.comparer, this.Scheduler);
             operation.Subscribe(model);
             timeSpan.Subscribe(model);
             return model;

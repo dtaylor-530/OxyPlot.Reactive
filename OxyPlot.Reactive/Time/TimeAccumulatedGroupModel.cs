@@ -6,20 +6,15 @@ using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
-    public class TimeAccumulatedGroupModel<TKey> : TimeGroup2Model<TKey>
+    public class TimeAccumulatedGroupModel<TGroupKey, TKey> : TimeGroup2Model<TGroupKey, TKey>
     {
         public TimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
         }
 
-        public TimeAccumulatedGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeAccumulatedGroupModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
-
-        //protected override double Combine(double x0, double x1)
-        //{
-        //    return x0 + x1;
-        //}
 
         protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {

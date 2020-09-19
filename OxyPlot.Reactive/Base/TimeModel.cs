@@ -19,22 +19,31 @@ namespace OxyPlot.Reactive
         }
     }
 
-    public class TimeGroupKeyModel<TGroupKey, TKey> : TimeModel<TGroupKey, TKey, ITimePoint<TKey>, ITimePoint<TKey>>
+    public class TimeGroupKeyModel<TGroupKey, TKey> : TimeGroupKeyModel<TGroupKey, TKey, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>>
     {
         public TimeGroupKeyModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
     }
 
-    public abstract class TimeModel<TKey, TType> : TimeModel<TKey, TType, TType> where TType : ITimePoint<TKey>
+    public class TimeGroupKeyModel<TGroupKey, TKey, TType, TType3> : TimeModel<TGroupKey, TKey, TType, TType3>
+        where TType : ITimeGroupPoint<TGroupKey, TKey>
+        where TType3 : TType
+    {
+        public TimeGroupKeyModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+        }
+    }
+
+    public class TimeModel<TKey, TType> : TimeModel<TKey, TType, TType> where TType : ITimePoint<TKey>
     {
         public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
         {
         }
     }
 
-    public abstract class TimeModel<TKey, TType, TType3> : TimeModel<TKey, TKey, TType, TType3> 
-        where TType : ITimePoint<TKey> 
+    public class TimeModel<TKey, TType, TType3> : TimeModel<TKey, TKey, TType, TType3>
+        where TType : ITimePoint<TKey>
         where TType3 : TType
     {
         public TimeModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
@@ -43,7 +52,8 @@ namespace OxyPlot.Reactive
     }
 
 
-    public abstract class TimeModel<TGroupKey, TKey, TType, TType3> : MultiPlotModel<TGroupKey, TKey, DateTime, TType, TType3> where TType : ITimePoint<TKey> where TType3 : TType
+    public class TimeModel<TGroupKey, TKey, TType, TType3> : MultiPlotModel<TGroupKey, TKey, DateTime, TType, TType3>
+        where TType : ITimePoint<TKey> where TType3 : TType
     {
         public TimeModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, DateTime.MinValue, DateTime.MaxValue, comparer, scheduler: scheduler)
         {

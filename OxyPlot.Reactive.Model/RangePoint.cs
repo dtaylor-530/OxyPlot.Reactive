@@ -35,11 +35,6 @@ namespace OxyPlot.Reactive.Model
         {
             return $"{Var:F}, {Value}";
         }
-
-        //public static ITimePoint<TKey> Create(ITimeRange dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key)
-        //{
-        //    return new TRangePoint<TKey>(dateTimeRange, value, key);
-        //}
     }
 
     public abstract class RangePoint<TKey, TVar> : RangePoint<TKey, TVar, double> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
