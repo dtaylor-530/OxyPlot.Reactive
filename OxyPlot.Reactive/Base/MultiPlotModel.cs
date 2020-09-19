@@ -187,7 +187,7 @@ namespace OxyPlot.Reactive
                 if (series is LineSeries lSeries)
                 {
                     var count = series.ItemsSource.Count();
-                    lSeries.MarkerSize = (int)(5 / (1 + (Math.Log10(count))));
+                    lSeries.MarkerSize = (int)(5 / (1 + (Math.Log10(count)))) - 1;
                 }
 
                 series.ItemsSource = items;
