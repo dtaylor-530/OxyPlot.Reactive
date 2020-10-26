@@ -55,19 +55,19 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
         }
 
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
-        {
-            return base.CreatePoint(xy0, xy);
-        }
+        //protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        //{
+        //    return new TimePoint<TKey>(xy0, xy);
+        //}
     }
 
     public class CustomDateTimeRangePoint<TKey> : TimeRangePoint<TKey>
     {
-        public CustomDateTimeRangePoint(Range<DateTime> dateTimeRange, ICollection<IPoint<DateTime, double>> value) : base(dateTimeRange, value)
+        public CustomDateTimeRangePoint(Range<DateTime> dateTimeRange, ICollection<ITimePoint<TKey>> value) : base(dateTimeRange, value)
         {
         }
 
-        public CustomDateTimeRangePoint(Range<DateTime> dateTimeRange, ICollection<IPoint<DateTime, double>> value, TKey key) : base(dateTimeRange, value, key)
+        public CustomDateTimeRangePoint(Range<DateTime> dateTimeRange, ICollection<ITimePoint<TKey>> value, TKey key) : base(dateTimeRange, value, key)
         {
         }
 

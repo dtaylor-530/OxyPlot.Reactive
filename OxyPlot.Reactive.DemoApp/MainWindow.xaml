@@ -29,6 +29,8 @@
 
                     <Page Title="Multi Line Series" Uri="\Views\TimeSeriesView.xaml" />
 
+                    <Page Title="Multi Line Rolling-Stats Series" Uri="\Views\TimeSeriesStatsView.xaml" />
+                    
                     <Page Title="Multi Line Accumulated Series" Uri="\Views\TimeSeriesAccumulatedView.xaml" />
 
                     <Page Title="Stacked Bar Series" Uri="\Views\StackedBarView.xaml" />

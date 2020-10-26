@@ -15,5 +15,6 @@
         Sum,
         Middle,
         Difference,
+        KellyCriterion
     }
 }

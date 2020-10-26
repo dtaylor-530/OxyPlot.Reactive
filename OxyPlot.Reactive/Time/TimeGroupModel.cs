@@ -66,5 +66,10 @@ namespace OxyPlot.Reactive
             operation = value;
             refreshSubject.OnNext(Unit.Default);
         }
+
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
     }
 }

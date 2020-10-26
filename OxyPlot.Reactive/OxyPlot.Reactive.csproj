@@ -5,7 +5,7 @@
     <AssemblyVersion>1.14.4.0</AssemblyVersion>
     <FileVersion>1.14.4.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.14.92</Version>
+    <Version>1.14.104</Version>
     <Authors>Declan Taylor</Authors>
   </PropertyGroup>
 
@@ -36,9 +36,10 @@
   <ItemGroup>
     <PackageReference Include="DynamicData" Version="6.16.3" />
     <PackageReference Include="Kaos.Collections" Version="4.1.0" />
-    <PackageReference Include="MathNet.Numerics" Version="4.7.0" />
-    <PackageReference Include="morelinq" Version="3.2.0" />
+    <PackageReference Include="MathNet.Numerics" Version="4.12.0" />
+    <PackageReference Include="morelinq" Version="3.3.2" />
     <PackageReference Include="NodaTime" Version="3.0.0" />
+    <PackageReference Include="OnTheFlyStats" Version="3.1.0" />
     <PackageReference Include="phirSOFT.LazyDictionary" Version="0.2.3" />
     <PackageReference Include="System.Reactive" Version="4.4.1" />
   </ItemGroup>

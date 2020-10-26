@@ -37,14 +37,14 @@ namespace OxyPlot.Reactive.DemoApp.Views
             var model = new TimeRangeModel<string>(PlotView1.Model ??= new PlotModel());
             var model2 = new TimeRangeModel<string>(PlotView2.Model ??= new PlotModel());
             var model3 = new TimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
-
+     
             var obs = TimeDataSource.Observe1000()
                 .Pace(TimeSpan.FromSeconds(1))
                 .Publish().RefCount();
-
-            obs.Subscribe(model);
-            obs.Subscribe(model2);
-            obs.Subscribe(model3);
+            Random random = new Random();
+            obs.SubscribeCustom(model);
+            obs.SubscribeCustom(model2);
+            obs.SubscribeCustom(model3);
 
             obs.Scan(new HashSet<DateTime>(), (a, b) => { a.Add(b.Value.Key); return a; })
                              .ObserveOnDispatcher()
@@ -162,5 +162,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             get { return (double)GetValue(CountProperty); }
             set { SetValue(CountProperty, value); }
         }
+
+
     }
+
 }

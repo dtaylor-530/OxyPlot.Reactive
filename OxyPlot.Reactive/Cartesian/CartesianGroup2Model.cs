@@ -27,16 +27,6 @@ namespace OxyPlot.Reactive
         {
         }
 
-        //protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
-        //{
-        //    return rangeType switch
-        //    {
-        //        RangeType.None => ToDataPoints(col).ToArray(),
-        //        //RangeType.Count when count.HasValue => Enumerable.TakeLast(ToDataPoints(col), count.Value),
-        //        RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(col).ToArray(),
-        //        _ => throw new ArgumentOutOfRangeException("fdssffd")
-        //    };
-        //}
 
         protected override async void PreModify()
         {
@@ -75,19 +65,18 @@ namespace OxyPlot.Reactive
                 var se = ees
                     .GroupOn(ranges, a => a.Value.Var)
                     .Where(a => a.Any())
-                    .Scan((default(DoubleRangePoint<TKey>), default(IDoublePoint<TKey>)), (ac, bc) =>
+                    .Scan(default(DoubleRangePoint<TKey>), (ac, bc) =>
                     {
                         var ss = bc
                         .Select(a => a.Value)
-                        .Scan(ac.Item2, (a, b) => CreatePoint(a, b))
+                        .Scan(ac?.Collection.Last(), (a, b) => CreatePoint(a, b))
                         .Cast<IDoublePoint<TKey>>()
                         .Skip(1)
                         .ToArray();
 
-                        return (new DoubleRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
+                        return new DoubleRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
                     })
                     .Skip(1)
-                    .Select(a => a.Item1)
                     .Cast<IDoubleRangePoint<TKey>>();
 
                 return se;
@@ -95,8 +84,12 @@ namespace OxyPlot.Reactive
 
             IEnumerable<IDoubleRangePoint<TKey>> NoRanges()
             {
-                return base.ToDataPoints(collection)
-                          .Select(a => new DoubleRangePoint<TKey>(new Range<double>(a.Var, a.Var), new IDoublePoint<TKey>[] { a }, a.Key));
+                return ees
+            .Select(a => a.Value)
+            .Select(a => { return a; })
+            .Scan(seed: default(IDoublePoint<TKey>), (a, b) => CreatePoint(a, b))
+            .Skip(1)
+            .Select(a => new DoubleRangePoint<TKey>(new Range<double>(a.Var, a.Var), new IDoublePoint<TKey>[] { a }, a.Key));
             }
         }
 
@@ -117,6 +110,11 @@ namespace OxyPlot.Reactive
             var disposable = rangesSubject.Subscribe(observer);
             refreshSubject.OnNext(Unit.Default);
             return disposable;
+        }
+
+        protected override IDoublePoint<TKey> CreatePoint(IDoublePoint<TKey> xy0, IDoublePoint<TKey> xy)
+        {
+            return new DoublePoint<TKey>(xy.Var, xy.Value, xy.Key);
         }
     }
 }

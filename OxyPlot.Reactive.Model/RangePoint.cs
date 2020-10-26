@@ -6,57 +6,47 @@ using System.Linq;
 
 namespace OxyPlot.Reactive.Model
 {
-    public abstract class RangePoint<TKey, TVar, TValue> : IRangePoint<TKey, TVar, TValue> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+
+    public abstract class RangePoint<TKey, TVar> : RangePoint<TKey, TVar, IPoint<TVar, double>>
+    where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
     {
-        public RangePoint(Range<TVar> timeRange, ICollection<IPoint<TVar, TValue>> value, TKey key)
-        {
-            Range = timeRange;
-            Collection = value;
-            this.Key = key;
-        }
-
-        public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, TValue>> value) : this(dateTimeRange, value, default)
+        public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, double>> collection, TKey key) : this(dateTimeRange, collection, key, Operation.Mean)
         {
         }
 
-        public TKey Key { get; }
-
-        public Range<TVar> Range { get; }
-
-        public abstract TVar Var { get; }
-
-        public abstract TValue Value { get; }
-
-        public ICollection<IPoint<TVar, TValue>> Collection { get; }
-
-        public abstract DataPoint GetDataPoint();
-
-        public override string ToString()
+        public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, double>> collection) : this(dateTimeRange, collection, default, Operation.Mean)
         {
-            return $"{Var:F}, {Value}";
+        }
+
+        public RangePoint(Range<TVar> timeRange, ICollection<IPoint<TVar, double>> collection, TKey key, Operation operation) : base(timeRange, collection, key, operation)
+        {
         }
     }
 
-    public abstract class RangePoint<TKey, TVar> : RangePoint<TKey, TVar, double> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+
+    public abstract class RangePoint<TKey, TVar, TPoint> : RangePoint<TKey, TVar, double, TPoint>
+        where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+        where TPoint : IPoint<TVar, double>
     {
         private readonly Operation operation;
 
-        public RangePoint(Range<TVar> timeRange, ICollection<IPoint<TVar, double>> value, TKey key, Operation operation) : base(timeRange, value, key)
+        public RangePoint(Range<TVar> dateTimeRange, ICollection<TPoint> collection, TKey key) : this(dateTimeRange, collection, key, Operation.Mean)
+        {
+        }
+
+        public RangePoint(Range<TVar> dateTimeRange, ICollection<TPoint> collection) : this(dateTimeRange, collection, default, Operation.Mean)
+        {
+        }
+
+        public RangePoint(Range<TVar> timeRange, ICollection<TPoint> collection, TKey key, Operation operation) : base(timeRange, collection, key)
         {
             this.operation = operation;
         }
 
-        public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, double>> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
-        {
-        }
-
-        public RangePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, double>> value) : this(dateTimeRange, value, default, Operation.Mean)
-        {
-        }
 
         public override double Value => Collection.Count > 1 ? GetValue() : Collection.Single().Value;
 
-        private double GetValue()
+        protected virtual double GetValue()
         {
             switch (this.operation)
             {
@@ -76,6 +66,49 @@ namespace OxyPlot.Reactive.Model
                 default: throw new NotImplementedException();
             };
         }
+    }
+
+    public abstract class RangeBasePoint<TKey, TVar, TValue> : RangePoint<TKey, TVar, TValue, IPoint<TVar, TValue>> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+    {
+        public RangeBasePoint(Range<TVar> timeRange, ICollection<IPoint<TVar, TValue>> value, TKey key) : base(timeRange, value, key)
+        {
+
+        }
+
+        public RangeBasePoint(Range<TVar> dateTimeRange, ICollection<IPoint<TVar, TValue>> value) : this(dateTimeRange, value, default)
+        {
+        }
+    }
+
+
+    public abstract class RangePoint<TKey, TVar, TValue, TPoint> : IRangePoint<TKey, TVar, TValue, TPoint>
+    where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+    where TPoint : IPoint<TVar, TValue>
+    {
+
+        public RangePoint(Range<TVar> dateTimeRange, ICollection<TPoint> value) : this(dateTimeRange, value, default)
+        {
+        }
+
+        public RangePoint(Range<TVar> timeRange, ICollection<TPoint> value, TKey key)
+        {
+            Range = timeRange;
+            Collection = value;
+            this.Key = key;
+        }
+
+
+        public TKey Key { get; }
+
+        public Range<TVar> Range { get; }
+
+        public abstract TVar Var { get; }
+
+        public abstract TValue Value { get; }
+
+        public ICollection<TPoint> Collection { get; }
+
+        public abstract DataPoint GetDataPoint();
 
         public override string ToString()
         {

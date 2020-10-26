@@ -34,29 +34,85 @@ namespace OxyPlot.Reactive
     ///  Groups all points by a common ranges.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class TimeGroup2Model<TGroupKey, TKey> : TimeModel<TGroupKey, TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>, IObservable<Range<DateTime>[]>, IObservable<IChangeSet<ITimeRangePoint<TKey>>>
+    public class TimeGroup2Model<TGroupKey, TKey> : TimeGroup2Model<TGroupKey, TKey, ITimeRangePoint<TKey>>
     {
-        private readonly Subject<Range<DateTime>[]> rangesSubject = new Subject<Range<DateTime>[]>();
-        private TimeSpan? timeSpan;
-        private Operation? operation;
-        protected Range<DateTime>[]? ranges;
-        protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
-        protected readonly IObservable<IChangeSet<ITimeRangePoint<TKey>>> changeSet;
 
         public TimeGroup2Model(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
-            changeSet = ObservableChangeSet.Create<ITimeRangePoint<TKey>>(sourceList =>
 
-            (this as IObservable<ITimeRangePoint<TKey>[]>).TakeUntil(timeSpanChanges)
-            .Merge(timeSpanChanges.Select(a => this as IObservable<ITimeRangePoint<TKey>[]>).Switch())
-        .Subscribe(c =>
-         {
-             (this as IMixedScheduler).ScheduleAction(() =>
-             {
-                 sourceList.Clear();
-                 sourceList.AddRange(c);
-             });
-         }));
+        }
+
+        protected override ITimeRangePoint<TKey> CreatePoint(ITimeRangePoint<TKey>? timePoint0, IGrouping<Range<DateTime>, KeyValuePair<TGroupKey, ITimePoint<TKey>>> timePoints)
+        {
+
+            var points = ToDataPoints(timePoints.Select(a => a.Value), timePoint0?.Collection.Last()).ToArray();
+            return new TimeRangePoint<TKey>(timePoints.Key, points, timePoints.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+
+            IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<ITimePoint<TKey>> timePoints, ITimePoint<TKey>? timePoint0)
+            {
+                var ss = timePoints
+                        .Scan(timePoint0, (a, b) => CreatePoint(a, b))
+                        .Skip(1);
+
+                return ss;
+            }
+        }
+
+        protected override IEnumerable<ITimeRangePoint<TKey>> NoRanges(IOrderedEnumerable<KeyValuePair<TGroupKey, ITimePoint<TKey>>>? ees)
+        { 
+            return ees
+                    .Select(a => a.Value)
+                .Select(a => (ITimeRangePoint<TKey>)new TimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key));
+        }
+    
+    }
+
+
+    public abstract class TimeGroup2Model<TGroupKey, TKey, TRangePoint> : TimeGroup2Model<TGroupKey, TKey, ITimePoint<TKey>, TRangePoint>
+        where TRangePoint : class, ITimeRangePoint<TKey>
+    {
+        public TimeGroup2Model(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+
+        }
+
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
+
+    }
+
+    /// <summary>
+    ///  Groups all points by a common ranges.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    public abstract class TimeGroup2Model<TGroupKey, TKey, TType, TRangePoint> :
+        TimeModel<TGroupKey, TKey, TType, TRangePoint>, IObserver<Operation>, IObserver<TimeSpan>, IObservable<Range<DateTime>[]>, IObservable<IChangeSet<TRangePoint>>
+        where TRangePoint : class, TType, ITimeRangePoint<TKey, TType>
+        where TType : ITimePoint<TKey>
+    {
+        protected readonly Subject<Range<DateTime>[]> rangesSubject = new Subject<Range<DateTime>[]>();
+        protected TimeSpan? timeSpan;
+        protected Operation? operation;
+        protected Range<DateTime>[]? ranges;
+        protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
+        protected readonly IObservable<IChangeSet<TRangePoint>> changeSet;
+
+        public TimeGroup2Model(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+            changeSet = ObservableChangeSet.Create<TRangePoint>(sourceList =>
+
+           (this as IObservable<TRangePoint[]>).TakeUntil(timeSpanChanges)
+           .Merge(timeSpanChanges.Select(a => this as IObservable<TRangePoint[]>).Switch())
+       .Subscribe(c =>
+        {
+            (this as IMixedScheduler).ScheduleAction(() =>
+            {
+                sourceList.Clear();
+                sourceList.AddRange(c);
+            });
+        }));
         }
 
         //protected override ITimeRangePoint<TKey>[] Create(IEnumerable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> col)
@@ -92,42 +148,35 @@ namespace OxyPlot.Reactive
             }
         }
 
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, ITimePoint<TKey>>> collection)
+        protected override IEnumerable<TRangePoint> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection)
         {
-            var ees = collection
+            IOrderedEnumerable<KeyValuePair<TGroupKey, TType>>? ees = collection
                 .OrderBy(a => a.Value.Key);
 
-            var se = ranges != null ? Ranges() : NoRanges();
+            var se = ranges != null ? Ranges(ees) : NoRanges(ees);
 
             return se.ToArray();
 
-            IEnumerable<ITimeRangePoint<TKey>> Ranges()
-            {
-                return ees
-                    .GroupOn(ranges, a => a.Value.Var)
-                    .Where(a => a.Any())
-                    .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
-                    {
-                        var ss = bc
-                        .Select(a => a.Value)
-                        .Scan(ac.Item2, (a, b) => CreatePoint(a, b))
-                        .Cast<ITimePoint<TKey>>()
-                        .Skip(1)
-                        .ToArray();
 
-                        return (new TimeRangePoint<TKey>(bc.Key, ss, bc.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
-                    })
-                    .Skip(1)
-                    .Select(a => a.Item1)
-                    .Cast<ITimeRangePoint<TKey>>();
-            }
 
-            IEnumerable<ITimeRangePoint<TKey>> NoRanges()
-            {
-                return base.ToDataPoints(collection)
-                    .Select(a => new TimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key));
-            }
+
         }
+
+        protected virtual IEnumerable<TRangePoint> Ranges(IOrderedEnumerable<KeyValuePair<TGroupKey, TType>>? ees)
+        {
+            return ees
+                .GroupOn(ranges, a => a.Value.Var)
+                .Where(a => a.Any())
+                .Scan(default(TRangePoint), CreatePoint)
+                .Skip(1)
+                .Cast<TRangePoint>();
+        }
+
+        protected abstract IEnumerable<TRangePoint> NoRanges(IOrderedEnumerable<KeyValuePair<TGroupKey, TType>>? ees);
+
+
+        protected abstract TRangePoint CreatePoint(TRangePoint? timePoint0, IGrouping<Range<DateTime>, KeyValuePair<TGroupKey, TType>> timePoints);
+
 
         public void OnNext(TimeSpan value)
         {
@@ -148,7 +197,7 @@ namespace OxyPlot.Reactive
             return rangesSubject.Subscribe(observer);
         }
 
-        public IDisposable Subscribe(IObserver<IChangeSet<ITimeRangePoint<TKey>>> observer)
+        public IDisposable Subscribe(IObserver<IChangeSet<TRangePoint>> observer)
         {
             return changeSet.Subscribe(observer);
         }

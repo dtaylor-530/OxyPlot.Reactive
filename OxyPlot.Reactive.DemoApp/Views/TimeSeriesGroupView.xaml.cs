@@ -29,11 +29,15 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var model1 = new TimeGroupModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-            pacedObs.Subscribe(model1);
+            pacedObs.SubscribeCustom(model1);
 
             var model2 = new TimeGroup2Model<string>(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-            pacedObs.Subscribe(model2);
+            pacedObs.SubscribeCustom(model2);
+
+            var model4= new TimeGroupOnTheFlyStatsModel<string>(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
+            IDisposable disposable = pacedObs.SubscribeCustom4(model4);
 
             (model2 as IObservable<IChangeSet<ITimeRangePoint<string>>>)
                 .Sort(SortExpressionComparer<ITimeRangePoint<string>>.Descending(t => t.Range.Max))
@@ -52,7 +56,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var model3 = new CustomTimeGroup2Model<string>(PlotView3.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-            pacedObs.Subscribe(model3);
+            pacedObs.SubscribeCustom(model3);
 
             TimeView1.TimeSpanObservable.Subscribe(x =>
             {

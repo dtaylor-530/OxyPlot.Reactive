@@ -27,7 +27,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             var model2 = new CartesianGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-            pacedObs.Subscribe(model2);
+            pacedObs.SubscribeCustom(model2);
 
             (model2 as IObservable<(double size, Range<double>[] ranges)>)
                 .CombineLatest(pacedObs, (a, b) => (a.ranges.FirstOrDefault(c => c.Min <= b.Value.Key && c.Max >= b.Value.Key), b))

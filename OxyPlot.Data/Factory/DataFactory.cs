@@ -146,7 +146,7 @@ namespace OxyPlot.Data.Factory
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    throw new InvalidOperationException();
+                    throw;
                 }
             }
         }
@@ -189,7 +189,7 @@ namespace OxyPlot.Data.Factory
                 }
                 catch (IndexOutOfRangeException)
                 {
-                    throw new InvalidOperationException();
+                    throw;
                 }
             }
         }

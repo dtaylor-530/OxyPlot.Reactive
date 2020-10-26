@@ -13,7 +13,7 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
         {
             var model3 = new TimeModel<string>(PlotModel, scheduler: RxApp.MainThreadScheduler) { };
 
-            observable.Where(a => a.HasValue).Select(a => a.Value).Subscribe(model3);
+            observable.Where(a => a.HasValue).Select(a => a.Value).SubscribeCustom(model3);
 
             isBusy = observable.ObserveOnDispatcher().Select(a => !a.HasValue)
                 .DistinctUntilChanged()

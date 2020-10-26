@@ -18,6 +18,7 @@
                 x:Name="ComboBox1"
                 Width="100"
                 Height="25"
+                SelectedIndex="0"
                 FontSize="16">
                 <sys:Int32>2</sys:Int32>
                 <sys:Int32>3</sys:Int32>

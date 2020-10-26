@@ -37,7 +37,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             subject.Subscribe(model1.OnNext);
 
-            pacedObs.Subscribe(model1, ()=> string.Empty);
+            pacedObs.SubscribeCustom(model1, ()=> string.Empty);
 
             //-------------------
 
@@ -46,6 +46,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             subject.Subscribe(model2.OnNext);
 
             pacedObs.Subscribe(model2);
+
+            subject.OnNext((int)ComboBox1.SelectedValue);
         }
 
         private void ComboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -29,10 +29,10 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
-        {
-            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
-        }
+        //protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        //{
+        //    return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        //}
 
         protected abstract TGroupKey CreateGroupKey(ITimePoint<TKey> val);
 
@@ -42,6 +42,10 @@ namespace OxyPlot.Reactive
                 temporaryCollection.Add(KeyValuePair.Create(CreateGroupKey(item.Value), CreatePoint(null, item.Value)));
 
             refreshSubject.OnNext(Unit.Default);
+        }
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
         }
     }
 }

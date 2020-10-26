@@ -1,4 +1,5 @@
 ﻿using LinqStatistics;
+using OxyPlot.Axes;
 using System;
 using System.Collections.Generic;
 
@@ -8,6 +9,12 @@ namespace OxyPlot.Reactive.Model
     {
         T Value { get; }
     }
+
+    public interface IValue2<T>
+    {
+        T Value2 { get; }
+    }
+
 
     public interface IVar<T>
     {
@@ -36,7 +43,7 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITimePoint :IValue<double>, IVar<DateTime>, IDataPointProvider
+    public interface ITimePoint : IValue<double>, IVar<DateTime>, IDataPointProvider
     {
     }
 
@@ -57,7 +64,15 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>,IPoint<DateTime, double>
+    public interface ITimePoint<TKey> : IDoublePoint<TKey, DateTime>, ITimePoint, IKey<TKey>, IPoint<DateTime, double>
+    {
+    }
+
+    public interface ITime2Point<TKey> : ITimePoint<TKey>, IValue2<double>
+    {
+    }
+
+    public interface ITime2Point<TKey, TValue> : ITimePoint<TKey>, IValue2<TValue>
     {
     }
 
@@ -83,24 +98,41 @@ namespace OxyPlot.Reactive.Model
         ICollection<IDoublePoint<TKey>> Collection { get; }
     }
 
-    public interface IPointCollection<TVar, TValue>
+    public interface IPointCollection<TVar, TValue, TPoint> : IPoint<TVar, TValue>
     {
-        ICollection<IPoint<TVar, TValue>> Collection { get; }
+        ICollection<TPoint> Collection { get; }
     }
 
-    public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IPointCollection<DateTime, double>, ITimeRange<DateTime>
-    {
-    }  
-    
-    public interface ITimeGroupRangePoint<TGroupKey,TKey> : ITimeGroupPoint<TGroupKey,TKey>, IPointCollection<DateTime, double>, ITimeRange<DateTime>
+    public interface IPointCollection<TVar, TValue> : IPointCollection<TVar, TValue, IPoint<TVar, TValue>>
     {
     }
 
-    public interface IDoubleRangePoint<TKey> : IDoublePoint<TKey>, IPointCollection<double, double>, IRange<double>
+    public interface ITimeRangePoint<TKey> : ITimeRangePoint<TKey, ITimePoint<TKey>>
     {
     }
 
-    public interface IRangePoint<TKey, TVar, TValue> : IKeyPoint<TKey, TVar, TValue>, IPointCollection<TVar, TValue>, IRange<TVar> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
+    //public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IPointCollection<DateTime, double, ITimePoint<TKey>>, ITimeRange<DateTime>
+    //{
+    //}
+
+    public interface ITimeRangePoint<TKey, TType> : ITimePoint<TKey>, IPointCollection<DateTime, double, TType>, ITimeRange<DateTime>
+        where TType : ITimePoint<TKey>
+    {
+    }
+
+    public interface ITime2RangePoint<TKey, TValue2> : ITimeRangePoint<TKey>, ITime2Point<TKey, TValue2>
+    {
+    }
+
+    public interface ITimeGroupRangePoint<TGroupKey, TKey> : ITimeGroupPoint<TGroupKey, TKey>, IPointCollection<DateTime, double, IDoublePoint<TKey>>, ITimeRange<DateTime>
+    {
+    }
+
+    public interface IDoubleRangePoint<TKey> : IDoublePoint<TKey>, IPointCollection<double, double, IDoublePoint<TKey>>, IRange<double>
+    {
+    }
+
+    public interface IRangePoint<TKey, TVar, TValue, TPoint> : IKeyPoint<TKey, TVar, TValue>, IPointCollection<TVar, TValue, TPoint>, IRange<TVar> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
     {
     }
 

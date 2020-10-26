@@ -1,5 +1,6 @@
 ﻿#nullable enable
 
+using MoreLinq;
 using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,8 @@ namespace OxyPlot.Reactive
                 });
         }
 
+  
+
         public double? Power { get; private set; }
 
         protected override string CreateGroupKey(ITimePoint<TKey> val)
@@ -74,6 +77,17 @@ namespace OxyPlot.Reactive
         public void OnNext(double value)
         {
             powerSubject.OnNext(value);
+        }
+
+        protected override IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<string, ITimePoint<TKey>>> collection)
+        {
+            return collection
+   .Select(a => a.Value)
+   .Select(a => { return a; })
+   .Scan(seed: default(ITimePoint<TKey>), (a, b) => CreatePoint(a, b))
+   .Skip(1)
+   .Cast<ITimePoint<TKey>>();
+
         }
     }
 }
