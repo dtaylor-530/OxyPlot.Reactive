@@ -32,7 +32,7 @@ namespace OxyPlotEx.DemoAppCore.Pages
             (model2 as IObservable<(double size, Range<double>[] ranges)>)
                 .CombineLatest(pacedObs, (a, b) => (a.ranges.FirstOrDefault(c => c.Min <= b.Value.Key && c.Max >= b.Value.Key), b))
                 .Where(c => c.Item1 != null)
-                .ToObservableChangeSet(a => Guid.NewGuid())
+                .ToObservableChangeSet(a => Guid.NewGuid(), limitSizeTo: 10)
                 .Group(a => a.Item1)
                 .Transform(a => new GroupViewModel<object, Range<double>, Guid>(a.Key, a.Cache.Connect().Transform(a => (object)new { a.b.Key, date = a.b.Value.Key, a.b.Value.Value })))
                 .ObserveOnDispatcher()

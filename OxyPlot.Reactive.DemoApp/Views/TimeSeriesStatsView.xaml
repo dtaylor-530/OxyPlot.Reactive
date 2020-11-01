@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
              xmlns:oxy="http://oxyplot.org/wpf" 
              xmlns:hc="https://handyorg.github.io/handycontrol"
              mc:Ignorable="d" 
@@ -29,10 +28,11 @@
                     ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
                     SelectedIndex="0" />
         </ToolBar>
+        
         <UniformGrid>
-
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="*" />
@@ -40,10 +40,11 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <oxy:PlotView x:Name="plotView" />
+                <oxy:PlotView x:Name="plotView1" />
                 <oxy:PlotView x:Name="plotView2" Grid.Row="1" />
                 <oxy:PlotView x:Name="plotView3" Grid.Row="2" />
                 <oxy:PlotView x:Name="plotView4" Grid.Row="3" />
+                <oxy:PlotView x:Name="plotView5" Grid.Row="4" />
             </Grid>
         </UniformGrid>
     </DockPanel>

@@ -33,7 +33,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var pacedObs = dis.ToObservable().Take(100).Merge(dis.ToObservable().Skip(100).Pace(TimeSpan.FromSeconds(2)));
 
-            var model1 = new TimeKeyDoubleGroupModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model1 = new TimeKeyLogGroupModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             subject.Subscribe(model1.OnNext);
 
@@ -41,7 +41,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             //-------------------
 
-            var model2 = new TimeKeyValueGroupModel(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model2 = new TimeKeyLogValueGroupModel(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             subject.Subscribe(model2.OnNext);
 
@@ -60,7 +60,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
     {
         static readonly Random random = new Random();
 
-        public static IDisposable Subscribe(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeKeyValueGroupModel model)
+        public static IDisposable Subscribe(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeKeyLogValueGroupModel model)
         {
             return observable
                 .Select(a => KeyValuePair.Create(a.Key, (ITimePoint<double>)new TimePoint<double>(a.Value.Key, a.Value.Value, random.NextDouble() * 100)))

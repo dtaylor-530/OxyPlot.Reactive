@@ -9,7 +9,7 @@ using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
-    public class CustomTimeGroup2Model<TKey> : TimeGroup2Model<TKey>
+    public class CustomTimeGroup2Model<TKey> : TimeGroupModel<TKey>
     {
         public CustomTimeGroup2Model(PlotModel model, IEqualityComparer<TKey> comparer = null, IScheduler scheduler = null) : base(model, comparer, scheduler)
         {

@@ -1,7 +1,9 @@
 ﻿#nullable enable
 
+using OxyPlot;
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model;
+using OxyPlot.Reactive.Multi;
 using System;
 using System.Collections.Generic;
 using System.Reactive;
@@ -10,9 +12,15 @@ using System.Reactive.Subjects;
 using System.Threading;
 using static System.Collections.Generic.KeyValuePair;
 
-namespace OxyPlot.Reactive.Multi
+namespace OxyPlot.Reactive.DemoApp.Model
 {
-    public class MultiTimePlotGroupAccumulatedModel<TGroupKey, TKey> : MultiTimePlotModel<TGroupKey, TKey, TimeAccumulatedGroupModel<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<Operation>, IObserver<TimeSpan>
+    public class MultiTimePlotGroupAccumulatedModel<TGroupKey, TKey> :
+        MultiTimePlotModel<TGroupKey, TKey,
+            TimeAccumulatedGroupModel<TGroupKey, TKey>, 
+            ITimeGroupPoint<TGroupKey, TKey>, 
+            ITimePoint<TKey>, 
+            ITimeRangePoint<TKey>>, 
+        IObserver<Operation>, IObserver<TimeSpan>
     {
         private readonly ReplaySubject<TimeSpan> timeSpan = new ReplaySubject<TimeSpan>();
         private readonly ReplaySubject<Operation> operation = new ReplaySubject<Operation>();
@@ -37,7 +45,7 @@ namespace OxyPlot.Reactive.Multi
 
         protected override TimeAccumulatedGroupModel<TGroupKey, TKey> CreateModel(PlotModel plotModel)
         {
-            var model = new TimeAccumulatedGroupModel<TGroupKey, TKey>(plotModel, this.comparer, this.Scheduler);
+            var model = new TimeAccumulatedGroupModel<TGroupKey, TKey>(plotModel, comparer, Scheduler);
             operation.Subscribe(model);
             timeSpan.Subscribe(model);
             return model;
@@ -51,7 +59,7 @@ namespace OxyPlot.Reactive.Multi
 
         public void OnNext(Operation value)
         {
-            this.operation.OnNext(value);
+            operation.OnNext(value);
             refreshSubject.OnNext(Unit.Default);
         }
     }

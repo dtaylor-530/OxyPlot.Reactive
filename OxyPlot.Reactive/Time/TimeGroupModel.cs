@@ -1,75 +1,64 @@
 ﻿#nullable enable
 
-using DynamicData;
-using LinqStatistics;
 using MoreLinq;
-using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using LinqStatistics;
+using OxyPlot.Reactive.Model;
+using OxyPlot.Reactive.Base;
 
 namespace OxyPlot.Reactive
 {
     /// <summary>
-    /// Groups each series individually
+    ///  Groups all points by a common ranges.
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class TimeGroupModel<TKey> : TimeModel<TKey, ITimePoint<TKey>, ITimeRangePoint<TKey>>, IObserver<TimeSpan>
+    public class TimeGroupModel<TKey> : TimeGroupModel<TKey, TKey>
     {
-        private TimeSpan? timeSpan;
-        private Operation? operation;
 
         public TimeGroupModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
+
+        }
+    }
+
+    /// <summary>
+    ///  Groups all points by a common ranges.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    public class TimeGroupModel<TGroupKey, TKey> : TimeGroupBaseModel<TGroupKey, TKey, ITimeRangePoint<TKey>>
+    {
+
+        public TimeGroupModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+
         }
 
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
+        protected override ITimeRangePoint<TKey> CreatePoint(ITimeRangePoint<TKey>? timePoint0, IGrouping<Range<DateTime>, KeyValuePair<TGroupKey, ITimePoint<TKey>>> timePoints)
         {
-            var ordered = collection
-                .OrderBy(a => a.Value.Key);
 
-            if (timeSpan.HasValue)
+            var points = ToDataPoints(timePoints.Select(a => a.Value), timePoint0?.Collection.Last()).ToArray();
+            return new TimeRangePoint<TKey>(timePoints.Key, points, timePoints.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+
+            IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<ITimePoint<TKey>> timePoints, ITimePoint<TKey>? timePoint0)
             {
-                var arr = ordered.GroupOn(timeSpan.Value, a => a.Value.Var).ToArray();
-                return arr.Select(ac =>
-                {
-                    var ss = ac
-                    .Select(a => a.Value)
-                    .Scan(default(ITimePoint<TKey>), (a, b) => CreatePoint(a, b))
-                    .Cast<ITimePoint<TKey>>()
-                    .Skip(1)
-                    .ToArray();
-                    return new TimeRangePoint<TKey>(ac.Key, ss, ac.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
-                }).Cast<ITimeRangePoint<TKey>>().ToArray();
+                var ss = timePoints
+                        .Scan(timePoint0, (a, b) => CreatePoint(a, b))
+                        .Skip(1);
+
+                return ss;
             }
-
-            return ordered
-                 .Select(a => a.Value)
-                .Scan(default(TimeRangePoint<TKey>), (a, b) => new TimeRangePoint<TKey>(new Range<DateTime>(b.Var, b.Var), new ITimePoint<TKey>[] { CreatePoint(a, b) }, b.Key))
-                .Cast<ITimeRangePoint<TKey>>()
-                .Skip(1)
-                .ToArray();
         }
 
-        public void OnNext(TimeSpan value)
-        {
-            timeSpan = value;
-            refreshSubject.OnNext(Unit.Default);
-        }
-
-        public void OnNext(Operation value)
-        {
-            operation = value;
-            refreshSubject.OnNext(Unit.Default);
-        }
-
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
-        {
-            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
-        }
+        //protected override IEnumerable<ITimeRangePoint<TKey>> NoRanges(IOrderedEnumerable<KeyValuePair<TGroupKey, ITimePoint<TKey>>>? ees)
+        //{ 
+        //    return ees
+        //            .Select(a => a.Value)
+        //        .Select(a => (ITimeRangePoint<TKey>)new TimeRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimePoint<TKey>[] { a }, a.Key));
+        //}
+    
     }
 }

@@ -7,12 +7,12 @@ namespace OxyPlot.Reactive
     public class DataPointsModel<TKey, TValue>
     {
         protected readonly Dictionary<TKey, ICollection<TValue>> DataPoints;
-        protected readonly IEqualityComparer<TKey>? comparer;
+        protected readonly IEqualityComparer<TKey>? equalityComparer;
 
         public DataPointsModel(IEqualityComparer<TKey>? comparer = null)
         {
             DataPoints = GetDataPoints();
-            this.comparer = comparer;
+            this.equalityComparer = comparer;
         }
 
         protected virtual void AddToDataPoints(IEnumerable<KeyValuePair<TKey, TValue>> items)
@@ -46,9 +46,9 @@ namespace OxyPlot.Reactive
 
         protected virtual Dictionary<TKey, ICollection<TValue>> GetDataPoints()
         {
-            return comparer == default ?
+            return equalityComparer == default ?
                    new Dictionary<TKey, ICollection<TValue>>() :
-                new Dictionary<TKey, ICollection<TValue>>(comparer);
+                new Dictionary<TKey, ICollection<TValue>>(equalityComparer);
         }
     }
 }

@@ -72,13 +72,14 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITime2Point<TKey, TValue> : ITimePoint<TKey>, IValue2<TValue>
+    public interface ITimeTwoPoint<TKey, TValue> : ITimePoint<TKey>, IValue2<TValue>
     {
     }
 
     public interface ITimeGroupPoint<TGroupKey, TKey> : ITimePoint<TKey>, IGroupKey<TGroupKey>
     {
     }
+
 
     public interface ITimeGroupPoint<TKey> : ITimePoint<TKey>, IGroupKey<TKey>
     {
@@ -120,7 +121,7 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITime2RangePoint<TKey, TValue2> : ITimeRangePoint<TKey>, ITime2Point<TKey, TValue2>
+    public interface ITime2RangePoint<TKey, TValue2> : ITimeRangePoint<TKey>, ITimeTwoPoint<TKey, TValue2>
     {
     }
 

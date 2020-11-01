@@ -12,6 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
+using OxyPlot.Reactive.DemoApp.Model;
+using OnTheFlyStats;
+using OxyPlot.Reactive.Model.Enum;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -28,6 +31,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             ItemsControlStandard.ItemsSource = Standard();
             ItemsControlAccumulatedGroup.ItemsSource = AccumulatedGroup();
             ItemsControlValueKey.ItemsSource = ValueKey();
+            ItemsControlRollingOperation.ItemsSource = RollingOperation();
         }
 
         private IReadOnlyCollection<dynamic> Accumulated()
@@ -106,6 +110,42 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
 
 
+        private IReadOnlyCollection<KeyValuePair<string, PlotModel>> RollingOperation()
+        {
+            Random random = new Random();
+            var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
+            {
+                var r = a.Key + Enumerable.Range(1, 3).Random();
+                return KeyValuePair.Create(a.Key, (ITimeStatsGroupPoint<string, string>)new TimeDemoStringPoint(r, r, a.Value.Key, a.Value.Value));
+            });
+
+            var mplots = new MultiTimePlotGroupStatsModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+
+            ComboBox1.SelectionChanged += (s, e) =>
+            {
+                var op = e.AddedItems.Cast<Operation>().Single();
+                mplots.OnNext(op);
+
+            };
+
+            ComboBox2.SelectionChanged += (s, e) =>
+            {
+                var op = e.AddedItems.Cast<RollingOperation>().Single();
+                mplots.OnNext(op);
+            };
+
+            TimeView1.TimeSpanObservable.Subscribe(mplots);
+
+            pacedObs.Subscribe(a => mplots.OnNext(a));
+
+            _ = mplots.ToObservableChangeSet()
+                .ObserveOnDispatcher()
+                .SubscribeOnDispatcher()
+                .Bind(out var plots)
+                .Subscribe();
+
+            return plots;
+        }
 
 
         private IReadOnlyCollection<KeyValuePair<string, PlotModel>> ValueKey()
@@ -115,11 +155,23 @@ namespace OxyPlot.Reactive.DemoApp.Views
             var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
             {
                 var r = random.NextDouble() * 100;
-                return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, double>)new TimeDemoDoublePoint(a.Key, r, a.Value.Key, a.Value.Value));
+                return KeyValuePair.Create(a.Key, (ITimeStatsGroupPoint<string, double>)new TimeDemoDoublePoint(a.Key, r, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotKeyValueGroupAccumulatedModel(scheduler: RxApp.MainThreadScheduler);
-            // pacedObs.SubscribeX<string,string,TimeGroupPoint<string,string>>(mplots);
+            var mplots = new MultiTimePlotKeyValueGroupStatsModel(scheduler: RxApp.MainThreadScheduler);
+
+            PowerComboBox.SelectionChanged += (s, e) =>
+            {
+                var op = e.AddedItems.Cast<int>().Single();
+                mplots.OnNext((double)op);
+            };
+
+            ComboBox2.SelectionChanged += (s, e) =>
+            {
+                var op = e.AddedItems.Cast<RollingOperation>().Single();
+                mplots.OnNext(op);
+            };
+
             pacedObs.Subscribe(a => mplots.OnNext(a));
 
             _ = mplots.ToObservableChangeSet()
@@ -141,7 +193,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
 
 
-        public class TimeDemoDoublePoint : ITimeGroupPoint<string, double>
+        public class TimeDemoDoublePoint : ITimeStatsGroupPoint<string, double>
         {
             public TimeDemoDoublePoint(string groupKey, double key, DateTime dateTime, double value)
             {
@@ -159,7 +211,11 @@ namespace OxyPlot.Reactive.DemoApp.Views
             public DateTime Var { get; }
 
             public double Value { get; }
+
+            // Used in demo view
             public Orientation Orientation { get; }
+
+            public Stats Value2 { get; }
 
             public DataPoint GetDataPoint()
             {
@@ -173,6 +229,41 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
         }
 
+
+        public class TimeDemoStringPoint : ITimeStatsGroupPoint<string, string>
+        {
+            public TimeDemoStringPoint(string groupKey, string key, DateTime dateTime, double value)
+            {
+                GroupKey = groupKey;
+                Key = key;
+                Var = dateTime;
+                Value = value;
+                //Orientation = new[] { Orientation.Horizontal, Orientation.Vertical }.Random();
+            }
+
+            public string GroupKey { get; }
+
+            public string Key { get; }
+
+            public DateTime Var { get; }
+
+            public double Value { get; }
+
+            // public Orientation Orientation { get; }
+
+            public Stats Value2 { get; }
+
+            public DataPoint GetDataPoint()
+            {
+                return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            }
+
+            public override string ToString()
+            {
+                return $"{Var:F}, {Value}, {Key}";
+            }
+
+        }
 
         public class TimeDemoPoint : ITimeGroupPoint<string, string>
         {

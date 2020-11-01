@@ -45,7 +45,12 @@ namespace OxyPlot.Reactive
         }
     }
 
-    public abstract class MultiPlotModel<TGroupKey, TKey, TVar, TType, TType3> : MultiPlotModel2Base<TGroupKey, TKey, TVar, TType, TType3>, IObservable<TType3[]>, IObserver<int>, IObservable<Exception>
+    public abstract class MultiPlotModel<TGroupKey, TKey, TVar, TType, TType3> :
+        MultiPlotModel2Base<TGroupKey, TKey, TVar, TType, TType3>,
+        IObservable<TType3[]>,
+        IObserver<int>,
+        IObserver<IComparer<TGroupKey>>,
+        IObservable<Exception>
         where TType3 : TType
         where TType : Model.IDoublePoint<TKey, TVar>
         where TVar : IComparable<TVar>
@@ -55,6 +60,7 @@ namespace OxyPlot.Reactive
         protected readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
         protected readonly Subject<Exception> exceptionSubject = new Subject<Exception>();
         protected int? takeLastCount;
+        private IComparer<TGroupKey> comparer;
 
         public MultiPlotModel(PlotModel model, TVar max, TVar min, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
@@ -109,14 +115,14 @@ namespace OxyPlot.Reactive
 
         protected virtual async Task AddAllPointsToSeries(KeyValuePair<TGroupKey, ICollection<TType>>[] dataPoints)
         {
-            foreach (var keyValue in dataPoints)
+            foreach (var keyValue in (comparer != null ? dataPoints.OrderBy(a => a.Key, comparer) : dataPoints.AsEnumerable()).Index())
             {
                 _ = await Task.Run(() =>
                 {
-                    return CreateSingle(keyValue).ToArray();
+                    return CreateSingle(keyValue.Value).ToArray();
                 }).ContinueWith(async points =>
                 {
-                    AddToSeries(await points, keyValue.Key?.ToString() ?? string.Empty);
+                    AddToSeries(await points, keyValue.Value.Key?.ToString() ?? string.Empty, keyValue.Key);
                 });
             }
 
@@ -130,7 +136,7 @@ namespace OxyPlot.Reactive
                     var taskPoints = await points;
 
                     if (showAll)
-                        AddToSeries(taskPoints, "All");
+                        AddToSeries(taskPoints, "All", dataPoints.Length);
 
                     if (pointsSubject.HasObservers)
                     {
@@ -180,7 +186,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected virtual void AddToSeries(TType3[] items, string title)
+        protected virtual void AddToSeries(TType3[] items, string title, int index)
         {
             lock (plotModel)
             {
@@ -193,7 +199,7 @@ namespace OxyPlot.Reactive
                         .Select(args => OxyMouseDownAction(args, series, items))
                         .Subscribe(subject.OnNext);
 
-                    plotModel.Series.Add(series);
+                    plotModel.Series.Insert(index, series);
                 }
                 if (series is LineSeries lSeries)
                 {
@@ -212,86 +218,6 @@ namespace OxyPlot.Reactive
 
         protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection);
 
-        //protected virtual IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection) =>
-        //   collection.Select(a => a.Value)
-        //    .GroupBy(a => a)
-        //    .Select(a =>
-        //    {
-        //        if (a == null)
-        //        {
-
-        //        }
-
-        //        return a;
-        //    })
-        //    .Scan(seed: default(TType), (a, b) => CreatePoint(a, b))
-        //    .Skip(1);
-
-
-
-
-
-        //protected virtual IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection) =>
-        //collection
-        //.Select(a => a.Value)
-        //.Select(a =>
-        //{
-        //    if (a == null)
-        //    {
-
-        //    }
-
-        //    return a;
-        //})
-        //.Scan(seed: default(TType), (a, b) => CreatePoint(a, b))
-        //.Skip(1)
-        //.Cast<TType3>();
-
-
-        //            protected override IEnumerable<ITimeStatsRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, ITimeStatsPoint<TKey>>> collection)
-        //{
-        //    var ees = collection
-        //        .OrderBy(a => a.Value.Key);
-
-        //    var se = ranges != null ? Ranges() : NoRanges();
-
-        //    return se.ToArray();
-
-        //    IEnumerable<ITimeStatsRangePoint<TKey>> Ranges()
-        //    {
-        //        return ees
-        //            .GroupOn(ranges, a => a.Value.Var)
-        //            .Where(a => a.Any())
-        //            .Scan((default(TimeStatsRangePoint<TKey>), default(ITimeStatsPoint<TKey>)), (ac, bc) =>
-        //            {
-        //                var ss = bc
-        //                .Select(a => a.Value)
-        //                .Scan(ac.Item2, (a, b) => CreatePoint(a, b))
-        //                .Cast<ITimeStatsPoint<TKey>>()
-        //                .Skip(1)
-        //                .ToArray();
-        //                var value2 = ac.Item2.Value2;
-        //                return (new TimeStatsRangePoint<TKey>(bc.Key, ss, value2, bc.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean), ss.Last());
-        //            })
-        //            .Skip(1)
-        //            .Select(a => a.Item1)
-        //            .Cast<ITimeStatsRangePoint<TKey>>();
-        //    }
-
-        //    IEnumerable<ITimeStatsRangePoint<TKey>> NoRanges()
-        //    {
-        //        return base.ToDataPoints(collection)
-        //            .Scan((a, b) =>
-        //            {
-        //                var sa = a.Value2 ?? new OnTheFlyStats.Stats();
-        //                var es = new TimeStatsRangePoint<TKey>(new Range<DateTime>(b.Var, b.Var), new ITimePoint<TKey>[] { b }, sa, a.Key);
-        //                sa.Update(es.Value);
-        //                return es;
-        //            });
-        //    }
-        //}
-
-        //protected abstract TType3 Convert(TType type);
 
         protected abstract TType CreatePoint(TType xy0, TType xy);
 
@@ -311,6 +237,12 @@ namespace OxyPlot.Reactive
         {
             lock (temporaryCollection)
                 temporaryCollection.Add(item);
+            refreshSubject.OnNext(Unit.Default);
+        }
+
+        public void OnNext(IComparer<TGroupKey> comparer)
+        {
+            this.comparer = comparer;
             refreshSubject.OnNext(Unit.Default);
         }
 

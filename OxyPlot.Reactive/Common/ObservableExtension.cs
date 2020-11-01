@@ -60,14 +60,14 @@ namespace OxyPlot.Reactive
 
 
         public static IDisposable SubscribeCustom3<R, S, Y>(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeModel<string, R, S> model, Func<string>? keyFunc = null)
-where R : ITime2Point<string, Y>
+where R : ITimeTwoPoint<string, Y>
 where S : R
         {
             keyFunc ??= CreateKey;
             return observable
                    .Select(a =>
                    {
-                       var timePoint = (ITime2Point<string, Y>)new Time2Point<string, Y>(a.Value.Key, a.Value.Value, default, keyFunc());
+                       var timePoint = (ITimeTwoPoint<string, Y>)new Time2Point<string, Y>(a.Value.Key, a.Value.Value, default, keyFunc());
                        R r = default;
                        try
                        {

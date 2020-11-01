@@ -15,6 +15,7 @@
         <DockPanel>
 
             <ToolBar
+                xmlns:en="clr-namespace:OxyPlot.Reactive.Model.Enum;assembly=OxyPlot.Reactive.Model"
                 xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
                 xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                 DockPanel.Dock="Top">
@@ -27,12 +28,26 @@
                             <x:Type TypeName="m:Operation" />
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
+
+                    <ObjectDataProvider
+                        x:Key="dataFromRollingOperation"
+                        MethodName="GetValues"
+                        ObjectType="{x:Type sys:Enum}">
+                        <ObjectDataProvider.MethodParameters>
+                            <x:Type TypeName="en:RollingOperation" />
+                        </ObjectDataProvider.MethodParameters>
+                    </ObjectDataProvider>
                 </ToolBar.Resources>
                 <views:TimePickerView x:Name="TimeView1" />
 
                 <hc:ComboBox
                     x:Name="ComboBox1"
                     ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                    SelectedIndex="0" />
+
+                <hc:ComboBox
+                    x:Name="ComboBox2"
+                    ItemsSource="{Binding Source={StaticResource dataFromRollingOperation}}"
                     SelectedIndex="0" />
             </ToolBar>
 
@@ -52,13 +67,15 @@
                     </DataGrid.Columns>
                     <DataGrid.RowDetailsTemplate>
                         <DataTemplate>
-                            <!--<DataGrid ItemsSource="{Binding Collection}" VerticalScrollBarVisibility="Visible" ></DataGrid>-->
                             <TextBlock Text="{Binding Collection.Count}" />
                         </DataTemplate>
                     </DataGrid.RowDetailsTemplate>
                 </DataGrid>
 
                 <oxy:PlotView Name="PlotView3" />
+                <TextBlock>Nothing</TextBlock>
+
+                <oxy:PlotView Name="PlotView4" />
                 <TextBlock>Nothing</TextBlock>
             </UniformGrid>
         </DockPanel>

@@ -38,7 +38,7 @@ namespace OxyPlot.Reactive.Model
         }
     }
 
-    public struct Time2Point<TKey, TValue2> : ITime2Point<TKey, TValue2>
+    public struct Time2Point<TKey, TValue2> : ITimeTwoPoint<TKey, TValue2>
     {
         public Time2Point(DateTime dateTime, double value, TValue2 value2, TKey key)
         {

@@ -20,9 +20,9 @@ namespace OxyPlot.Reactive.Multi
         }
     }
 
-    public abstract class MultiTimePlotModel<TGroupKey, TKey, TModelType, TPoint, TPointIn> : MultiTimePlotModel<TGroupKey, TKey, TModelType, TPoint, TPointIn, TPointIn>
+    public abstract class MultiTimePlotModel<TGroupKey, TKey, TModelType, TGroupPoint, TPointIn> : MultiTimePlotModel<TGroupKey, TKey, TModelType, TGroupPoint, TPointIn, TPointIn>
         where TModelType : TimeModel<TGroupKey, TKey, TPointIn, TPointIn>
-        where TPoint : ITimeGroupPoint<TGroupKey, TKey>, TPointIn
+        where TGroupPoint : ITimeGroupPoint<TGroupKey, TKey>, TPointIn
         where TPointIn : ITimePoint<TKey>
     {
         public MultiTimePlotModel(IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) : base(comparer, scheduler, synchronizationContext)
@@ -31,9 +31,9 @@ namespace OxyPlot.Reactive.Multi
     }
 
 
-    public abstract class MultiTimePlotModel<TGroupKey, TKey, TModelType, TPoint, TPointIn, TPointOut> : IObserver<KeyValuePair<TGroupKey, TPoint>>, IObservable<KeyValuePair<TGroupKey, PlotModel>>, IMixedScheduler
+    public abstract class MultiTimePlotModel<TGroupKey, TKey, TModelType, TGroupPoint, TPointIn, TPointOut> : IObserver<KeyValuePair<TGroupKey, TGroupPoint>>, IObservable<KeyValuePair<TGroupKey, PlotModel>>, IMixedScheduler
         where TModelType : TimeModel<TGroupKey, TKey, TPointIn, TPointOut>
-        where TPoint : ITimeGroupPoint<TGroupKey, TKey>, TPointIn
+        where TGroupPoint : ITimeGroupPoint<TGroupKey, TKey>, TPointIn
         where TPointIn:  ITimePoint<TKey>
         where TPointOut : TPointIn
     {
@@ -59,15 +59,21 @@ namespace OxyPlot.Reactive.Multi
             //throw new NotImplementedException();
         }
 
-        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiTimePlotModel<TGroupKey, TKey, TModelType, TPoint, TPointIn, TPointOut>)}", error);
+        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiTimePlotModel<TGroupKey, TKey, TModelType, TGroupPoint, TPointIn, TPointOut>)}", error);
 
-        public void OnNext(KeyValuePair<TGroupKey, TPoint> value)
+        public void OnNext(KeyValuePair<TGroupKey, TGroupPoint> value)
         {
             AddToDataPoints(value);
             refreshSubject.OnNext(Unit.Default);
         }
 
-        protected virtual void AddToDataPoints(KeyValuePair<TGroupKey, TPoint> item)
+        public void OnNext2(KeyValuePair<TGroupKey, TGroupPoint> value)
+        {
+            AddToDataPoints(value);
+            refreshSubject.OnNext(Unit.Default);
+        }
+
+        protected virtual void AddToDataPoints(KeyValuePair<TGroupKey, TGroupPoint> item)
         {
             lock (Models)
             {

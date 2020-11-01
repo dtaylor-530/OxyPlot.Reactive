@@ -5,6 +5,7 @@ using ReactiveUI;
 using System;
 using System.Windows;
 using System.Reactive.Disposables;
+using OxyPlot.Reactive.DemoApp.Model;
 
 namespace OxyPlotEx.DemoAppCore.Pages
 {

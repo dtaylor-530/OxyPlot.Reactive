@@ -10,6 +10,7 @@
     xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
     mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -18,84 +19,116 @@
             </ResourceDictionary.MergedDictionaries>
             <local:Converter x:Key="Converter" />
             <local:DefaultConverter x:Key="DefaultConverter" />
+
+
+            <ObjectDataProvider
+                xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
+                x:Key="dataFromEnum"
+                MethodName="GetValues"
+                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="m:Operation" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+
+            <ObjectDataProvider
+                xmlns:en="clr-namespace:OxyPlot.Reactive.Model.Enum;assembly=OxyPlot.Reactive.Model"
+                x:Key="RollingOperation"
+                MethodName="GetValues"
+                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="en:RollingOperation" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+
         </ResourceDictionary>
     </UserControl.Resources>
-    <TabControl>
-        <TabItem Header="Accumulated">
-            <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                <ItemsControl x:Name="ItemsControlAccumulated" Style="{StaticResource LastItemBottomRowStyle}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <TabControl>
-
-                                <TabItem Header="Plot">
-                                    <Grid>
-                                        <oxy:PlotView Model="{Binding model.Value}" />
-                                        <Grid
-                                            Margin="70,50"
-                                            HorizontalAlignment="Left"
-                                            VerticalAlignment="Top">
-                                            <TextBlock
-                                                FontSize="20"
-                                                Foreground="Silver"
-                                                Text="{Binding index}" />
-                                            <TextBlock
-                                                Margin="30,0,0,0"
-                                                FontSize="20"
-                                                Foreground="Silver"
-                                                Text="{Binding model.Key}" />
-                                        </Grid>
-                                    </Grid>
-                                </TabItem>
-                                <TabItem Header="Data">
-                                    <ListBox ItemsSource="{Binding model.Value, Converter={StaticResource Converter}}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <ItemsControl ItemsSource="{Binding ItemsSource}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <TextBlock Text="{Binding Orientation}" />
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                                <!--<Ellipse Fill="Red" Height="20" Width="20"></Ellipse>-->
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ListBox>
-                                </TabItem>
-                            </TabControl>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </TabItem>
-
-        <TabItem Header="Accumulated Group">
-
-            <DockPanel>
-                <ToolBar
-                    xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
-                    xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                    DockPanel.Dock="Top">
-                    <ToolBar.Resources>
-                        <ObjectDataProvider
-                            x:Key="dataFromEnum"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
-                            <ObjectDataProvider.MethodParameters>
-                                <x:Type TypeName="m:Operation" />
-                            </ObjectDataProvider.MethodParameters>
-                        </ObjectDataProvider>
-                    </ToolBar.Resources>
-                    <views:TimePickerView x:Name="TimeView1" />
-                    <hc:ComboBox
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top"  FontWeight="DemiBold">
+            <ToolBar>
+                <TextBlock Margin="10">Operation</TextBlock>
+                <hc:ComboBox
+                    Margin="10"
                         x:Name="ComboBox1"
                         ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
                         SelectedIndex="0" />
-                </ToolBar>
 
+                <TextBlock  Margin="10">Rolling Operation</TextBlock>
+                <hc:ComboBox
+                    Margin="10"
+                        x:Name="ComboBox2"
+                        ItemsSource="{Binding Source={StaticResource RollingOperation}}"
+                        SelectedIndex="0" />
+                
+                <TextBlock Margin="10">Time</TextBlock>
+                <views:TimePickerView x:Name="TimeView1" Height="25"/>
+
+                <TextBlock  Margin="10">Power</TextBlock>
+                <ComboBox
+                    Margin="10"
+                x:Name="PowerComboBox"
+                Width="40"
+                Height="25"
+                SelectedIndex="0"
+                FontSize="16">
+                    <sys:Int32>2</sys:Int32>
+                    <sys:Int32>3</sys:Int32>
+                    <sys:Int32>4</sys:Int32>
+                    <sys:Int32>5</sys:Int32>
+                </ComboBox>
+            </ToolBar>
+        </ToolBar>
+
+        <TabControl>
+
+            <TabItem Header="Rolling Operation">
+                <DockPanel>
+                    <ScrollViewer>
+                        <ItemsControl x:Name="ItemsControlRollingOperation">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Width="600" Height="400">
+                                        <hc:Card
+                                        Margin="8"
+                                        BorderThickness="0"
+                                        Footer="{Binding}">
+
+                                            <Border CornerRadius="4,4,0,0">
+                                                <oxy:PlotView Model="{Binding Value}" />
+                                            </Border>
+                                            <hc:Card.FooterTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel Margin="10">
+                                                        <TextBlock
+                                                        HorizontalAlignment="Left"
+                                                        FontSize="18"
+                                                        FontWeight="Bold"
+                                                        Text="{Binding Key}"
+                                                        TextTrimming="CharacterEllipsis"
+                                                        TextWrapping="NoWrap" />
+                                                        <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </hc:Card.FooterTemplate>
+                                        </hc:Card>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+            
+            
+            
+            <TabItem Header="Accumulated">
                 <ScrollViewer HorizontalScrollBarVisibility="Visible">
-                    <ItemsControl x:Name="ItemsControlAccumulatedGroup" Style="{StaticResource LastItemBottomRowStyle}">
+                    <ItemsControl x:Name="ItemsControlAccumulated" Style="{StaticResource LastItemBottomRowStyle}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <TabControl>
@@ -104,20 +137,18 @@
                                         <Grid>
                                             <oxy:PlotView Model="{Binding model.Value}" />
                                             <Grid
-                                                Margin="70,50"
-                                                HorizontalAlignment="Left"
-                                                VerticalAlignment="Top">
+                                            Margin="70,50"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Top">
                                                 <TextBlock
-                                                    VerticalAlignment="Top"
-                                                    FontSize="20"
-                                                    Foreground="Silver"
-                                                    Text="{Binding index}" />
+                                                FontSize="20"
+                                                Foreground="Silver"
+                                                Text="{Binding index}" />
                                                 <TextBlock
-                                                    VerticalAlignment="Bottom"
-                                                    Margin="30,0,0,0"
-                                                    FontSize="20"
-                                                    Foreground="DarkGray"
-                                                    Text="{Binding model.Key}" />
+                                                Margin="30,0,0,0"
+                                                FontSize="20"
+                                                Foreground="Silver"
+                                                Text="{Binding model.Key}" />
                                             </Grid>
                                         </Grid>
                                     </TabItem>
@@ -128,7 +159,7 @@
                                                     <ItemsControl ItemsSource="{Binding ItemsSource}">
                                                         <ItemsControl.ItemTemplate>
                                                             <DataTemplate>
-                                                                <TextBlock Text="{Binding Key}" />
+                                                                <TextBlock Text="{Binding Orientation}" />
                                                             </DataTemplate>
                                                         </ItemsControl.ItemTemplate>
                                                     </ItemsControl>
@@ -142,89 +173,146 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
-            </DockPanel>
-        </TabItem>
+            </TabItem>
 
-        <TabItem Header="Standard">
-            <ScrollViewer>
-                <ItemsControl x:Name="ItemsControlStandard">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Width="600" Height="400">
-                                <hc:Card
+            <TabItem Header="Accumulated Group">
+
+                <DockPanel>
+       
+                    <ScrollViewer HorizontalScrollBarVisibility="Visible">
+                        <ItemsControl x:Name="ItemsControlAccumulatedGroup" Style="{StaticResource LastItemBottomRowStyle}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TabControl>
+
+                                        <TabItem Header="Plot">
+                                            <Grid>
+                                                <oxy:PlotView Model="{Binding model.Value}" />
+                                                <Grid
+                                                Margin="70,50"
+                                                HorizontalAlignment="Left"
+                                                VerticalAlignment="Top">
+                                                    <TextBlock
+                                                    VerticalAlignment="Top"
+                                                    FontSize="20"
+                                                    Foreground="Silver"
+                                                    Text="{Binding index}" />
+                                                    <TextBlock
+                                                    Margin="30,0,0,0"
+                                                    VerticalAlignment="Bottom"
+                                                    FontSize="20"
+                                                    Foreground="DarkGray"
+                                                    Text="{Binding model.Key}" />
+                                                </Grid>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem Header="Data">
+                                            <ListBox ItemsSource="{Binding model.Value, Converter={StaticResource Converter}}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <ItemsControl ItemsSource="{Binding ItemsSource}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <TextBlock Text="{Binding Key}" />
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                        <!--<Ellipse Fill="Red" Height="20" Width="20"></Ellipse>-->
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ListBox>
+                                        </TabItem>
+                                    </TabControl>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </TabItem>
+
+            <TabItem Header="Standard">
+                <ScrollViewer>
+                    <ItemsControl x:Name="ItemsControlStandard">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="600" Height="400">
+                                    <hc:Card
                                     Margin="8"
                                     BorderThickness="0"
                                     Footer="{Binding}">
 
-                                    <Border CornerRadius="4,4,0,0">
-                                        <oxy:PlotView Model="{Binding Value}" />
-                                    </Border>
-                                    <hc:Card.FooterTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Margin="10">
-                                                <TextBlock
+                                        <Border CornerRadius="4,4,0,0">
+                                            <oxy:PlotView Model="{Binding Value}" />
+                                        </Border>
+                                        <hc:Card.FooterTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="10">
+                                                    <TextBlock
                                                     HorizontalAlignment="Left"
                                                     FontSize="18"
                                                     FontWeight="Bold"
                                                     Text="{Binding Key}"
                                                     TextTrimming="CharacterEllipsis"
                                                     TextWrapping="NoWrap" />
-                                                <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </hc:Card.FooterTemplate>
-                                </hc:Card>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </TabItem>
+                                                    <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </hc:Card.FooterTemplate>
+                                    </hc:Card>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
 
-        <TabItem Header="ValueKey">
-            <ScrollViewer>
-                <ItemsControl x:Name="ItemsControlValueKey">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapPanel />
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Width="600" Height="400">
-                                <hc:Card
+            <TabItem Header="ValueKey">
+                <ScrollViewer>
+                    <ItemsControl x:Name="ItemsControlValueKey">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Width="600" Height="400">
+                                    <hc:Card
                                     Margin="8"
                                     BorderThickness="0"
                                     Footer="{Binding}">
 
-                                    <Border CornerRadius="4,4,0,0">
-                                        <oxy:PlotView Model="{Binding Value}" />
-                                    </Border>
-                                    <hc:Card.FooterTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Margin="10">
-                                                <TextBlock
+                                        <Border CornerRadius="4,4,0,0">
+                                            <oxy:PlotView Model="{Binding Value}" />
+                                        </Border>
+                                        <hc:Card.FooterTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Margin="10">
+                                                    <TextBlock
                                                     HorizontalAlignment="Left"
                                                     FontSize="18"
                                                     FontWeight="Bold"
                                                     Text="{Binding Key}"
                                                     TextTrimming="CharacterEllipsis"
                                                     TextWrapping="NoWrap" />
-                                                <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </hc:Card.FooterTemplate>
-                                </hc:Card>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-        </TabItem>
-    </TabControl>
+                                                    <!--<TextBlock TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" Text="{Binding}" Margin="0,6,0,0" HorizontalAlignment="Left" />-->
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </hc:Card.FooterTemplate>
+                                    </hc:Card>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </TabItem>
+
+         
+        </TabControl>
+    </DockPanel>
 </UserControl>
