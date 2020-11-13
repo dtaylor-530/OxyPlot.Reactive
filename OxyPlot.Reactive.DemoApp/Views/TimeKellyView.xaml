@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="OxyPlot.Reactive.DemoApp.Views.TimeKellyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:OxyPlot.Reactive.DemoApp.Views" xmlns:oxy="http://oxyplot.org/wpf"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top" >
+            <ComboBox x:Name="RatioComboBox" SelectedIndex="0">
+                <ComboBoxItem>0.01</ComboBoxItem>
+                <ComboBoxItem>0.02</ComboBoxItem>
+                <ComboBoxItem>0.04</ComboBoxItem>
+                <ComboBoxItem>0.08</ComboBoxItem>
+            </ComboBox>
+        </ToolBar>
+
+    <Grid>
+        <UniformGrid>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <!--<RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />-->
+                </Grid.RowDefinitions>
+                <oxy:PlotView x:Name="plotView1" />
+                <!--<oxy:PlotView x:Name="plotView2" Grid.Row="1" />
+                <oxy:PlotView x:Name="plotView3" Grid.Row="2" />
+                <oxy:PlotView x:Name="plotView4" Grid.Row="3" />
+                <oxy:PlotView x:Name="plotView5" Grid.Row="4" />-->
+            </Grid>
+        </UniformGrid>
+    </Grid>
+    </DockPanel>
+</UserControl>

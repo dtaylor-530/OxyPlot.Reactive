@@ -44,7 +44,7 @@
                 <oxy:PlotView x:Name="plotView2" Grid.Row="1" />
                 <oxy:PlotView x:Name="plotView3" Grid.Row="2" />
                 <oxy:PlotView x:Name="plotView4" Grid.Row="3" />
-                <oxy:PlotView x:Name="plotView5" Grid.Row="4" />
+                <!--<oxy:PlotView x:Name="plotView5" Grid.Row="4" />-->
             </Grid>
         </UniformGrid>
     </DockPanel>
