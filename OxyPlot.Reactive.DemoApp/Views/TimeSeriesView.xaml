@@ -13,20 +13,26 @@
     <UserControl.Resources>
         <common:ColorToBrushConverter x:Key="ColorToBrushConverter1" />
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
-        <oxy:PlotView x:Name="plotView" />
+    
+    <DockPanel>
+        <ToolBar DockPanel.Dock="Top">
+            <ToggleButton x:Name="AllToggleButton" FontSize="18" FontWeight="DemiBold" Margin="10,0" >All</ToggleButton>
+        </ToolBar>
 
-        <UniformGrid Grid.Row="1" Rows="1">
-            <oxy:PlotView x:Name="plotView2">
-                <oxy:PlotView.DefaultTrackerTemplate>
-                    <ControlTemplate>
-                        <oxy:TrackerControl
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <oxy:PlotView x:Name="plotView" />
+
+            <UniformGrid Grid.Row="1" Rows="1">
+                <oxy:PlotView x:Name="plotView2">
+                    <oxy:PlotView.DefaultTrackerTemplate>
+                        <ControlTemplate>
+                            <oxy:TrackerControl
                             Background="White"
                             BorderBrush="LightSteelBlue"
                             BorderThickness="2"
@@ -34,50 +40,52 @@
                             LineStroke="SteelBlue"
                             Position="{Binding Position}">
 
-                            <oxy:TrackerControl.Content>
+                                <oxy:TrackerControl.Content>
 
-                                <ItemsControl ItemsSource="{Binding Values}">
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <UniformGrid Margin="5" Rows="1">
-                                                <TextBlock
+                                    <ItemsControl ItemsSource="{Binding Values}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <UniformGrid Margin="5" Rows="1">
+                                                    <TextBlock
                                                     Margin="10"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     FontWeight="DemiBold"
                                                     Foreground="{Binding Value.Color, Converter={StaticResource ColorToBrushConverter1}}"
                                                     Text="{Binding Key}" />
-                                                <TextBlock
+                                                    <TextBlock
                                                     Margin="10"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     FontWeight="DemiBold"
                                                     Text="{Binding Value.Value, StringFormat=f3}" />
-                                            </UniformGrid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                            </oxy:TrackerControl.Content>
-                        </oxy:TrackerControl>
-                    </ControlTemplate>
-                </oxy:PlotView.DefaultTrackerTemplate>
-            </oxy:PlotView>
-            <DataGrid x:Name="DataGrid1">
-                <DataGrid.RowStyle>
-                    <Style TargetType="DataGridRow">
-                        <Style.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="BorderBrush" Value="Blue" />
-                                <Setter Property="BorderThickness" Value="2" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </DataGrid.RowStyle>
-            </DataGrid>
-        </UniformGrid>
+                                                </UniformGrid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </oxy:TrackerControl.Content>
+                            </oxy:TrackerControl>
+                        </ControlTemplate>
+                    </oxy:PlotView.DefaultTrackerTemplate>
+                </oxy:PlotView>
+                <DataGrid x:Name="DataGrid1">
+                    <DataGrid.RowStyle>
+                        <Style TargetType="DataGridRow">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="BorderBrush" Value="Blue" />
+                                    <Setter Property="BorderThickness" Value="2" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.RowStyle>
+                </DataGrid>
+            </UniformGrid>
 
-        <rui:ViewModelViewHost x:Name="ViewModelViewHost1" Grid.Row="2" />
+            <rui:ViewModelViewHost x:Name="ViewModelViewHost1" Grid.Row="2" />
 
-        <oxy:PlotView x:Name="plotView1" Grid.Row="3" />
-    </Grid>
+            <oxy:PlotView x:Name="plotView1" Grid.Row="3" />
+            <!--<oxy:PlotView x:Name="plotView2" Grid.Row="3" />-->
+        </Grid>
+    </DockPanel>
 </UserControl>

@@ -55,6 +55,8 @@ namespace OxyPlot.Reactive
         where TType : Model.IDoublePoint<TKey, TVar>
         where TVar : IComparable<TVar>
     {
+
+        private const string AllSeriesTitle = "All";
         protected readonly Subject<TType3> subject = new Subject<TType3>();
         protected readonly Collection<KeyValuePair<TGroupKey, TType>> temporaryCollection = new Collection<KeyValuePair<TGroupKey, TType>>();
         protected readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
@@ -136,13 +138,17 @@ namespace OxyPlot.Reactive
                     var taskPoints = await points;
 
                     if (showAll)
-                        AddToSeries(taskPoints, "All", dataPoints.Length);
+                        AddToSeries(taskPoints, AllSeriesTitle, dataPoints.Length);
 
                     if (pointsSubject.HasObservers)
                     {
                         pointsSubject.OnNext(taskPoints);
                     }
                 });
+            }
+            else
+            {
+                _ = RemoveSeries(AllSeriesTitle);
             }
         }
 
@@ -153,7 +159,7 @@ namespace OxyPlot.Reactive
 
         protected virtual IEnumerable<TType3> CreateMany(IEnumerable<KeyValuePair<TGroupKey, ICollection<TType>>> keyValues)
         {
-            return Create(Flatten(keyValues.SelectMany(a => a.Value)));
+            return Create(Flatten(keyValues.SelectMany(a => a.Value).OrderBy(a => a.Var).Scan((a, b) => CreateAllPoint(a, b))));
         }
 
         private IEnumerable<KeyValuePair<TGroupKey, TType>> Flatten(IEnumerable<TType> value, TGroupKey key = default)
@@ -186,7 +192,9 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected virtual void AddToSeries(TType3[] items, string title, int index)
+        Dictionary<string, IDisposable> disposableDictionary = new Dictionary<string, IDisposable>();
+
+        protected virtual void AddToSeries(TType3[] items, string title, int? index = null)
         {
             lock (plotModel)
             {
@@ -199,7 +207,11 @@ namespace OxyPlot.Reactive
                         .Select(args => OxyMouseDownAction(args, series, items))
                         .Subscribe(subject.OnNext);
 
-                    plotModel.Series.Insert(index, series);
+                    if (index.HasValue)
+                        plotModel.Series.Insert(index.Value, series);
+                    else
+                        plotModel.Series.Add(series);
+
                 }
                 if (series is LineSeries lSeries)
                 {
@@ -213,6 +225,27 @@ namespace OxyPlot.Reactive
             }
         }
 
+        protected virtual bool RemoveSeries(string title)
+        {
+            lock (plotModel)
+            {
+                //if (index.HasValue)
+                //{
+                //    plotModel.Series.RemoveAt(index.Value);
+                //    return;
+                //}
+
+                if ((plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
+                {
+                    disposableDictionary.Remove(title);
+                    plotModel.Series.Remove(series);
+                    return true;
+                }
+                return false;
+            }
+        }
+
+
         protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
 
 
@@ -220,6 +253,11 @@ namespace OxyPlot.Reactive
 
 
         protected abstract TType CreatePoint(TType xy0, TType xy);
+
+        protected virtual TType CreateAllPoint(TType xy0, TType xy)
+        {
+            throw new NotImplementedException();
+        }
 
 
         public override IDisposable Subscribe(IObserver<TType3> observer)

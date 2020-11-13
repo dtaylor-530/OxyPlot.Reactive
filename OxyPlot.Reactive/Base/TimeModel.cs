@@ -23,6 +23,11 @@ namespace OxyPlot.Reactive
         {
             return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
         }
+
+        protected override ITimePoint<TKey> CreateAllPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key);
+        }
     }
 
     public abstract class TimeGroupKeyModel<TGroupKey, TKey> : TimeGroupKeyModel<TGroupKey, TKey, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>>
@@ -38,7 +43,7 @@ namespace OxyPlot.Reactive
        .Select(a => { return a; })
        .Scan(seed: default(ITimeGroupPoint<TGroupKey, TKey>), (a, b) => CreatePoint(a, b))
        .Skip(1)
-       .Cast< ITimeGroupPoint<TGroupKey, TKey>>();
+       .Cast<ITimeGroupPoint<TGroupKey, TKey>>();
         }
 
 
@@ -67,6 +72,8 @@ namespace OxyPlot.Reactive
             .Scan(seed: default(TType), (a, b) => CreatePoint(a, b))
             .Skip(1);
     }
+
+
 
     public abstract class TimeModel<TKey, TType, TType3> : TimeModel<TKey, TKey, TType, TType3>
         where TType : ITimePoint<TKey>

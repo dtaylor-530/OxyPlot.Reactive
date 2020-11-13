@@ -94,6 +94,7 @@ namespace OxyPlot.Reactive
         public void OnNext(bool showAll)
         {
             this.showAll = showAll;
+            refreshSubject.OnNext(Unit.Default);
         }
 
         public void Reset()

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
+using OxyPlot.Reactive.DemoApp.Common;
 
 namespace OxyPlotEx.DemoAppCore.Pages
 {
@@ -46,7 +47,12 @@ namespace OxyPlotEx.DemoAppCore.Pages
             var obs2 = pacedObs.Select(a => (KeyValuePair<string, KeyValuePair<DateTime, double>>?)a).Delay(TimeSpan.FromSeconds(5)).StartWith(default(KeyValuePair<string, KeyValuePair<DateTime, double>>?));
             ViewModelViewHost1.ViewModel = new BusyViewModel(obs2);
 
-            TimeDataSource.Observe1000().Concat(TimeDataSource.Observe1000()).SubscribeCustom(new TimeModel<string>(plotView1.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { });
+            var timeModel = new TimeModel<string>(plotView1.Model ??= new OxyPlot.PlotModel(), scheduler: ReactiveUI.RxApp.MainThreadScheduler) { };
+
+            TimeDataSource.Observe1000().Concat(TimeDataSource.Observe1000())
+                .SubscribeCustom(timeModel);
+
+            AllToggleButton.SelectToggleChanges().Subscribe(timeModel.OnNext);
         }
     }
 }
