@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using OxyPlot.Reactive.DemoApp.Model;
 using OnTheFlyStats;
 using OxyPlot.Reactive.Model.Enum;
+using OxyPlot.Reactive.DemoApp.Common;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -113,7 +114,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         private IReadOnlyCollection<KeyValuePair<string, PlotModel>> RollingOperation()
         {
             Random random = new Random();
-            var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
+            var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1)).Select(a =>
             {
                 var r = a.Key + Enumerable.Range(1, 3).Random();
                 return KeyValuePair.Create(a.Key, (ITimeStatsGroupPoint<string, string>)new TimeDemoStringPoint(r, r, a.Value.Key, a.Value.Value));
@@ -121,18 +122,9 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var mplots = new MultiTimePlotGroupStatsModel<string, string>(scheduler: RxApp.MainThreadScheduler);
 
-            ComboBox1.SelectionChanged += (s, e) =>
-            {
-                var op = e.AddedItems.Cast<Operation>().Single();
-                mplots.OnNext(op);
+            _ = ComboBox1.SelectItemChanges<Operation>().Subscribe(op => mplots.OnNext(op));
 
-            };
-
-            ComboBox2.SelectionChanged += (s, e) =>
-            {
-                var op = e.AddedItems.Cast<RollingOperation>().Single();
-                mplots.OnNext(op);
-            };
+            _ = ComboBox2.SelectItemChanges<RollingOperation>().Subscribe(op => mplots.OnNext(op));
 
             TimeView1.TimeSpanObservable.Subscribe(mplots);
 
@@ -160,17 +152,15 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var mplots = new MultiTimePlotKeyValueGroupStatsModel(scheduler: RxApp.MainThreadScheduler);
 
-            PowerComboBox.SelectionChanged += (s, e) =>
+            PowerComboBox.SelectItemChanges<int>().Subscribe(op=>
             {
-                var op = e.AddedItems.Cast<int>().Single();
-                mplots.OnNext((double)op);
-            };
-
-            ComboBox2.SelectionChanged += (s, e) =>
-            {
-                var op = e.AddedItems.Cast<RollingOperation>().Single();
                 mplots.OnNext(op);
-            };
+            });
+
+            ComboBox2.SelectItemChanges<RollingOperation>().Subscribe(op =>
+            {
+                mplots.OnNext(op);
+            });
 
             pacedObs.Subscribe(a => mplots.OnNext(a));
 
@@ -215,7 +205,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             // Used in demo view
             public Orientation Orientation { get; }
 
-            public Stats Value2 { get; }
+            public Stats Model { get; }
 
             public DataPoint GetDataPoint()
             {
@@ -251,7 +241,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             // public Orientation Orientation { get; }
 
-            public Stats Value2 { get; }
+            public Stats Model { get; }
 
             public DataPoint GetDataPoint()
             {

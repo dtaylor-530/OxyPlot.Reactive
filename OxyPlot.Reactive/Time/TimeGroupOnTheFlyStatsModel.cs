@@ -35,12 +35,12 @@ namespace OxyPlot.Reactive
         {
         }
 
-        public TimeStatsRangePoint(Range<DateTime> timeRange, ICollection<ITimeStatsPoint<TKey>> value, Stats value2, TKey key, Operation operation) : base(timeRange, value, key, operation)
+        public TimeStatsRangePoint(Range<DateTime> timeRange, ICollection<ITimeStatsPoint<TKey>> value, Stats model, TKey key, Operation operation) : base(timeRange, value, key, operation)
         {
-            Value2 = value2;
+            Model = model;
         }
 
-        public Stats Value2 { get; }
+        public Stats Model { get; }
     }
 
 
@@ -84,7 +84,7 @@ namespace OxyPlot.Reactive
         {
 
             var points = ToDataPoints(timePoints.Select(a => a.Value), timePoint0?.Collection.Last()).ToArray();
-            return new TimeStatsRangePoint<TKey>(timePoints.Key, points, timePoint0?.Value2 ?? new OnTheFlyStats.Stats(), timePoints.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+            return new TimeStatsRangePoint<TKey>(timePoints.Key, points, timePoint0?.Model ?? new OnTheFlyStats.Stats(), timePoints.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
 
             IEnumerable<ITimeStatsPoint<TKey>> ToDataPoints(IEnumerable<ITimeStatsPoint<TKey>> timePoints, ITimeStatsPoint<TKey>? timePoint0)
             {
@@ -101,12 +101,5 @@ namespace OxyPlot.Reactive
         {
             return OnTheFlyStatsHelper.Combine(xy0, xy, rollingOperation);
         }
-
-        //protected override IEnumerable<ITimeStatsRangePoint<TKey>> NoRanges(IOrderedEnumerable<KeyValuePair<TGroupKey, ITimeStatsPoint<TKey>>>? ees)
-        //{
-        //    return ees
-        //            .Select(a => a.Value)
-        //        .Select(a => (ITimeStatsRangePoint<TKey>)new TimeStatsRangePoint<TKey>(new Range<DateTime>(a.Var, a.Var), new ITimeStatsPoint<TKey>[] { a }, a.Value2, a.Key));
-        //}
     }
 }

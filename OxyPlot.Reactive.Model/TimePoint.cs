@@ -47,10 +47,6 @@ namespace OxyPlot.Reactive.Model
             this.Key = key;
         }
 
-        public TimePoint(DateTime dateTime, double value) : this(dateTime, value, default)
-        {
-        }
-
         public TKey Key { get; }
 
         public DateTime Var { get; }

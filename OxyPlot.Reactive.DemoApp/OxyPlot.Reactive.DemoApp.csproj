@@ -19,7 +19,9 @@
     <PackageReference Include="LinqStatistics" Version="2.3.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="OxyPlot.Wpf" Version="2.0.0" />
+    <PackageReference Include="ReactiveUI.Events.WPF" Version="12.1.5" />
     <PackageReference Include="ReactiveUI.WPF" Version="11.4.17" />
+    <PackageReference Include="TypeConvert" Version="2.1.6" />
     <PackageReference Include="WindowsProgressRing" Version="1.0.0" />
   </ItemGroup>
 

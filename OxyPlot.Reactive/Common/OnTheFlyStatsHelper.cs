@@ -8,9 +8,9 @@ namespace OxyPlot.Reactive
 {
     public class OnTheFlyStatsHelper
     {
-        public static ITimeStatsPoint<TKey> Combine<TKey>(ITimeTwoPoint<TKey, OnTheFlyStats.Stats> xy0, ITimeTwoPoint<TKey, OnTheFlyStats.Stats> xy, RollingOperation? rollingOperation = RollingOperation.Average)
+        public static ITimeStatsPoint<TKey> Combine<TKey>(ITimeModelPoint<TKey, OnTheFlyStats.Stats> xy0, ITimeModelPoint<TKey, OnTheFlyStats.Stats> xy, RollingOperation? rollingOperation = RollingOperation.Average)
         {
-            var value2 = xy0?.Value2 ?? new OnTheFlyStats.Stats();
+            var value2 = xy0?.Model ?? new OnTheFlyStats.Stats();
             value2.Update(xy.Value);
 
             return (rollingOperation?? RollingOperation.Average) switch

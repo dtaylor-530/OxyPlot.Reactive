@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
+using OxyPlot.Reactive.DemoApp.Common;
 
 namespace OxyPlotEx.DemoAppCore.Pages
 {
@@ -49,23 +50,8 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 DataGrid2.ScrollIntoView(DataGrid2.Items[n]);
             });
 
-            this.Loaded += (s, e) =>
-            {
-                var op = (int)NumbersBox.SelectedItem;
-                model2.OnNext(op);
-            };
-
-            NumbersBox.SelectionChanged += (s, e) =>
-            {
-                var op = e.AddedItems.Cast<int>().Single();
-                model2.OnNext(op);
-            };
-
-            ComboBox1.SelectionChanged += (s, e) =>
-            {
-                var op = e.AddedItems.Cast<Operation>().Single();
-                model2.OnNext(op);
-            };
+            _ = NumbersBox.SelectItemChanges<int>().Subscribe(op => model2.OnNext(op));
+            _ = ComboBox1.SelectItemChanges<Operation>().Subscribe(op => model2.OnNext(op));
         }
 
         private void CartesianSeriesGroupView_Loaded(object sender, System.Windows.RoutedEventArgs e)

@@ -13,12 +13,13 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
-                    
-                
+
+                    <Page Title="Kelly" Uri="\Views\TimeKellyView.xaml" />
 
                     <Page Title="Multi" Uri="\Views\MultiTimePlotView.xaml" />
 
-                    <Page Title="Multi Line Rolling-Stats Series" Uri="\Views\TimeSeriesStatsView.xaml" />
+
+                    <Page Title="Stats" Uri="\Views\TimeSeriesStatsView.xaml" />
 
                     <Page Title="Time Key Group" Uri="\Views\TimeKeyGroupView.xaml" />
 
@@ -32,8 +33,6 @@
 
                     <Page Title="Heat Map Series" Uri="\Views\HeatMapView.xaml" />
 
-                    <Page Title="Multi Line Series" Uri="\Views\TimeSeriesView.xaml" />
-
                     <Page Title="Multi Line Accumulated Series" Uri="\Views\TimeSeriesAccumulatedView.xaml" />
 
                     <Page Title="Stacked Bar Series" Uri="\Views\StackedBarView.xaml" />
@@ -41,6 +40,8 @@
                     <Page Title="Multi Line Range" Uri="\Views\TimeSeriesRangeView.xaml" />
 
                     <Page Title="Multi Group" Uri="\Views\TimeSeriesGroupView.xaml" />
+
+                    <Page Title="Time Series" Uri="\Views\TimeSeriesView.xaml" />
                 </Pages>
             </x:XData>
         </XmlDataProvider>

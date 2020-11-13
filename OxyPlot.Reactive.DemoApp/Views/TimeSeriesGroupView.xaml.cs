@@ -14,6 +14,7 @@ using System.Reactive.Linq;
 using System.Windows.Controls;
 using OxyPlot.Reactive.DemoApp.Model;
 using OxyPlot.Reactive.Model.Enum;
+using OxyPlot.Reactive.DemoApp.Common;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -80,20 +81,18 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 model4?.OnNext(x);
             });
 
-            ComboBox1.SelectionChanged += (s, e) =>
+            ComboBox1.SelectItemChanges<Operation>().Subscribe(op=>
             {
-                var op = e.AddedItems.Cast<Operation>().Single();
                 model1.OnNext(op);
                 model2.OnNext(op);
                 model3.OnNext(op);
                 model4.OnNext(op);
-            };
+            });
 
-            ComboBox2.SelectionChanged += (s, e) =>
+            ComboBox2.SelectItemChanges<RollingOperation>().Subscribe(op =>
             {
-                var op = e.AddedItems.Cast<RollingOperation>().Single();
                 model3.OnNext(op);
-            };
+            });
         }
 
         public class GroupViewModel<T, R, S> : ReactiveObject

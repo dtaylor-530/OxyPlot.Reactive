@@ -22,13 +22,13 @@ namespace OxyPlot.Data.Factory
             dict = arr.ToDictionary(a => a, a => 0);
         }
 
-        public IEnumerable<KeyValuePair<string, double>> GetSin()
+        public IEnumerable<KeyValuePair<string, double>> GetSin(double factor)
         {
             var chr = NextCharacter();
 
             while (xc[chr].MoveNext())
             {
-                yield return new KeyValuePair<string, double>(chr, Math.Sin((1 + xc[chr].Current + (1 + random.NextDouble())) / 4));
+                yield return new KeyValuePair<string, double>(chr, Math.Sin((1 + xc[chr].Current + (1 + random.NextDouble()* factor)) / 4));
                 chr = NextCharacter();
             }
         }

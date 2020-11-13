@@ -60,11 +60,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
             });
         }
 
-        static double LayUnitProfit(CsvRow csvRow)
-        {
-            return csvRow.Profit > 0 ? 1 : -csvRow.Profit;
-        }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             disposable.Dispose();

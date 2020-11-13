@@ -16,13 +16,18 @@ namespace OxyPlot.Reactive
 
     public class TimeOnTheFlyStatsModel : TimeOnTheFlyStatsModel<string>
     {
+        public TimeOnTheFlyStatsModel(PlotModel model, RollingOperation rollingOperation) : this(model)
+        {
+            this.OnNext(rollingOperation);
+        }
+
         public TimeOnTheFlyStatsModel(PlotModel model) : base(model)
         {
         }
     }
 
 
-    public class TimeOnTheFlyStatsModel<TKey> : TimeTwoModel<TKey, ITimeTwoPoint<TKey, OnTheFlyStats.Stats>, OnTheFlyStats.Stats>
+    public class TimeOnTheFlyStatsModel<TKey> : TimeModelPointModel<TKey, ITimeModelPoint<TKey, OnTheFlyStats.Stats>, OnTheFlyStats.Stats>
     {
         private RollingOperation operation;
 
@@ -30,7 +35,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected override ITimeTwoPoint<TKey, OnTheFlyStats.Stats> CreatePoint(ITimeTwoPoint<TKey, OnTheFlyStats.Stats> xy0, ITimeTwoPoint<TKey, OnTheFlyStats.Stats> xy)
+        protected override ITimeModelPoint<TKey, OnTheFlyStats.Stats> CreatePoint(ITimeModelPoint<TKey, OnTheFlyStats.Stats> xy0, ITimeModelPoint<TKey, OnTheFlyStats.Stats> xy)
         {
             return OnTheFlyStatsHelper.Combine(xy0, xy, operation);
         }
@@ -70,7 +75,7 @@ namespace OxyPlot.Reactive
 
             var points = ToDataPoints(timePoints.Select(a => a.Value), timePoint0?.Collection.Last()).ToArray();
             var first = timePoints.FirstOrDefault();
-            return new TimeStatsRangePoint<TKey>(timePoints.Key, points, first.Value.Value2, first.Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+            return new TimeStatsRangePoint<TKey>(timePoints.Key, points, first.Value.Model, first.Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
 
             IEnumerable<ITimeStatsPoint<TKey>> ToDataPoints(IEnumerable<ITimeStatsPoint<TKey>> timePoints, ITimeStatsPoint<TKey>? timePoint0)
             {
@@ -101,7 +106,7 @@ namespace OxyPlot.Reactive
         {
             Var = dateTime;
             Value = value;
-            Value2 = value2;
+            Model = value2;
             this.Key = key;
         }
 
@@ -115,7 +120,7 @@ namespace OxyPlot.Reactive
 
         public double Value { get; }
 
-        public OnTheFlyStats.Stats Value2 { get; }
+        public OnTheFlyStats.Stats Model { get; }
 
         public DataPoint GetDataPoint()
         {
@@ -131,7 +136,7 @@ namespace OxyPlot.Reactive
     }
 
 
-    public interface ITimeStatsPoint<TKey> : ITimeTwoPoint<TKey, OnTheFlyStats.Stats>
+    public interface ITimeStatsPoint<TKey> : ITimeModelPoint<TKey, OnTheFlyStats.Stats>
     {
 
     }

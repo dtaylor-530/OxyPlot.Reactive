@@ -47,27 +47,27 @@ namespace OxyPlot.Reactive
                 model.OnNext(a));
         }
 
-        public static IDisposable SubscribeCustom2<TGroupKey, R, S>(this IObservable<KeyValuePair<TGroupKey, KeyValuePair<DateTime, (double x, double y)>>> observable, TimeModel<TGroupKey, string, R, S> model, Func<string>? keyFunc = null)
-    where R : ITimePoint<string>
-    where S : R
-        {
-            keyFunc ??= CreateKey;
-            return observable
-                .Select(a => KeyValuePair.Create(a.Key, (R)(ITimePoint<string>)new Time2Point<string>(a.Value.Key, a.Value.Value.x, a.Value.Value.y, keyFunc())))
-                .Subscribe(a =>
-                model.OnNext(a));
-        }
+        //public static IDisposable SubscribeCustom2<TGroupKey, R, S>(this IObservable<KeyValuePair<TGroupKey, KeyValuePair<DateTime, (double x, double y)>>> observable, TimeModel<TGroupKey, string, R, S> model, Func<string>? keyFunc = null)
+        //where R : ITimePoint<string>
+        //where S : R
+        //{
+        //    keyFunc ??= CreateKey;
+        //    return observable
+        //        .Select(a => KeyValuePair.Create(a.Key, (R)(ITimePoint<string>)new TimeModelPoint<string, double>(a.Value.Key, a.Value.Value.x, a.Value.Value.y, keyFunc())))
+        //        .Subscribe(a =>
+        //        model.OnNext(a));
+        //}
 
 
         public static IDisposable SubscribeCustom3<R, S, Y>(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeModel<string, R, S> model, Func<string>? keyFunc = null)
-where R : ITimeTwoPoint<string, Y>
-where S : R
+        where R : ITimeModelPoint<string, Y>
+        where S : R
         {
             keyFunc ??= CreateKey;
             return observable
                    .Select(a =>
                    {
-                       var timePoint = (ITimeTwoPoint<string, Y>)new Time2Point<string, Y>(a.Value.Key, a.Value.Value, default, keyFunc());
+                       var timePoint = (ITimeModelPoint<string, Y>)new TimeModelPoint<string, Y>(a.Value.Key, a.Value.Value, default, keyFunc());
                        R r = default;
                        try
                        {

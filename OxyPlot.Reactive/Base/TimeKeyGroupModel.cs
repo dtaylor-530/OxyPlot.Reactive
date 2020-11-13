@@ -46,6 +46,11 @@ namespace OxyPlot.Reactive
        .Skip(1)
        .Cast<ITimePoint<TKey>>();
         }
+
+        protected override ITimePoint<TKey> CreateAllPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
     }
 
 
@@ -91,6 +96,8 @@ namespace OxyPlot.Reactive
 
 
         protected abstract TGroupKey CreateGroupKey(IKeyPoint<TKey, DateTime, double> val);
+
+
 
     }
 }

@@ -13,6 +13,7 @@
             xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
             DockPanel.Dock="Top">
+            <ToggleButton x:Name="AllToggleButton" FontSize="18" FontWeight="DemiBold" Margin="10,0" >All</ToggleButton>
 
             <ComboBox
                 x:Name="ComboBox1"

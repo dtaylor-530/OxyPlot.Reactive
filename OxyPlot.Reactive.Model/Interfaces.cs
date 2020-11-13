@@ -1,5 +1,4 @@
 ﻿using LinqStatistics;
-using OxyPlot.Axes;
 using System;
 using System.Collections.Generic;
 
@@ -10,9 +9,9 @@ namespace OxyPlot.Reactive.Model
         T Value { get; }
     }
 
-    public interface IValue2<T>
+    public interface IModel<T>
     {
-        T Value2 { get; }
+        T Model { get; }
     }
 
 
@@ -68,11 +67,8 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    public interface ITime2Point<TKey> : ITimePoint<TKey>, IValue2<double>
-    {
-    }
 
-    public interface ITimeTwoPoint<TKey, TValue> : ITimePoint<TKey>, IValue2<TValue>
+    public interface ITimeModelPoint<TKey, TModel> : ITimePoint<TKey>, IModel<TModel>
     {
     }
 
@@ -112,16 +108,13 @@ namespace OxyPlot.Reactive.Model
     {
     }
 
-    //public interface ITimeRangePoint<TKey> : ITimePoint<TKey>, IPointCollection<DateTime, double, ITimePoint<TKey>>, ITimeRange<DateTime>
-    //{
-    //}
 
     public interface ITimeRangePoint<TKey, TType> : ITimePoint<TKey>, IPointCollection<DateTime, double, TType>, ITimeRange<DateTime>
         where TType : ITimePoint<TKey>
     {
     }
 
-    public interface ITime2RangePoint<TKey, TValue2> : ITimeRangePoint<TKey>, ITimeTwoPoint<TKey, TValue2>
+    public interface ITime2RangePoint<TKey, TValue2> : ITimeRangePoint<TKey>, ITimeModelPoint<TKey, TValue2>
     {
     }
 

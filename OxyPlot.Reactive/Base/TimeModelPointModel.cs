@@ -7,9 +7,9 @@ using System.Reactive.Concurrency;
 
 namespace OxyPlot.Reactive
 {
-    public abstract class TimeTwoModel<TKey, R, Y> : TimeModel<TKey, R, R> where R : ITimeTwoPoint<TKey, Y>
+    public abstract class TimeModelPointModel<TKey, R, Y> : TimeModel<TKey, R, R> where R : ITimeModelPoint<TKey, Y>
     {
-        public TimeTwoModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeModelPointModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 

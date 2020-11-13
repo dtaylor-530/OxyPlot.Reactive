@@ -1,7 +1,6 @@
 ﻿#nullable enable
 
 using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
 using OxyPlot.Reactive.Model.Enum;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,7 @@ namespace OxyPlot.Reactive.Multi
         MultiTimePlotModel<
             string,
             double,
-            TimeKeyValueGroupStatsModel,
+            TimeLogGroupStatsKeyModel,
             ITimeStatsGroupPoint<string, double>,
             ITimeStatsPoint<double>>,
         IObserver<RollingOperation>,
@@ -44,7 +43,7 @@ namespace OxyPlot.Reactive.Multi
             }
         }
 
-        protected override Reactive.TimeKeyValueGroupStatsModel CreateModel(PlotModel plotModel)
+        protected override TimeLogGroupStatsKeyModel CreateModel(PlotModel plotModel)
         {
             var model = new TimeKeyValueGroupStatsModel(plotModel, this.comparer, this.Scheduler);
             rollingOperationSubject.Subscribe(model);
@@ -53,7 +52,7 @@ namespace OxyPlot.Reactive.Multi
         }
 
 
-        internal class TimeKeyValueGroupStatsModel : Reactive.TimeKeyValueGroupStatsModel
+        internal class TimeKeyValueGroupStatsModel : Reactive.TimeLogGroupStatsKeyModel
         {
             public TimeKeyValueGroupStatsModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler)
             {

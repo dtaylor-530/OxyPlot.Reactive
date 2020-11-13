@@ -1,6 +1,7 @@
 ﻿#nullable enable
 
 using MoreLinq;
+using OxyPlot.Reactive.Common;
 using OxyPlot.Reactive.Model;
 using System;
 using System.Collections.Generic;
@@ -18,35 +19,25 @@ namespace OxyPlot.Reactive
     /// Groups values by the Key, logarithmically
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public class TimeKeyLogValueGroupModel : TimeKeyLogGroupModel<double>
+    public class TimeLogGroupKeyModel : TimeLogGroupValueModel<double>
     {
 
-        public TimeKeyLogValueGroupModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupKeyModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
         protected override string CreateGroupKey(IKeyPoint<double, DateTime, double> val)
         {
-            if (Power.HasValue == false)
-            {
-                return default(double).ToString();
-            }
-
-            int v = (int)Math.Log(val.Key, Power.Value);
-
-            var min = Math.Pow(Power.Value, v);
-            var max = Math.Pow(Power.Value, v + 1);
-            return $"{min:N} - {max:N}";
+            return Power.HasValue == false ? 
+                default(double).ToString() :
+                GroupKeyFactory.Create(val.Value, Power.Value);
         }
-
-
-
     }
 
 
-    public class TimeKeyLogGroupModel<TKey> : TimeKeyLogGroupModel<TKey, ITimePoint<TKey>>
+    public class TimeLogGroupValueModel<TKey> : TimeLogGroupValueModel<TKey, ITimePoint<TKey>>
     {
-        public TimeKeyLogGroupModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupValueModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -64,18 +55,23 @@ namespace OxyPlot.Reactive
    .Skip(1)
    .Cast<ITimePoint<TKey>>();
         }
+
+        protected override ITimePoint<TKey> CreateAllPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
     }
 
     /// <summary>
     /// Groups values by the Value, logarithmically
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class TimeKeyLogGroupModel<TKey, TPoint> : TimeKeyGroupModel<string, TKey, TPoint, TPoint>, IObserver<double>
+    public abstract class TimeLogGroupValueModel<TKey, TPoint> : TimeKeyGroupModel<string, TKey, TPoint, TPoint>, IObserver<double>
         where TPoint : ITimePoint<TKey>
     {
         protected Subject<double> powerSubject = new Subject<double>();
 
-        public TimeKeyLogGroupModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupValueModel(PlotModel model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             powerSubject
                 .Subscribe(a =>
