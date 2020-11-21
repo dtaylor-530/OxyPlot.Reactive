@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
+using ReactivePlot.Common;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
@@ -11,7 +12,7 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
         public BusyViewModel(IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>?> observable)
         {
-            var model3 = new TimeModel<string>(PlotModel, scheduler: RxApp.MainThreadScheduler) { };
+            var model3 = new ReactivePlot.OxyPlot.OxyTimeModel<string>(PlotModel, scheduler: RxApp.MainThreadScheduler) { };
 
             observable.Where(a => a.HasValue).Select(a => a.Value).SubscribeCustom(model3);
 

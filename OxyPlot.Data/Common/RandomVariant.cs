@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OxyPlot.Data.Common
+namespace ReactivePlot.Data.Common
 {
     public static class RandomVariant
     {

@@ -1,10 +1,8 @@
 ﻿using CsvHelper;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 namespace OxyPlot.Reactive.DemoApp.Common
 {
@@ -12,7 +10,7 @@ namespace OxyPlot.Reactive.DemoApp.Common
     {
 
         public static CsvRow[] Read()
-        
+
         {
             using (var reader = new StreamReader("../../../Data/Temp2.csv"))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))

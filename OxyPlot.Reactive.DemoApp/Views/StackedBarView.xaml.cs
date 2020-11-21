@@ -1,5 +1,5 @@
-﻿using OxyPlot.Data.Factory;
-using OxyPlot.Reactive;
+﻿using ReactivePlot.Data.Factory;
+using ReactivePlot.OxyPlot;
 using System;
 using System.Linq;
 using System.Reactive.Linq;

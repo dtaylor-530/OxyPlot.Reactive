@@ -1,4 +1,4 @@
-﻿namespace OxyPlot.Reactive.Model
+﻿namespace ReactivePlot.Model
 {
 
     public struct XY<T>

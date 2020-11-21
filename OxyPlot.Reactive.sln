@@ -3,19 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive.DemoApp", "OxyPlot.Reactive.DemoApp\OxyPlot.Reactive.DemoApp.csproj", "{1F2CB24A-D1EF-4ADA-857D-C90E88BF685E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot.DemoApp", "OxyPlot.Reactive.DemoApp\ReactivePlot.DemoApp.csproj", "{1F2CB24A-D1EF-4ADA-857D-C90E88BF685E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive", "OxyPlot.Reactive\OxyPlot.Reactive.csproj", "{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Test", "OxyPlot.Test\OxyPlot.Test.csproj", "{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot.Test", "OxyPlot.Test\ReactivePlot.Test.csproj", "{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "App", "App", "{EA079EFF-C639-4AEE-AED1-1C47C0A22A1D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive.Model", "OxyPlot.Reactive.Model\OxyPlot.Reactive.Model.csproj", "{3A48587F-0F05-411F-B941-CE8202F2578E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot.Model", "OxyPlot.Reactive.Model\ReactivePlot.Model.csproj", "{3A48587F-0F05-411F-B941-CE8202F2578E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OxyPlot.Reactive.View", "OxyPlot.Reactive.View\OxyPlot.Reactive.View.csproj", "{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot.View", "OxyPlot.Reactive.View\ReactivePlot.View.csproj", "{9E638B0E-29B4-476F-BCCA-FB7C0DEFEB94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OxyPlot.Data", "OxyPlot.Data\OxyPlot.Data.csproj", "{38BD81F3-CDB7-44B4-909B-42FA1BF02539}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot.Data", "OxyPlot.Data\ReactivePlot.Data.csproj", "{38BD81F3-CDB7-44B4-909B-42FA1BF02539}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot", "ReactivePlot\ReactivePlot.csproj", "{BA606318-472C-4A85-9A4F-F00836D1EF32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReactivePlot.OxyPlot", "ReactivePlot.OxyPlot\ReactivePlot.OxyPlot.csproj", "{CDD459B8-84D5-481F-950C-1426AD1B5D1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,10 +29,6 @@ Global
 		{1F2CB24A-D1EF-4ADA-857D-C90E88BF685E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F2CB24A-D1EF-4ADA-857D-C90E88BF685E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F2CB24A-D1EF-4ADA-857D-C90E88BF685E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D6D8A31-CEAB-4384-A1AF-20E19661AC49}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8E86AE7-871C-4185-90B0-BF4A0C70D2A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,6 +45,14 @@ Global
 		{38BD81F3-CDB7-44B4-909B-42FA1BF02539}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38BD81F3-CDB7-44B4-909B-42FA1BF02539}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38BD81F3-CDB7-44B4-909B-42FA1BF02539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA606318-472C-4A85-9A4F-F00836D1EF32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA606318-472C-4A85-9A4F-F00836D1EF32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA606318-472C-4A85-9A4F-F00836D1EF32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA606318-472C-4A85-9A4F-F00836D1EF32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD459B8-84D5-481F-950C-1426AD1B5D1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD459B8-84D5-481F-950C-1426AD1B5D1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD459B8-84D5-481F-950C-1426AD1B5D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD459B8-84D5-481F-950C-1426AD1B5D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

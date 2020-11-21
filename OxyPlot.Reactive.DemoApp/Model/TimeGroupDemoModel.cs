@@ -3,14 +3,17 @@
 using DynamicData;
 using LinqStatistics;
 using MoreLinq;
-using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
+using ReactivePlot.Base;
+using ReactivePlot.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using ReactivePlot.Common;
+using ReactivePlot.Model.Enum;
+using ReactivePlot.OxyPlot.PlotModel;
 
 namespace OxyPlot.Reactive.DemoApp.Model
 {
@@ -23,7 +26,8 @@ namespace OxyPlot.Reactive.DemoApp.Model
         private TimeSpan? timeSpan;
         private Operation? operation;
 
-        public TimeGroupDemoModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupDemoModel(PlotModel model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : 
+            base(new OxyTimePlotModel<TKey, ITimeRangePoint<TKey>>(model), comparer, scheduler: scheduler)
         {
         }
 

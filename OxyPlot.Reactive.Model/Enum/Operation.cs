@@ -1,4 +1,4 @@
-﻿namespace OxyPlot.Reactive.Model
+﻿namespace ReactivePlot.Model.Enum
 {
     public enum Operation
     {

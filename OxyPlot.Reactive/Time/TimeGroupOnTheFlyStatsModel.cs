@@ -12,6 +12,7 @@ using OnTheFlyStats;
 using OxyPlot.Reactive.Model.Enum;
 using OxyPlot.Reactive.Model;
 using OxyPlot.Reactive.Base;
+using ReactivePlot.Model;
 
 namespace OxyPlot.Reactive
 {

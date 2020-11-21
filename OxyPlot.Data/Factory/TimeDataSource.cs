@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
-namespace OxyPlot.Data.Factory
+namespace ReactivePlot.Data.Factory
 {
     public static class TimeDataSource
     {

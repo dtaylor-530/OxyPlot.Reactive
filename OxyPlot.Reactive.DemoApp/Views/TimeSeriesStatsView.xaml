@@ -1,34 +1,33 @@
-﻿<UserControl x:Class="OxyPlot.Reactive.DemoApp.Views.TimeSeriesStatsView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:oxy="http://oxyplot.org/wpf" 
-             xmlns:hc="https://handyorg.github.io/handycontrol"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="OxyPlot.Reactive.DemoApp.Views.TimeSeriesStatsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:enum="clr-namespace:ReactivePlot.Model.Enum;assembly=ReactivePlot.Model"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:oxy="http://oxyplot.org/wpf"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
     <DockPanel>
-        <ToolBar
-                xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
-                xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-                DockPanel.Dock="Top">
+        <ToolBar xmlns:sys="clr-namespace:System;assembly=System.Runtime" DockPanel.Dock="Top">
             <ToolBar.Resources>
                 <ObjectDataProvider
-                        xmlns:enum="clr-namespace:OxyPlot.Reactive.Model.Enum;assembly=OxyPlot.Reactive.Model"
-                        x:Key="dataFromEnum"
-                        MethodName="GetValues"
-                        ObjectType="{x:Type sys:Enum}">
+                    x:Key="dataFromEnum"
+                    MethodName="GetValues"
+                    ObjectType="{x:Type sys:Enum}">
                     <ObjectDataProvider.MethodParameters>
                         <x:Type TypeName="enum:RollingOperation" />
                     </ObjectDataProvider.MethodParameters>
                 </ObjectDataProvider>
             </ToolBar.Resources>
             <hc:ComboBox
-                    x:Name="ComboBox1"
-                    ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
-                    SelectedIndex="0" />
+                x:Name="ComboBox1"
+                ItemsSource="{Binding Source={StaticResource dataFromEnum}}"
+                SelectedIndex="0" />
         </ToolBar>
-        
+
         <UniformGrid>
             <Grid>
                 <Grid.RowDefinitions>

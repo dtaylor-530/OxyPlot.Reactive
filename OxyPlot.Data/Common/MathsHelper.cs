@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OxyPlot.Data.Common
+namespace ReactivePlot.Data.Common
 {
     internal static class MathsHelper
     {

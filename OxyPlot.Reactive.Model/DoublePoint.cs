@@ -1,12 +1,5 @@
-﻿namespace OxyPlot.Reactive.Model
+﻿namespace ReactivePlot.Model
 {
-    //public interface IPoint : IDataPointProvider
-    //{
-    //    double X { get; }
-
-    //    double Y { get; }
-    //}
-
     public struct DoublePoint<TKey> : IDoublePoint<TKey>
     {
         public DoublePoint(double var, double value, TKey key) : this()
@@ -22,35 +15,10 @@
 
         public TKey Key { get; set; }
 
-        public DataPoint GetDataPoint()
+        public void Deconstruct(out double var, out double value)
         {
-            return new DataPoint(Var, Value);
+            var = Var;
+            value = Value;
         }
     }
-
-    //public struct KeyPoint<TKey> : IDataPointProvider, IPoint<TKey>
-    //{
-    //    public KeyPoint(double constant, double variable, TKey key)
-    //    {
-    //        X = constant;
-    //        Y = variable;
-    //        Key = key;
-    //    }
-
-    //    public double X { get; }
-
-    //    public double Y { get; }
-
-    //    public TKey Key { get; }
-
-    //    public override string ToString()
-    //    {
-    //        return $"{Key}, {X}, {Y}";
-    //    }
-
-    //    public DataPoint GetDataPoint()
-    //    {
-    //        return new DataPoint(X, Y);
-    //    }
-    //}
 }

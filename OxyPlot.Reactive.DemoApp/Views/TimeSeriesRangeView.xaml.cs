@@ -1,13 +1,16 @@
 ﻿using Itenso.TimePeriod;
-using OxyPlot.Data.Common;
-using OxyPlot.Data.Factory;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Time;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using static OxyPlot.Data.Factory.TimeDataSource;
+using ReactivePlot.Data.Common;
+using static ReactivePlot.Data.Factory.TimeDataSource;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -34,10 +37,10 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             InitializeComponent();
 
-            var model = new TimeRangeModel<string>(PlotView1.Model ??= new PlotModel());
-            var model2 = new TimeRangeModel<string>(PlotView2.Model ??= new PlotModel());
-            var model3 = new TimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
-     
+            var model = new OxyTimeRangeModel<string>(PlotView1.Model ??= new PlotModel());
+            var model2 = new OxyTimeRangeModel<string>(PlotView2.Model ??= new PlotModel());
+            var model3 = new OxyTimeRangeModel<string>(PlotView3.Model ??= new PlotModel());
+
             var obs = TimeDataSource.Observe1000()
                 .Pace(TimeSpan.FromSeconds(1))
                 .Publish().RefCount();

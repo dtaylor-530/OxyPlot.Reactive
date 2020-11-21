@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace OxyPlot.Reactive.View.Common
+namespace ReactivePlot.View.Common
 {
     public class AdjustColumnToItemCountBehavior : Behavior<Grid>
     {

@@ -4,7 +4,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
-namespace OxyPlot.Data.Common
+namespace ReactivePlot.Data.Common
 {
     public static class ObservableHelper
     {

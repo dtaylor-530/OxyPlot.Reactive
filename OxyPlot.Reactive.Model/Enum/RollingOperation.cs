@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OxyPlot.Reactive.Model.Enum
+﻿namespace ReactivePlot.Model.Enum
 {
     public enum RollingOperation
     {

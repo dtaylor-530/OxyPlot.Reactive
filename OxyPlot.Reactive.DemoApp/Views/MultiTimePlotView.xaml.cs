@@ -1,21 +1,24 @@
 ﻿using DynamicData;
 using Endless;
 using MoreLinq;
+using OnTheFlyStats;
 using OxyPlot.Axes;
-using OxyPlot.Data.Factory;
-using OxyPlot.Data.Common;
-using OxyPlot.Reactive.Model;
-using OxyPlot.Reactive.Multi;
+using OxyPlot.Reactive.DemoApp.Common;
+using OxyPlot.Reactive.DemoApp.Model;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Model;
+using ReactivePlot.Model.Enum;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
-using OxyPlot.Reactive.DemoApp.Model;
-using OnTheFlyStats;
-using OxyPlot.Reactive.Model.Enum;
-using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.Data.Common;
+using ReactivePlot.Multi;
+using ReactivePlot.OxyPlot;
+using ReactivePlot.OxyPlot.PlotModel;
+using ReactivePlot.OxyPlot.Common;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -35,7 +38,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             ItemsControlRollingOperation.ItemsSource = RollingOperation();
         }
 
-        private IReadOnlyCollection<dynamic> Accumulated()
+        private IReadOnlyCollection<ModelKeyIndex> Accumulated()
         {
             var pacedObs = TimeDataSource.Observe1000PlusMinus().Take(200).Concat(TimeDataSource.Observe1000PlusMinus().Skip(200).Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
@@ -50,7 +53,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 .ToObservableChangeSet(a => a.i)
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
-                .Transform(abc => new { model = abc.a, index = abc.i })
+                .Transform(abc => new ModelKeyIndex { key = abc.a.Key, model = abc.a.Value.PlotModel, index = abc.i })
                 .Sort(DynamicData.Binding.SortExpressionComparer<dynamic>.Descending(t => t.index))
                 .Bind(out var plots)
                 .Subscribe();
@@ -58,7 +61,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             return plots;
         }
 
-        private IReadOnlyCollection<dynamic> AccumulatedGroup()
+        private IReadOnlyCollection<ModelKeyIndex> AccumulatedGroup()
         {
             var pacedObs = TimeDataSource.Observe1000().Take(200).Concat(TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6))).Select(a =>
             {
@@ -66,7 +69,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, string>)new TimeDemoPoint(r, r, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotGroupAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new MultiTimePlotGroupAccumulatedBaseModel<string, string>(scheduler: RxApp.MainThreadScheduler);
 
             pacedObs.Subscribe(a => mplots.OnNext(a));
 
@@ -82,7 +85,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 .ToObservableChangeSet(a => a.i)
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
-                .Transform(abc => new { model = abc.a, index = abc.i })
+                .Transform(abc => new ModelKeyIndex { key = abc.a.Key, model = abc.a.Value.PlotModel, index = abc.i })
                 .Sort(DynamicData.Binding.SortExpressionComparer<dynamic>.Descending(t => t.index))
                 .Bind(out var plots)
                 .Subscribe();
@@ -90,18 +93,22 @@ namespace OxyPlot.Reactive.DemoApp.Views
             return plots;
         }
 
-        private IReadOnlyCollection<KeyValuePair<string, PlotModel>> Standard()
+
+
+        private IReadOnlyCollection<ModelKeyIndex> Standard()
         {
             var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.6)).Select(a =>
             {
                 return KeyValuePair.Create(a.Key, (ITimeGroupPoint<string, string>)new TimeDemoPoint(a.Key, a.Key, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotAccumulatedModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new OxyMultiTimePlotAccumulatedModel<string>(scheduler: RxApp.MainThreadScheduler);
             // pacedObs.SubscribeX<string,string,TimeGroupPoint<string,string>>(mplots);
             pacedObs.Subscribe(a => mplots.OnNext(a));
 
-            _ = mplots.ToObservableChangeSet()
+            _ = mplots
+                .Select(a => new ModelKeyIndex { key = a.Key, model = a.Value.PlotModel })
+                .ToObservableChangeSet()
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
                 .Bind(out var plots)
@@ -111,7 +118,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
 
 
-        private IReadOnlyCollection<KeyValuePair<string, PlotModel>> RollingOperation()
+        private IReadOnlyCollection<ModelKeyIndex> RollingOperation()
         {
             Random random = new Random();
             var pacedObs = TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1)).Select(a =>
@@ -120,7 +127,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 return KeyValuePair.Create(a.Key, (ITimeStatsGroupPoint<string, string>)new TimeDemoStringPoint(r, r, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotGroupStatsModel<string, string>(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new OxyMultiTimePlotGroupStatsModel<string, string>(scheduler: RxApp.MainThreadScheduler);
 
             _ = ComboBox1.SelectItemChanges<Operation>().Subscribe(op => mplots.OnNext(op));
 
@@ -130,7 +137,9 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             pacedObs.Subscribe(a => mplots.OnNext(a));
 
-            _ = mplots.ToObservableChangeSet()
+            _ = mplots
+                .Select(a => new ModelKeyIndex { key = a.Key, model = a.Value.PlotModel })
+                .ToObservableChangeSet()
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
                 .Bind(out var plots)
@@ -140,7 +149,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         }
 
 
-        private IReadOnlyCollection<KeyValuePair<string, PlotModel>> ValueKey()
+        private IReadOnlyCollection<ModelKeyIndex> ValueKey()
         {
             Random random = new Random();
 
@@ -150,9 +159,9 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 return KeyValuePair.Create(a.Key, (ITimeStatsGroupPoint<string, double>)new TimeDemoDoublePoint(a.Key, r, a.Value.Key, a.Value.Value));
             });
 
-            var mplots = new MultiTimePlotKeyValueGroupStatsModel(scheduler: RxApp.MainThreadScheduler);
+            var mplots = new OxyMultiTimePlotKeyValueGroupStatsModel(scheduler: RxApp.MainThreadScheduler);
 
-            PowerComboBox.SelectItemChanges<int>().Subscribe(op=>
+            PowerComboBox.SelectItemChanges<int>().Subscribe(op =>
             {
                 mplots.OnNext(op);
             });
@@ -164,7 +173,9 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             pacedObs.Subscribe(a => mplots.OnNext(a));
 
-            _ = mplots.ToObservableChangeSet()
+            _ = mplots
+                .Select(a => new ModelKeyIndex { key = a.Key, model = a.Value.PlotModel })
+                .ToObservableChangeSet()
                 .ObserveOnDispatcher()
                 .SubscribeOnDispatcher()
                 .Bind(out var plots)
@@ -173,8 +184,24 @@ namespace OxyPlot.Reactive.DemoApp.Views
             return plots;
         }
 
-        public class MultiTimePlotAccumulatedDemoModel : MultiTimePlotAccumulatedModel<string, string>
+        public class MultiTimePlotAccumulatedDemoModel : 
+            MultiTimePlotAccumulatedModel<
+                string, 
+                string, 
+                OxyTimePlotModel<string, ITimeGroupPoint<string, string>>,
+                IOxyPlotModel,
+                ErrorBarPlotModel>
         {
+            protected override ErrorBarPlotModel CreateErrorPlotModel()
+            {
+                return new ErrorBarPlotModel(new PlotModel());
+            }
+
+            protected override OxyTimePlotModel<string, ITimeGroupPoint<string, string>> CreatePlotModel()
+            {
+                return new OxyTimePlotModel<string, ITimeGroupPoint<string, string>>(new PlotModel());
+            }
+
             protected override ITimeGroupPoint<string, string> CreatePoint(ITimeGroupPoint<string, string> xy0, ITimeGroupPoint<string, string> xy)
             {
                 return new TimeDemoPoint(xy.GroupKey, xy.Key, xy.Var, (xy0?.Value ?? 0) + xy.Value);
@@ -286,5 +313,16 @@ namespace OxyPlot.Reactive.DemoApp.Views
             }
 
         }
+
+
+    }
+
+    public class ModelKeyIndex
+    {
+        public string key { get; set; }
+
+        public PlotModel model { get; set; }
+
+        public int index { get; set; }
     }
 }

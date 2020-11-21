@@ -1,8 +1,11 @@
-﻿using OxyPlot.Data.Common;
-using OxyPlot.Data.Factory;
+﻿using ReactivePlot.Base;
+using ReactivePlot.Data.Factory;
 using ReactiveUI;
 using System;
 using System.Windows.Controls;
+using ReactivePlot.Data.Common;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -15,7 +18,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             InitializeComponent();
 
-            var model = new CartesianModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model = new OxyCartesianModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1))
                 .ToDoubles()

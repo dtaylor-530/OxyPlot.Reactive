@@ -1,13 +1,13 @@
 ﻿using LinqStatistics;
-using OxyPlot.Axes;
+using ReactivePlot.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
 
-    public class TimeRangePoint<TKey,TType> : RangePoint<TKey, DateTime, TType>, ITimeRangePoint<TKey, TType>
+    public class TimeRangePoint<TKey, TType> : RangePoint<TKey, DateTime, TType>, ITimeRangePoint<TKey, TType>
             where TType : ITimePoint<TKey>
     {
         public TimeRangePoint(Range<DateTime> dateTimeRange, ICollection<TType> value, TKey key) : this(dateTimeRange, value, key, Operation.Mean)
@@ -26,9 +26,10 @@ namespace OxyPlot.Reactive.Model
 
         public override double Value => Collection.Count > 1 ? GetValue() : Collection.Single().Value;
 
-        public override DataPoint GetDataPoint()
+        public override (double, double) DataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            //return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            return (Var.Ticks, Value);
         }
     }
 
@@ -50,9 +51,10 @@ namespace OxyPlot.Reactive.Model
 
         public override double Value => Collection.Count > 1 ? GetValue() : Collection.Single().Value;
 
-        public override DataPoint GetDataPoint()
+        public override (double, double) DataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            //return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            return (Var.Ticks, Value);
         }
     }
 
@@ -78,9 +80,10 @@ namespace OxyPlot.Reactive.Model
 
         public TModel Model { get; }
 
-        public override DataPoint GetDataPoint()
+        public override (double, double) DataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            //  return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            return (Var.Ticks, Value);
         }
     }
 }

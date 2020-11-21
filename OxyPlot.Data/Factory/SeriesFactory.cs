@@ -1,17 +1,17 @@
-﻿using OxyPlot.Data.Common;
+﻿using ReactivePlot.Data.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 
-namespace OxyPlot.Data.Factory
+namespace ReactivePlot.Data.Factory
 {
     internal class SeriesFactory
     {
         private static double equation(int i) => Math.Sin(i * 3.14 * 10 / 180);
 
-        private static Random r = new Random();
+        private static readonly Random r = new Random();
 
         public static IEnumerable<KeyValuePair<Tuple<string, string>, Tuple<DateTime, double>>> ValuesStandard(Dictionary<string, Tuple<double, int>> signals, string[] elements, int count)
         {

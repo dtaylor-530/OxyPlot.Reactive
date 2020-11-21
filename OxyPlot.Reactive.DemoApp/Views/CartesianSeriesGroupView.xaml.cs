@@ -1,17 +1,21 @@
 ﻿using DynamicData;
 using LinqStatistics;
 using MoreLinq;
-using OxyPlot.Reactive;
-using OxyPlot.Data.Factory;
-using OxyPlot.Data.Common;
-using OxyPlot.Reactive.Model;
+using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.Cartesian;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Model;
+using ReactivePlot.Model.Enum;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
-using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.Data.Common;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot;
+using ReactivePlot.OxyPlot.PlotModel;
 
 namespace OxyPlotEx.DemoAppCore.Pages
 {
@@ -25,9 +29,10 @@ namespace OxyPlotEx.DemoAppCore.Pages
             InitializeComponent();
 
             var pacedObs = DataSource.Observe1000().ToDoubles().Pace(TimeSpan.FromSeconds(0.3));
+            var plotModel = new OxyCartesianPlotModel<string, IDoubleRangePoint<string>>(PlotView2.Model ??= new OxyPlot.PlotModel());
+            var model2 = new CartesianGroupModel<string>(plotModel, scheduler: RxApp.MainThreadScheduler);
 
-            var model2 = new CartesianGroup2Model<string>(PlotView2.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
-
+         
             pacedObs.SubscribeCustom(model2);
 
             (model2 as IObservable<(double size, Range<double>[] ranges)>)
@@ -43,7 +48,8 @@ namespace OxyPlotEx.DemoAppCore.Pages
 
             DataGrid2.ItemsSource = rangeCollection;
 
-            (model2 as IObservable<IDoublePoint<string>>).Subscribe(p =>
+
+            plotModel.Subscribe(p =>
             {
                 var n = rangeCollection.Select((a, i) => (key: a.Key.Min, i)).SingleOrDefault(a => a.key == p.Var).i;
                 DataGrid2.SelectedIndex = n;

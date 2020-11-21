@@ -64,7 +64,7 @@ namespace OxyPlot.Reactive
         protected int? takeLastCount;
         private IComparer<TGroupKey> comparer;
 
-        public MultiPlotModel(PlotModel model, TVar max, TVar min, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public MultiPlotModel(IPlotModel model, TVar max, TVar min, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             this.Max = max;
             this.Min = min;
@@ -194,59 +194,59 @@ namespace OxyPlot.Reactive
 
         Dictionary<string, IDisposable> disposableDictionary = new Dictionary<string, IDisposable>();
 
-        protected virtual void AddToSeries(TType3[] items, string title, int? index = null)
-        {
-            lock (plotModel)
-            {
-                if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
-                {
-                    series = OxyFactory.BuildWithMarker(items, title);
+        //protected virtual void AddToSeries(TType3[] items, string title, int? index = null)
+        //{
+        //    lock (plotModel)
+        //    {
+        //        if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
+        //        {
+        //            series = OxyFactory.BuildWithMarker(items, title);
 
-                    series
-                        .ToMouseDownEvents()
-                        .Select(args => OxyMouseDownAction(args, series, items))
-                        .Subscribe(subject.OnNext);
+        //            series
+        //                .ToMouseDownEvents()
+        //                .Select(args => OxyMouseDownAction(args, series, items))
+        //                .Subscribe(subject.OnNext);
 
-                    if (index.HasValue)
-                        plotModel.Series.Insert(index.Value, series);
-                    else
-                        plotModel.Series.Add(series);
+        //            if (index.HasValue)
+        //                plotModel.Series.Insert(index.Value, series);
+        //            else
+        //                plotModel.Series.Add(series);
 
-                }
-                if (series is LineSeries lSeries)
-                {
-                    //var count = series.ItemsSource.Count();
-                    //lSeries.MarkerSize = (int)(5/ (1 + (Math.Log10(count)))) - 1;
-                    //if (count > 100)
-                    //    lSeries.MarkerStrokeThickness = 0;
-                }
+        //        }
+        //        if (series is LineSeries lSeries)
+        //        {
+        //            //var count = series.ItemsSource.Count();
+        //            //lSeries.MarkerSize = (int)(5/ (1 + (Math.Log10(count)))) - 1;
+        //            //if (count > 100)
+        //            //    lSeries.MarkerStrokeThickness = 0;
+        //        }
 
-                series.ItemsSource = items;
-            }
-        }
+        //        series.ItemsSource = items;
+        //    }
+        //}
 
-        protected virtual bool RemoveSeries(string title)
-        {
-            lock (plotModel)
-            {
-                //if (index.HasValue)
-                //{
-                //    plotModel.Series.RemoveAt(index.Value);
-                //    return;
-                //}
+        //protected virtual bool RemoveSeries(string title)
+        //{
+        //    lock (plotModel)
+        //    {
+        //        //if (index.HasValue)
+        //        //{
+        //        //    plotModel.Series.RemoveAt(index.Value);
+        //        //    return;
+        //        //}
 
-                if ((plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
-                {
-                    disposableDictionary.Remove(title);
-                    plotModel.Series.Remove(series);
-                    return true;
-                }
-                return false;
-            }
-        }
+        //        if ((plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
+        //        {
+        //            disposableDictionary.Remove(title);
+        //            plotModel.Series.Remove(series);
+        //            return true;
+        //        }
+        //        return false;
+        //    }
+        //}
 
 
-        protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
+        //protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
 
 
         protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection);

@@ -1,11 +1,12 @@
 ﻿using OxyPlot.Reactive;
-using OxyPlot.Data.Common;
-using OxyPlot.Data.Factory;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.DemoApp.Model;
 using ReactiveUI;
 using System;
-using System.Windows;
 using System.Reactive.Disposables;
-using OxyPlot.Reactive.DemoApp.Model;
+using System.Windows;
+using ReactivePlot.Common;
+using ReactivePlot.Data.Common;
 
 namespace OxyPlotEx.DemoAppCore.Pages
 {
@@ -25,13 +26,13 @@ namespace OxyPlotEx.DemoAppCore.Pages
             //var model3 = new TimeRollingStatisticsModel<string>(plotView3.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
             //var model4 = new TimeRollingStatisticsModel<string>(plotView4.Model ??= new OxyPlot.PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-           TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5))
-                .SubscribeCustom(model1)
-                .DisposeWith(disposable);
+            TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5))
+                 .SubscribeCustom(model1)
+                 .DisposeWith(disposable);
 
-           TimeDataSource.Observe3()
-                .SubscribeCustom(model2)
-                .DisposeWith(disposable);
+            TimeDataSource.Observe3()
+                 .SubscribeCustom(model2)
+                 .DisposeWith(disposable);
 
             TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.2))
         .SubscribeCustom(model3)

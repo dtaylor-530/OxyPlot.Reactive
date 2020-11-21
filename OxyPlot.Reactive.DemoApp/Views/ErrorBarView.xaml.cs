@@ -1,5 +1,6 @@
 ﻿using MoreLinq;
-using OxyPlot.Reactive;
+using ReactivePlot.Base;
+using ReactivePlot.OxyPlot;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace OxyPlotEx.DemoAppCore
         {
             InitializeComponent();
 
-            _ = GenerateData().Subscribe(new ErrorBarModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
+            _ = GenerateData().Subscribe(new OxyErrorBarModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
         }
 
         private static IObservable<KeyValuePair<string, double>> GenerateData()

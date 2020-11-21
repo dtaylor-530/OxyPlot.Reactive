@@ -1,17 +1,20 @@
 ﻿using LinqStatistics;
 using MoreLinq;
-using OxyPlot.Reactive.Infrastructure;
-using OxyPlot.Reactive.Model;
+using ReactivePlot.Model;
+using ReactivePlot.Time;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot.PlotModel;
 
 namespace OxyPlot.Reactive.DemoApp.ViewModels
 {
     public class CustomTimeGroup2Model<TKey> : TimeGroupModel<TKey>
     {
-        public CustomTimeGroup2Model(PlotModel model, IEqualityComparer<TKey> comparer = null, IScheduler scheduler = null) : base(model, comparer, scheduler)
+        public CustomTimeGroup2Model(PlotModel model, IEqualityComparer<TKey> comparer = null, IScheduler scheduler = null) : base(
+            new OxyTimePlotModel<TKey, ITimeRangePoint<TKey>>(model), comparer, scheduler)
         {
         }
 

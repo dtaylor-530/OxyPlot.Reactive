@@ -1,7 +1,6 @@
-﻿using OxyPlot.Axes;
-using System;
+﻿using System;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
     public struct TimePoint : ITimePoint<string>
     {
@@ -22,11 +21,11 @@ namespace OxyPlot.Reactive.Model
 
         public double Value { get; }
 
-        public DataPoint GetDataPoint()
+        public void Deconstruct(out DateTime var, out double value)
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            var = Var;
+            value = Value;
         }
-
         public override string ToString()
         {
             return $"{Var:F}, {Value}, {Key}";
@@ -53,9 +52,10 @@ namespace OxyPlot.Reactive.Model
 
         public double Value { get; }
 
-        public DataPoint GetDataPoint()
+        public void Deconstruct(out DateTime var, out double value)
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            var = Var;
+            value = Value;
         }
 
         public override string ToString()

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OxyPlot.Data.Factory
+namespace ReactivePlot.Data.Factory
 {
     public class DataFactory
     {
@@ -28,7 +28,7 @@ namespace OxyPlot.Data.Factory
 
             while (xc[chr].MoveNext())
             {
-                yield return new KeyValuePair<string, double>(chr, Math.Sin((1 + xc[chr].Current + (1 + random.NextDouble()* factor)) / 4));
+                yield return new KeyValuePair<string, double>(chr, Math.Sin((1 + xc[chr].Current + (1 + random.NextDouble() * factor)) / 4));
                 chr = NextCharacter();
             }
         }
@@ -75,7 +75,7 @@ namespace OxyPlot.Data.Factory
             int i = 0;
             while (xc2.First().Value.MoveNext())
             {
-                var xx = KeyValuePair.Create(++i,  random.NextDouble());
+                var xx = KeyValuePair.Create(++i, random.NextDouble());
                 yield return xx;
             }
 

@@ -1,14 +1,15 @@
-﻿using OxyPlot.Data.Common;
+﻿using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.OxyPlot;
+using ReactivePlot.Time;
 using ReactiveUI;
 using System;
-using System.Windows;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
-using System.Windows.Controls;
-using OxyPlot.Reactive.DemoApp.Common;
 using System.Reactive.Linq;
-using System.Collections.Generic;
-using OxyPlot.Reactive.Time;
+using System.Windows;
+using System.Windows.Controls;
+using ReactivePlot.Data.Common;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -24,7 +25,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             InitializeComponent();
 
             //var model = new TimeKellyModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            var model2 = new Time2KellyModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model2 = new OxyTime2KellyModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             disposable = new CompositeDisposable();
 
@@ -39,7 +40,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             var array = Csv.Read()
                 .Select(a => new KellyPoint<string>(a.DateTime_, default, null, a.Odd, LayUnitProfit(a), ""))
-                .OrderBy(a=>a.Var)
+                .OrderBy(a => a.Var)
                 .ToArray();
 
             IObservable<KellyPoint<string>> cc = array.Take(2000).ToObservable().Merge(

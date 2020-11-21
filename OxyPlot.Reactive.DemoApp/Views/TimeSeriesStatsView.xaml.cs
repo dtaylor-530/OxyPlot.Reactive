@@ -1,14 +1,17 @@
-﻿using OxyPlot.Data.Common;
-using OxyPlot.Data.Factory;
+﻿using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Model;
+using ReactivePlot.Model.Enum;
+using ReactivePlot.Time;
 using ReactiveUI;
 using System;
-using System.Windows;
-using OxyPlot.Reactive.Model;
-using OxyPlot.Reactive.Model.Enum;
 using System.Reactive.Disposables;
-using System.Windows.Controls;
-using OxyPlot.Reactive.DemoApp.Common;
 using System.Reactive.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using ReactivePlot.Data.Common;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -23,11 +26,11 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             InitializeComponent();
 
-            var model1 = new TimeOnTheFlyStatsModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            var model2 = new TimeOnTheFlyStatsModel<string>(plotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            var model3 = new TimeOnTheFlyStatsModel<string>(plotView3.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            var model4 = new TimeOnTheFlyStatsModel<string>(plotView4.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
-          
+            var model1 = new OxyTimeOnTheFlyStatsModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model2 = new OxyTimeOnTheFlyStatsModel<string>(plotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model3 = new OxyTimeOnTheFlyStatsModel<string>(plotView3.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model4 = new OxyTimeOnTheFlyStatsModel<string>(plotView4.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+
             disposable = new CompositeDisposable();
 
             TimeDataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.5))

@@ -5,6 +5,8 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:hc="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+       xmlns:enum="clr-namespace:ReactivePlot.Model.Enum;assembly=ReactivePlot.Model"
+    
     xmlns:oxy="http://oxyplot.org/wpf"
     xmlns:views="clr-namespace:OxyPlot.Reactive.DemoApp.Views"
     d:DesignHeight="450"
@@ -15,8 +17,6 @@
         <DockPanel>
 
             <ToolBar
-                xmlns:en="clr-namespace:OxyPlot.Reactive.Model.Enum;assembly=OxyPlot.Reactive.Model"
-                xmlns:m="clr-namespace:OxyPlot.Reactive.Model;assembly=OxyPlot.Reactive.Model"
                 xmlns:sys="clr-namespace:System;assembly=System.Runtime"
                 DockPanel.Dock="Top">
                 <ToolBar.Resources>
@@ -25,7 +25,7 @@
                         MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}">
                         <ObjectDataProvider.MethodParameters>
-                            <x:Type TypeName="m:Operation" />
+                            <x:Type TypeName="enum:Operation" />
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
 
@@ -34,7 +34,7 @@
                         MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}">
                         <ObjectDataProvider.MethodParameters>
-                            <x:Type TypeName="en:RollingOperation" />
+                            <x:Type TypeName="enum:RollingOperation" />
                         </ObjectDataProvider.MethodParameters>
                     </ObjectDataProvider>
                 </ToolBar.Resources>

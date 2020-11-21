@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OxyPlot.Data
+﻿namespace ReactivePlot.Data
 {
     public class Class1
     {

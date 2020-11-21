@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,21 +15,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CsvHelper" Version="15.0.8" />
+    <PackageReference Include="CsvHelper" Version="16.0.0" />
     <PackageReference Include="HandyControl" Version="2.5.0.2" />
     <PackageReference Include="LinqStatistics" Version="2.3.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="OxyPlot.Wpf" Version="2.0.0" />
     <PackageReference Include="ReactiveUI.Events.WPF" Version="12.1.5" />
-    <PackageReference Include="ReactiveUI.WPF" Version="11.4.17" />
+    <PackageReference Include="ReactiveUI.WPF" Version="12.1.5" />
     <PackageReference Include="TypeConvert" Version="2.1.6" />
     <PackageReference Include="WindowsProgressRing" Version="1.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OxyPlot.Data\OxyPlot.Data.csproj" />
-    <ProjectReference Include="..\OxyPlot.Reactive.View\OxyPlot.Reactive.View.csproj" />
-    <ProjectReference Include="..\OxyPlot.Reactive\OxyPlot.Reactive.csproj" />
+    <ProjectReference Include="..\OxyPlot.Data\ReactivePlot.Data.csproj" />
+    <ProjectReference Include="..\OxyPlot.Reactive.View\ReactivePlot.View.csproj" />
+    <ProjectReference Include="..\ReactivePlot.OxyPlot\ReactivePlot.OxyPlot.csproj" />
   </ItemGroup>
 
   <ItemGroup>

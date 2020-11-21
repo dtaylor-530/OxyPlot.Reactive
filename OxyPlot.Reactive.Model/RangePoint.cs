@@ -1,10 +1,11 @@
-﻿using Endless;
-using LinqStatistics;
+﻿using LinqStatistics;
+using MoreLinq;
+using ReactivePlot.Model.Enum;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
 
     public abstract class RangePoint<TKey, TVar> : RangePoint<TKey, TVar, IPoint<TVar, double>>
@@ -57,7 +58,7 @@ namespace OxyPlot.Reactive.Model
                 case Operation.Max: return Collection.Max(a => a.Value);
                 case Operation.Min: return Collection.Min(a => a.Value);
                 case Operation.Median: return Collection.Median(a => a.Value);
-                case Operation.Random: return Collection.Random().Value;
+                case Operation.Random: return Collection.RandomSubset(1).Single().Value;
                 case Operation.First: return Collection.First().Value;
                 case Operation.Last: return Collection.Last().Value;
                 case Operation.Difference: return Collection.Last().Value - Collection.First().Value;
@@ -108,7 +109,7 @@ namespace OxyPlot.Reactive.Model
 
         public ICollection<TPoint> Collection { get; }
 
-        public abstract DataPoint GetDataPoint();
+        public abstract (double, double) DataPoint();
 
         public override string ToString()
         {

@@ -2,6 +2,7 @@
 
 using OxyPlot.Reactive.Infrastructure;
 using OxyPlot.Reactive.Model.Enum;
+using ReactivePlot.Model;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;

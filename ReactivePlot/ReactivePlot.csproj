@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CSharp.Pipe" Version="1.0.1" />
+    <PackageReference Include="DynamicData" Version="6.16.3" />
+    <PackageReference Include="Kaos.Collections" Version="4.1.0" />
+    <PackageReference Include="OnTheFlyStats" Version="3.1.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OxyPlot.Reactive.Model\ReactivePlot.Model.csproj" />
+  </ItemGroup>
+
+</Project>

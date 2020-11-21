@@ -1,19 +1,27 @@
 ﻿#nullable enable
 
 using OxyPlot;
-using OxyPlot.Reactive.Model;
+using ReactivePlot.Model;
+using ReactivePlot.OxyPlot.PlotModel;
+using ReactivePlot.Time;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 
-namespace OxyPlot.Reactive.DemoApp.Model
+namespace ReactivePlot.DemoApp.Model
 {
     public class TimeAccumulatedGroupModel<TGroupKey, TKey> : TimeGroupModel<TGroupKey, TKey>
     {
-        public TimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
+        public TimeAccumulatedGroupModel(PlotModel model, IScheduler? scheduler = null) : 
+            base(new OxyTimePlotModel<TKey, ITimeRangePoint<TKey>>(model), scheduler: scheduler)
         {
         }
 
-        public TimeAccumulatedGroupModel(PlotModel model, IEqualityComparer<TGroupKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+
+        public TimeAccumulatedGroupModel(IPlotModel<ITimeRangePoint<TKey>> model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
+        {
+        }
+
+        public TimeAccumulatedGroupModel(IPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 

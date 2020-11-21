@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OxyPlot.Data.Factory
+namespace ReactivePlot.Data.Factory
 {
     internal static class MeasurementGenerator
     {

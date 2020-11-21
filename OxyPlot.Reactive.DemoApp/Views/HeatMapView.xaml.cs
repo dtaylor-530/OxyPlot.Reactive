@@ -1,4 +1,4 @@
-﻿using OxyPlot.Reactive;
+﻿using ReactivePlot.OxyPlot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -17,9 +17,9 @@ namespace OxyPlotEx.DemoAppCore.Pages
         {
             InitializeComponent();
 
-            _ = NewMethod().Subscribe(new HeatMap(plotView1.Model ??= new OxyPlot.PlotModel(), hNamesComparer: new WDComparer(), hAxisKey: "WeekDay", vAxisKey: "Number", scheduler: ReactiveUI.RxApp.MainThreadScheduler));
+            _ = NewMethod().Subscribe(new HeatMapModel(plotView1.Model ??= new OxyPlot.PlotModel(), hNamesComparer: new WDComparer(), hAxisKey: "WeekDay", vAxisKey: "Number", scheduler: ReactiveUI.RxApp.MainThreadScheduler));
 
-            _ = NewMethod2(out _).Subscribe(new HeatMap(plotView2.Model ??= new OxyPlot.PlotModel(), hNamesComparer: new WDComparer()));
+            _ = NewMethod2(out _).Subscribe(new HeatMapModel(plotView2.Model ??= new OxyPlot.PlotModel(), hNamesComparer: new WDComparer()));
         }
 
         private IObservable<KeyValuePair<(string, string), double>> NewMethod()

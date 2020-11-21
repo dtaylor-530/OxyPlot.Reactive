@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace OxyPlot.Reactive.View.Common
+namespace ReactivePlot.View.Common
 {
     internal class LastItemConverter : IMultiValueConverter
     {

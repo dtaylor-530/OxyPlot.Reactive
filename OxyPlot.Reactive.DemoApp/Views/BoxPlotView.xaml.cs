@@ -1,5 +1,5 @@
-﻿using OxyPlot.Data.Factory;
-using OxyPlot.Reactive;
+﻿using ReactivePlot.Data.Factory;
+using ReactivePlot.OxyPlot;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -16,7 +16,7 @@ namespace OxyPlotEx.DemoAppCore
         {
             InitializeComponent();
 
-            _ = GenerateData().Subscribe(new BoxPlotModel(PlotView1.Model ??= new OxyPlot.PlotModel()));
+            _ = GenerateData().Subscribe(new BoxPlotModel(PlotView1.Model ??= new OxyPlot.PlotModel(), scheduler: default));
         }
 
         private static IObservable<KeyValuePair<string, KeyValuePair<int, double>>> GenerateData()

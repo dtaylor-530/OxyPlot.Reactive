@@ -7,7 +7,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
     /// <summary>
     /// Interaction logic for BusyView.xaml
     /// </summary>
-    public partial class BusyView : ReactiveUserControl<BusyViewModel>
+    public partial class BusyView
     {
         public BusyView()
         {

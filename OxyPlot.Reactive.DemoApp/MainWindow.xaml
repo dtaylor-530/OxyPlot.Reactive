@@ -15,9 +15,12 @@
                 <Pages xmlns="">
 
                     <Page Title="Kelly" Uri="\Views\TimeKellyView.xaml" />
+                    
+                    <Page Title="Cartesian" Uri="\Views\CartesianView.xaml" />
+
+                    <Page Title="Box Plot Series" Uri="\Views\BoxPlotView.xaml" />
 
                     <Page Title="Multi" Uri="\Views\MultiTimePlotView.xaml" />
-
 
                     <Page Title="Stats" Uri="\Views\TimeSeriesStatsView.xaml" />
 
@@ -25,12 +28,8 @@
 
                     <Page Title="Cartesian Group" Uri="\Views\CartesianSeriesGroupView.xaml" />
 
-                    <Page Title="Cartesian" Uri="\Views\CartesianView.xaml" />
-
                     <Page Title="Error Bar Series" Uri="\Views\ErrorBarView.xaml" />
-
-                    <Page Title="Box Plot Series" Uri="\Views\BoxPlotView.xaml" />
-
+                    
                     <Page Title="Heat Map Series" Uri="\Views\HeatMapView.xaml" />
 
                     <Page Title="Multi Line Accumulated Series" Uri="\Views\TimeSeriesAccumulatedView.xaml" />

@@ -1,13 +1,16 @@
-﻿using OxyPlot.Data.Factory;
+﻿using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Time;
 using ReactiveUI;
 using System;
-using System.Windows.Controls;
-using OxyPlot.Data.Common;
 using System.Collections.Generic;
-using OxyPlot.Reactive.Model;
-using System.Reactive.Linq;
 using System.Linq;
-using OxyPlot.Reactive.DemoApp.Common;
+using System.Reactive.Linq;
+using System.Windows.Controls;
+using ReactivePlot.Data.Common;
+using ReactivePlot.Model;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -27,23 +30,23 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             var pacedObs = dis.ToObservable().Take(100).Merge(dis.ToObservable().Skip(100).Pace(TimeSpan.FromSeconds(2)));
 
-            var model1 = new TimeLogGroupValueModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model1 = new OxyTimeLogGroupValueModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
-            pacedObs.SubscribeCustom(model1, ()=> string.Empty);
+            pacedObs.SubscribeCustom(model1, () => string.Empty);
 
             //-------------------
 
             var dis2 = new DataFactory().GetSin(0.1)
       .Take(200)
-      .Select((x,i) => KeyValuePair.Create(string.Empty,
+      .Select((x, i) => KeyValuePair.Create(string.Empty,
       KeyValuePair.Create(DateTime.UnixEpoch.AddDays(i), x.Value * 100)));
 
 
-            var model2 = new TimeLogGroupKeyModel(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model2 = new OxyTimeLogGroupKeyModel(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             dis2.ToObservable().Subscribe(model2);
 
- 
+
             AllToggleButton.SelectToggleChanges().Subscribe(model1.OnNext);
             AllToggleButton.SelectToggleChanges().Subscribe(model2.OnNext);
             ComboBox1.SelectItemChanges<double>().Subscribe(model1.OnNext);

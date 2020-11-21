@@ -1,7 +1,8 @@
 ﻿using LinqStatistics;
+using ReactivePlot.Model.Enum;
 using System.Collections.Generic;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
     public class DoubleRangePoint<TKey> : RangePoint<TKey, double, IDoublePoint<TKey>>, IDoubleRangePoint<TKey>
     {
@@ -21,9 +22,9 @@ namespace OxyPlot.Reactive.Model
 
 
 
-        public override DataPoint GetDataPoint()
+        public override (double, double) DataPoint()
         {
-            return new DataPoint(Var, Value);
+            return (Var, Value);
         }
     }
 }

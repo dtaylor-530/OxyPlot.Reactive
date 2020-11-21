@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
-    public struct TimeUncertainPoint
+    public struct TimeErrorPoint
     {
-        public TimeUncertainPoint(DateTime dateTime, double value, double deviation)
+        public TimeErrorPoint(DateTime dateTime, double value, double deviation)
         {
             DateTime = dateTime;
             Value = value;

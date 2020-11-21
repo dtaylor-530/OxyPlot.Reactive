@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
     public struct Point<TVar> : I2Point<string, TVar> where TVar : IComparable<TVar>
     {
@@ -21,9 +21,10 @@ namespace OxyPlot.Reactive.Model
 
         public double Value { get; }
 
-        public DataPoint GetDataPoint()
+        public (double, double) DataPoint()
         {
-            return new DataPoint(Convert.ToDouble(Var), Value);
+            //return new DataPoint(Convert.ToDouble(Var), Value);
+            return (Convert.ToDouble(Var), Value);
         }
 
         public override string ToString()

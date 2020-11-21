@@ -1,20 +1,23 @@
 ﻿using DynamicData;
 using DynamicData.Binding;
 using MoreLinq;
-using OxyPlot;
-using OxyPlot.Data.Common;
-using OxyPlot.Data.Factory;
+using OxyPlot.Reactive.DemoApp.Common;
+using OxyPlot.Reactive.DemoApp.Model;
 using OxyPlot.Reactive.DemoApp.ViewModels;
-using OxyPlot.Reactive.Model;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Model;
+using ReactivePlot.Model.Enum;
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Windows.Controls;
-using OxyPlot.Reactive.DemoApp.Model;
-using OxyPlot.Reactive.Model.Enum;
-using OxyPlot.Reactive.DemoApp.Common;
+using ReactivePlot.Data.Common;
+using ReactivePlot.OxyPlot;
+using ReactivePlot.Common;
+using ReactivePlot.OxyPlot.PlotModel;
+using ReactivePlot.Time;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
@@ -36,7 +39,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             //----------------------------------------------
 
-            var model2 = new TimeGroupModel<string>(PlotView2.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var timePlotModel = new OxyTimePlotModel<string, ITimeRangePoint<string>>(PlotView2.Model ??= new PlotModel());
+            var model2 = new TimeGroupModel<string>(timePlotModel, scheduler: RxApp.MainThreadScheduler);
 
             pacedObs.SubscribeCustom(model2);
 
@@ -48,7 +52,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
             DataGrid2.ItemsSource = collection2;
 
-            (model2 as IObservable<ITimePoint<string>>).Subscribe(p =>
+
+            (timePlotModel as IObservable<ITimePoint<string>>).Subscribe(p =>
             {
                 var n = collection2.Index().SingleOrDefault(a => (a.Value.Key, a.Value.Var) == (p.Key, p.Var)).Key;
                 DataGrid2.SelectedIndex = n;
@@ -57,7 +62,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
 
             //----------------------------------------------
-            var model3 = new TimeGroupOnTheFlyStatsModel<string>(PlotView3.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            var model3 = new OxyTimeGroupOnTheFlyStatsModel<string>(PlotView3.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
 
             IDisposable disposable = pacedObs.SubscribeCustom4(model3);
 
@@ -81,7 +86,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 model4?.OnNext(x);
             });
 
-            ComboBox1.SelectItemChanges<Operation>().Subscribe(op=>
+            ComboBox1.SelectItemChanges<Operation>().Subscribe(op =>
             {
                 model1.OnNext(op);
                 model2.OnNext(op);

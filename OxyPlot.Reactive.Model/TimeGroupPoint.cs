@@ -1,7 +1,6 @@
-﻿using OxyPlot.Axes;
-using System;
+﻿using System;
 
-namespace OxyPlot.Reactive.Model
+namespace ReactivePlot.Model
 {
 
     public struct TimeGroupPoint<TKey> : ITimeGroupPoint<TKey, TKey>
@@ -26,9 +25,10 @@ namespace OxyPlot.Reactive.Model
 
         public double Value { get; }
 
-        public DataPoint GetDataPoint()
+        public (double, double) DataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            //  return (DateTimeAxis.ToDouble(Var), Value);
+            return (Var.Ticks, Value);
         }
 
         public override string ToString()
@@ -64,9 +64,15 @@ namespace OxyPlot.Reactive.Model
 
         public double Value { get; }
 
-        public DataPoint GetDataPoint()
+        //public DataPoint GetDataPoint()
+        //{
+        //    return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+        //}
+
+
+        public (double, double) DataPoint()
         {
-            return new DataPoint(DateTimeAxis.ToDouble(Var), Value);
+            return (Var.Ticks, Value);
         }
 
         public override string ToString()

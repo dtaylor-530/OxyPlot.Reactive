@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Data;
 
 namespace OxyPlot.Reactive.DemoApp
@@ -18,8 +16,8 @@ namespace OxyPlot.Reactive.DemoApp
         {
             throw new NotImplementedException();
         }
-    }    
-    
+    }
+
     public class DefaultConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
