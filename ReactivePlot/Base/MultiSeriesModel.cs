@@ -182,7 +182,7 @@ namespace ReactivePlot.Base
 
         protected override ICollection<TType> CreateCollection()
         {
-            return new RankedSet<TType>(Comparer<TType>.Create((a, b) => a.Var.CompareTo(b.Var)));
+            return new RankedBag<TType>(Comparer<TType>.Create((a, b) => a.Var.CompareTo(b.Var)));
         }
 
         protected abstract TVar CalculateMin(IEnumerable<KeyValuePair<TGroupKey, TType>> items);
@@ -193,63 +193,6 @@ namespace ReactivePlot.Base
         {
         }
 
-        //Dictionary<string, IDisposable> disposableDictionary = new Dictionary<string, IDisposable>();
-
-        //protected virtual void AddToSeries(TType3[] items, string title, int? index = null)
-        //{
-        //    lock (plotModel)
-        //    {
-        //        if (!(plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
-        //        {
-        //            series = OxyFactory.BuildWithMarker(items, title);
-
-        //            series
-        //                .ToMouseDownEvents()
-        //                .Select(args => OxyMouseDownAction(args, series, items))
-        //                .Subscribe(subject.OnNext);
-
-        //            if (index.HasValue)
-        //                plotModel.Series.Insert(index.Value, series);
-        //            else
-        //                plotModel.Series.Add(series);
-
-        //        }
-        //        if (series is LineSeries lSeries)
-        //        {
-        //            var count = series.ItemsSource.Count();
-        //            lSeries.MarkerSize = (int)(5/ (1 + (Math.Log10(count)))) - 1;
-        //            if (count > 100)
-        //                lSeries.MarkerStrokeThickness = 0;
-        //        }
-
-        //        series.ItemsSource = items;
-        //    }
-        //}
-
-        //protected virtual bool RemoveSeries(string title)
-        //{
-        //    lock (plotModel)
-        //    {
-        //        //if (index.HasValue)
-        //        //{
-        //        //    plotModel.Series.RemoveAt(index.Value);
-        //        //    return;
-        //        //}
-
-        //        if ((plotModel.Series.SingleOrDefault(a => a.Title == title) is XYAxisSeries series))
-        //        {
-        //            disposableDictionary.Remove(title);
-        //            plotModel.Series.Remove(series);
-        //            return true;
-        //        }
-        //        return false;
-        //    }
-        //}
-
-
-        //protected abstract TType3 OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, TType3[] items);
-
-
         protected abstract IEnumerable<TType3> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection);
 
 
@@ -257,14 +200,8 @@ namespace ReactivePlot.Base
 
         protected virtual TType CreateAllPoint(TType xy0, TType xy)
         {
-            return CreatePoint(xy0,xy);
+            return CreatePoint(xy0, xy);
         }
-
-
-        //public override IDisposable Subscribe(IObserver<TType3> observer)
-        //{
-        //    return subject.Subscribe(observer);
-        //}
 
         public void OnNext(int count)
         {

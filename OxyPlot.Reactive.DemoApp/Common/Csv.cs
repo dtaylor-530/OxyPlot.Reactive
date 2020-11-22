@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive.Disposables;
+using System.Text.RegularExpressions;
 
 namespace OxyPlot.Reactive.DemoApp.Common
 {
@@ -34,10 +35,15 @@ namespace OxyPlot.Reactive.DemoApp.Common
         public double Odd { get; set; }
         public double Wager { get; set; }
         public double Profit { get; set; }
+        public double UnitProfit { get; set; }
+        public double ZeroPoint005   { get; set; }
+        public double ZeroPoint001 { get; set; }
 
-        public long DateTime { get; set; }
+        public string DateTime { get; set; }
 
-        public DateTime DateTime_ => new DateTime(DateTime);
+
+
+        public DateTime DateTime_ => new System.DateTime((long)(double.Parse(new Regex(@"[\d.]*").Match(DateTime).Value)*Math.Pow(10,17)));
 
     }
 }

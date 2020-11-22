@@ -58,16 +58,21 @@ namespace ReactivePlot.Time
 
         protected override IKellyPoint<TKey> CreatePoint(IKellyPoint<TKey> xy0, IKellyPoint<TKey> xy)
         {
+            return CreatePoint(xy0, xy, ratio);
+        }
+
+        public static IKellyPoint<TKey> CreatePoint(IKellyPoint<TKey> xy0, IKellyPoint<TKey> xy, double ratio)
+        {
 
             var kellyModel = xy0 == null ? new KellyModel
             {
                 ProfitStats = new Stats(),
                 KellyDictionary = null,
-                KellyProfits = new Stats(new double[] { 100d })
+                KellyProfits = new Stats(new double[] { 1d })
             } : xy0.Model;
 
-
-            var current = xy.Odds > 0 ? xy.UnitProfit * kellyModel.KellyProfits.Sum * ratio / xy.Odds : 0;
+            var sum = kellyModel.KellyProfits.Sum;
+            var current = sum > 0 && xy.Odds > 0 ? xy.UnitProfit * sum * ratio : 0;
             (kellyModel.KellyProfits ??= new Stats()).Update(current);
 
             kellyModel.ProfitStats.Update(xy.UnitProfit);
@@ -106,7 +111,11 @@ namespace ReactivePlot.Time
 
         public DateTime Var { get; }
 
-        public double UnitProfit { get; set; }
+        public double UnitProfit
+        {
+            get;
+            set;
+        }
 
         public double Odds { get; set; }
 

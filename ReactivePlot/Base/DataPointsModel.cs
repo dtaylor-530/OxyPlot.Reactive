@@ -1,6 +1,8 @@
 ﻿#nullable enable
 
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ReactivePlot.Base
 {
@@ -23,7 +25,6 @@ namespace ReactivePlot.Base
                 {
                     var newdp = item.Value;
                     if (!DataPoints.ContainsKey(item.Key))
-
                         DataPoints[item.Key] = CreateCollection();
                     DataPoints[item.Key].Add(newdp);
                 }

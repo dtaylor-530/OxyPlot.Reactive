@@ -9,32 +9,18 @@
     <DockPanel>
         <ToolBar DockPanel.Dock="Top" >
             <ComboBox x:Name="RatioComboBox" SelectedIndex="0">
+                <ComboBoxItem>0.001</ComboBoxItem>
+                <ComboBoxItem>0.002</ComboBoxItem>
+                <ComboBoxItem>0.005</ComboBoxItem>
                 <ComboBoxItem>0.01</ComboBoxItem>
-                <ComboBoxItem>0.02</ComboBoxItem>
-                <ComboBoxItem>0.04</ComboBoxItem>
-                <ComboBoxItem>0.08</ComboBoxItem>
             </ComboBox>
         </ToolBar>
 
     <Grid>
-        <UniformGrid>
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*" />
-                    <!--<RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />-->
-                </Grid.RowDefinitions>
+        <UniformGrid Rows="1">
                 <oxy:PlotView x:Name="plotView1" />
-                <!--<oxy:PlotView x:Name="plotView2" Grid.Row="1" />
-                <oxy:PlotView x:Name="plotView3" Grid.Row="2" />
-                <oxy:PlotView x:Name="plotView4" Grid.Row="3" />
-                <oxy:PlotView x:Name="plotView5" Grid.Row="4" />-->
-            </Grid>
-        </UniformGrid>
+                <DataGrid x:Name="DataGrid1" />
+            </UniformGrid>
     </Grid>
     </DockPanel>
 </UserControl>
