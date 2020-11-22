@@ -141,17 +141,6 @@ namespace OxyPlot.Reactive
 
         protected abstract void Refresh(IList<Unit> units);
 
-        //protected void CongfigureBindings(IController pc)
-        //{
-        //    pc.UnbindMouseDown(OxyMouseButton.Left);
-        //    //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Control);
-        //    //pc.UnbindMouseDown(OxyMouseButton.Left, OxyModifierKeys.Shift);
-
-        //    pc.BindMouseDown(OxyMouseButton.Left, new DelegatePlotCommand<OxyMouseDownEventArgs>(
-        //                     (view, controller, args) =>
-        //                     controller.AddMouseManipulator(view, new TrackerManipulator1(view), args)));
-        //}
-
         IScheduler? IMixedScheduler.Scheduler => scheduler;
 
         SynchronizationContext? IMixedScheduler.Context => context;

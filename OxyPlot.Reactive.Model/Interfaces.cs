@@ -40,6 +40,11 @@ namespace ReactivePlot.Model
 
     public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double> where TVar : IComparable<TVar>
     {
+        void Deconstruct(out TVar x, out double y)
+        {
+            x = Var;
+            y = Value;
+        }
     }
 
     public interface ITimePoint : IValue<double>, IVar<DateTime>, IPoint<DateTime, double>

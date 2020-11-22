@@ -78,7 +78,7 @@ namespace ReactivePlot.OxyPlot
                     plotModel.ClearSeries();
 
                     foreach (var item in botPlotItems)
-                        plotModel.AddToSeries(item.Item2, item.Item1);
+                        plotModel.AddData(item.Item2, item.Item1);
 
                     plotModel.Invalidate(true);
                 }
@@ -126,7 +126,7 @@ namespace ReactivePlot.OxyPlot
 
         protected virtual void AddToSeries(BoxPlotItem[] points, string title)
         {
-            plotModel.AddToSeries(points, title);
+            plotModel.AddData(points, title);
         }
     }
 
@@ -137,7 +137,7 @@ namespace ReactivePlot.OxyPlot
         {
         }
 
-        public void AddToSeries(BoxPlotItem[] items, string title, int? index = null)
+        public void AddData(BoxPlotItem[] items, string title, int? index = null)
         {
             PlotModel.Series.Add(OxyFactory.BuildBoxPlot(items, title));
         }

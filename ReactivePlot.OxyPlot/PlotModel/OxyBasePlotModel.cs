@@ -1,5 +1,6 @@
 ﻿using OxyPlot;
 using OxyPlot.Series;
+using ReactivePlot.Model;
 using ReactivePlot.OxyPlot.Common;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using oxy = OxyPlot;
 
 namespace ReactivePlot.OxyPlot.PlotModel
 {
-    public abstract class OxyBasePlotModel : IOxyPlotModel
+    public abstract class OxyBasePlotModel : IOxyPlotModel, IAddData<IDataPointProvider>
     {
         protected readonly Dictionary<string, IDisposable> disposableDictionary = new Dictionary<string, IDisposable>();
 
@@ -39,7 +40,7 @@ namespace ReactivePlot.OxyPlot.PlotModel
         }
 
 
-        public virtual void AddToSeries(IDataPointProvider[] items, string title, int? index = null)
+        public virtual void AddData(IDataPointProvider[] items, string title, int? index = null)
         {
             lock (PlotModel)
             {

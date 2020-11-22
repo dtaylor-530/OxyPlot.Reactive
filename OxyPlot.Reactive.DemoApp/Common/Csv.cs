@@ -1,27 +1,32 @@
 ﻿using CsvHelper;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 
 namespace OxyPlot.Reactive.DemoApp.Common
 {
-    class Csv
+    class Csv : IDisposable
     {
-
-        public static CsvRow[] Read()
-
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        public IEnumerable<CsvRow> Read()
         {
-            using (var reader = new StreamReader("../../../Data/Temp2.csv"))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                var records = csv.GetRecords<CsvRow>().ToArray();
-                return records;
-            }
+
+            var reader = new StreamReader("../../../Data/Temp2.csv");
+            var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+            compositeDisposable.Add(reader);
+            compositeDisposable.Add(csv);
+
+            var records = csv.GetRecords<CsvRow>();
+            return records;
         }
 
-
-
+        public void Dispose()
+        {
+            compositeDisposable.Dispose();
+        }
     }
 
     public class CsvRow

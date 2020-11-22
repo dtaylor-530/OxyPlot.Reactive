@@ -55,7 +55,7 @@ namespace ReactivePlot.OxyPlot
             }
         }
 
-        public virtual void AddToSeries((string key, ErrorPoint)[] points, string title, int? index)
+        public virtual void AddData((string key, ErrorPoint)[] points, string title, int? index)
         {
             PlotModel.Series.Add(OxyFactory.BuildError(
                 points.Select(a => a.Item2).Select(a => new ErrorColumnItem(a.Value, a.Deviation) { Color = a.Value > 0 ? Positive : Negative }).ToArray(), title));

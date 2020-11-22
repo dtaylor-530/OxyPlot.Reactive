@@ -38,14 +38,17 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
         static IObservable<KellyPoint<string>> GetData()
         {
-            var array = Csv.Read()
-                .Select(a => new KellyPoint<string>(a.DateTime_, default, null, a.Odd, LayUnitProfit(a), ""))
-                .OrderBy(a => a.Var)
-                .ToArray();
+            var csv = new Csv().Read()
+                .Take(1000)
+                .Select(a => new KellyPoint<string>(a.DateTime_, default, default, a.Odd, LayUnitProfit(a), ""))
+                .OrderBy(a => a.Var);
+            
 
-            IObservable<KellyPoint<string>> cc = array.Take(2000).ToObservable().Merge(
-                array
-                .Skip(2000)
+            IObservable<KellyPoint<string>> cc = csv
+                .Take(500)
+                .ToObservable().Merge(
+                csv
+                .Skip(500)
                 .ToObservable()
                 .Pace(TimeSpan.FromSeconds(0.1)))
                  .Publish().RefCount();
@@ -62,5 +65,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
             disposable.Dispose();
         }
     }
+
+
 
 }

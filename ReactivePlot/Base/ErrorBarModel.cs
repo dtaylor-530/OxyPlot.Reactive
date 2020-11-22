@@ -39,7 +39,7 @@ namespace ReactivePlot.Base
                 lock (plotModel)
                 {
                     plotModel.ClearSeries();
-                    plotModel.AddToSeries(points, "A Title");
+                    plotModel.AddData(points, "A Title");
                     plotModel.Invalidate(true);
                 }
             });

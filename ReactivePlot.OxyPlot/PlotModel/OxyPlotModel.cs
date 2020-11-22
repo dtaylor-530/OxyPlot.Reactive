@@ -17,7 +17,7 @@ namespace ReactivePlot.OxyPlot.PlotModel
         {
         }
 
-        public virtual void AddToSeries(TType3[] items, string title, int? index = null)
+        public virtual void AddData(TType3[] items, string title, int? index = null)
         {
             var dataPoints = items.Select(Convert);
             lock (PlotModel)

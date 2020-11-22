@@ -125,7 +125,7 @@ namespace ReactivePlot.Base
                     return CreateSingle(keyValue.Value).ToArray();
                 }).ContinueWith(async points =>
                 {
-                    plotModel.AddToSeries(await points, keyValue.Value.Key?.ToString() ?? string.Empty, keyValue.Key);
+                    plotModel.AddData(await points, keyValue.Value.Key?.ToString() ?? string.Empty, keyValue.Key);
                 });
             }
 
@@ -139,7 +139,7 @@ namespace ReactivePlot.Base
                     var taskPoints = await points;
 
                     if (showAll)
-                        plotModel.AddToSeries(taskPoints, AllSeriesTitle, dataPoints.Length);
+                        plotModel.AddData(taskPoints, AllSeriesTitle, dataPoints.Length);
 
                     if (pointsSubject.HasObservers)
                     {

@@ -44,7 +44,7 @@ namespace OxyPlot.Reactive.DemoApp.Common
 
             static T NewMethod2(object selectedItem)
             {
-                return TypeConvert.TryConvert<object, T>(selectedItem, out T t2) ? t2 : default;
+                return TypeConvert.TryConvert(selectedItem, out T t2) ? t2 : default;
             }
         }
 

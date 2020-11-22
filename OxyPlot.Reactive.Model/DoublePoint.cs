@@ -15,10 +15,5 @@
 
         public TKey Key { get; set; }
 
-        public void Deconstruct(out double var, out double value)
-        {
-            var = Var;
-            value = Value;
-        }
     }
 }

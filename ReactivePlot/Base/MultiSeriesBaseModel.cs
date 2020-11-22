@@ -17,11 +17,11 @@ namespace ReactivePlot.Base
 
     public abstract class MultiSeries2BaseModel<TGroupKey, TKey, TR, TRS, TRS2> : MultiSeriesBaseModel<TGroupKey, TKey, TRS>
     {
-        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 1000, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
         }
 
-        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 1000, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
         {
         }
     }
@@ -30,12 +30,12 @@ namespace ReactivePlot.Base
     {
         protected readonly IPlotModel<TRS> plotModel;
 
-        public MultiSeries2BaseModel(IPlotModel<TRS> plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        public MultiSeries2BaseModel(IPlotModel<TRS> plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 1000, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
         {
             this.plotModel = plotModel;
         }
 
-        public MultiSeries2BaseModel(IPlotModel<TRS> plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        public MultiSeries2BaseModel(IPlotModel<TRS> plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 1000, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
         {
             this.plotModel = plotModel;
         }
@@ -63,17 +63,17 @@ namespace ReactivePlot.Base
         protected readonly object lck = new object();
         protected bool showAll;
 
-        public MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 3000, IScheduler? scheduler = default) : this(plotModel, comparer, refreshRate)
+        public MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default) : this(plotModel, comparer, refreshRate)
         {
             this.scheduler = scheduler ?? Scheduler.CurrentThread;
         }
 
-        public MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 3000, SynchronizationContext? context = default) : this(plotModel, comparer, refreshRate)
+        public MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = default) : this(plotModel, comparer, refreshRate)
         {
             this.context = context ?? SynchronizationContext.Current;
         }
 
-        private MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 3000) : base(comparer)
+        private MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100) : base(comparer)
         {
             this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
          
