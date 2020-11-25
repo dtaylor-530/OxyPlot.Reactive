@@ -24,6 +24,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             var model = new OxyCartesianModel<string>(PlotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
            
             var model2 = new CartesianModel<string>(new DataGridPlotModel(DataGrid1), scheduler: RxApp.MainThreadScheduler);
+
+            var model3 = new CartesianModel(new SummaryPlotModel(SummaryListBox1), scheduler: RxApp.MainThreadScheduler);
  
 
             var obs = DataSource.Observe1000().Pace(TimeSpan.FromSeconds(0.1))
@@ -35,6 +37,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             obs.SubscribeCustom(model);
 
             obs.SubscribeCustom(model2);
+
+            obs.SubscribeCustom(model3);
         }
     }
 }

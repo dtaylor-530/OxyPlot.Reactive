@@ -22,11 +22,24 @@ namespace ReactivePlot.Common
                 model.OnNext(a));
         }
 
+        public static IDisposable Subscribe<TIn>(this IObservable<TIn> observable,
+            CartesianModel model,
+            Func<TIn, string> funcKey,
+            Func<TIn, double> funcVar,
+            Func<TIn, double> funcValue)
+        {
+            return observable
+                .Select(a => KeyValuePair.Create(funcKey(a), (IDoublePoint)new DoublePoint(funcVar(a), funcValue(a), funcKey(a))))
+                .Subscribe(a =>
+                model.OnNext(a));
+        }
+
+
         public static IDisposable Subscribe<TKey, R, TIn>(this IObservable<TIn> observable,
-      TimeModel<TKey, ITimePoint<TKey>, R> model,
-      Func<TIn, TKey> funcKey,
-      Func<TIn, DateTime> funcVar,
-      Func<TIn, double> funcValue) where R : ITimePoint<TKey>
+            TimeModel<TKey, ITimePoint<TKey>, R> model,
+            Func<TIn, TKey> funcKey,
+            Func<TIn, DateTime> funcVar,
+            Func<TIn, double> funcValue) where R : ITimePoint<TKey>
         {
             return observable
                 .Select(a => KeyValuePair.Create(funcKey(a), (ITimePoint<TKey>)new TimePoint<TKey>(funcVar(a), funcValue(a), funcKey(a))))
@@ -35,16 +48,22 @@ namespace ReactivePlot.Common
         }
 
         public static IDisposable SubscribeCustom<TKey, R>(
-            this IObservable<KeyValuePair<TKey, KeyValuePair<double, double>>> observable, 
-            CartesianModel<TKey, IDoublePoint<TKey>, R> model) 
+            this IObservable<KeyValuePair<TKey, KeyValuePair<double, double>>> observable,
+            CartesianModel<TKey, IDoublePoint<TKey>, R> model)
             where R : IDoublePoint<TKey>
         {
             return observable.Subscribe(model, a => a.Key, a => a.Value.Key, a => a.Value.Value);
         }
 
+
+        public static IDisposable SubscribeCustom(this IObservable<KeyValuePair<string, KeyValuePair<double, double>>> observable, CartesianModel model)
+        {
+            return observable.Subscribe(model, a => a.Key, a => a.Value.Key, a => a.Value.Value);
+        }
+
         public static IDisposable SubscribeCustom<TKey, R>(
-            this IObservable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> observable, 
-            TimeModel<TKey, ITimePoint<TKey>, R> model) 
+            this IObservable<KeyValuePair<TKey, KeyValuePair<DateTime, double>>> observable,
+            TimeModel<TKey, ITimePoint<TKey>, R> model)
             where R : ITimePoint<TKey>
         {
             return observable.Subscribe(model, a => a.Key, a => a.Value.Key, a => a.Value.Value);

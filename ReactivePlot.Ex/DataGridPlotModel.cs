@@ -1,12 +1,10 @@
 ﻿using Kaos.Collections;
 using ReactivePlot.Model;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Windows.Controls;
 using System.Windows.Data;
 
@@ -21,7 +19,7 @@ namespace ReactivePlot.Ex
     public class DataGridPlotModel : IDataGridPlotModel<IDoublePoint<string>>, IAddData<IDoublePoint<string>>
     {
 
-        DataTable dsfs = new DataTable();
+        DataTable dataTable = new DataTable();
 
         public DataGridPlotModel(DataGrid plotModel)
         {
@@ -34,7 +32,7 @@ namespace ReactivePlot.Ex
 
         public virtual void AddData(IDoublePoint<string>[] items, string title, int? index = null)
         {
-            dsfs.Add(items, title);
+            dataTable.Add(items, title);
         }
 
 
@@ -84,7 +82,7 @@ namespace ReactivePlot.Ex
 
             void AddColumns()
             {
-                while (dsfs.Titlesqueue.TryDequeue(out var title))
+                while (dataTable.Titlesqueue.TryDequeue(out var title))
                     if (!(PlotModel.Columns.SingleOrDefault(a => a.Header.ToString() == title) is { } column))
                     {
                         column = new DataGridTextColumn
@@ -104,7 +102,7 @@ namespace ReactivePlot.Ex
 
             void AddItems()
             {
-                while (dsfs.ItemsQueue.TryDequeue(out var dsf))
+                while (dataTable.ItemsQueue.TryDequeue(out var dsf))
                 {
                     var (rowIndex, row) = dsf;
                     if (rowIndex.HasValue && rowIndex < PlotModel.Items.Count)

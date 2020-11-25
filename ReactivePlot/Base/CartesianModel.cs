@@ -8,6 +8,20 @@ using System.Reactive.Linq;
 
 namespace ReactivePlot.Base
 {
+
+    public class CartesianModel : CartesianModel<string, IDoublePoint>
+    {
+        public CartesianModel(IPlotModel<IDoublePoint> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        {
+        }
+
+        protected override IDoublePoint CreatePoint(IDoublePoint xy0, IDoublePoint xy)
+        {
+            return new DoublePoint(xy.Var, xy.Value, xy.Key);
+        }
+
+    }
+
     public class CartesianModel<TKey> : CartesianModel<TKey, IDoublePoint<TKey>>
     {
         public CartesianModel(IPlotModel<IDoublePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)

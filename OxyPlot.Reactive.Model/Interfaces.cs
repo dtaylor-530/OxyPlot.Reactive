@@ -55,6 +55,11 @@ namespace ReactivePlot.Model
     {
     }
 
+    public interface IDoublePoint : IDoublePoint<string>
+    {
+    }
+
+
     public interface I2Point<TKey, TVar> : IDoublePoint<TKey, TVar>, IKey<TKey> where TVar : IComparable<TVar>
     {
     }
