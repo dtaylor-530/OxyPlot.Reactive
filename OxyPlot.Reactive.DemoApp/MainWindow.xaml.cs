@@ -9,7 +9,7 @@ namespace OxyPlotEx.DemoAppCore
     {
         public MainWindow()
         {
-            InitializeComponent();
+           // InitializeComponent();rol
         }
     }
 }

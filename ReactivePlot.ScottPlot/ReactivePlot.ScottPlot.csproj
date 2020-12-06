@@ -1,20 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
-
+  
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
-
   <ItemGroup>
-    <None Remove="DataGridPlotModel.cs~RF3f56f7.TMP" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <PackageReference Include="System.Collections.Concurrent" Version="4.3.0" />
+    <PackageReference Include="ScottPlot" Version="4.0.45" />
+    <PackageReference Include="ScottPlot.WPF" Version="4.0.45" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

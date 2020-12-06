@@ -14,11 +14,11 @@ using static System.Collections.Generic.KeyValuePair;
 
 namespace ReactivePlot.Multi
 {
-    public interface IPlotGroupModel<TGroupKey, TKey> : IPlotModel<ITimeGroupPoint<TGroupKey, TKey>> { }
+    public interface IPlotGroupModel<TGroupKey, TKey> : IMultiPlotModel<ITimeGroupPoint<TGroupKey, TKey>> { }
 
     public abstract class MultiTimePlotModel<TGroupKey, TKey, TModelType, TPlotModelIn, TPlotModelOut> : 
         MultiTimePlotModel<TGroupKey, TKey, TModelType, ITimeGroupPoint<TGroupKey, TKey>, ITimePoint<TKey>, TPlotModelIn, TPlotModelOut> 
-        where TModelType : TimeModel<TGroupKey, TKey, ITimePoint<TKey>, ITimePoint<TKey>>
+        where TModelType : TimeMinMaxModel<TGroupKey, TKey, ITimePoint<TKey>, ITimePoint<TKey>>
         where TPlotModelOut : IPlotModel
           where TPlotModelIn : TPlotModelOut
     {
@@ -29,7 +29,7 @@ namespace ReactivePlot.Multi
 
     public abstract class MultiTimePlotModel<TGroupKey, TKey, TModelType, TGroupPoint, TPointIn, TPlotModelIn, TPlotModelOut> :
         MultiTimePlotBaseModel<TGroupKey, TKey, TModelType, TGroupPoint, TPointIn, TPointIn, TPlotModelIn, TPlotModelOut> 
-        where TModelType : TimeModel<TGroupKey, TKey, TPointIn, TPointIn>
+        where TModelType : TimeMinMaxModel<TGroupKey, TKey, TPointIn, TPointIn>
         where TGroupPoint : ITimeGroupPoint<TGroupKey, TKey>, TPointIn
         where TPointIn : ITimePoint<TKey>
         where TPlotModelOut : IPlotModel
@@ -45,7 +45,7 @@ namespace ReactivePlot.Multi
         IObserver<KeyValuePair<TGroupKey, TGroupPoint>>,
         IObservable<KeyValuePair<TGroupKey, TPlotModelOut>>,
         IMixedScheduler
-        where TModelType : TimeModel<TGroupKey, TKey, TPointIn, TPointOut>
+        where TModelType : TimeMinMaxModel<TGroupKey, TKey, TPointIn, TPointOut>
         where TGroupPoint : ITimeGroupPoint<TGroupKey, TKey>, TPointIn
         where TPointIn : ITimePoint<TKey>
         where TPointOut : TPointIn
@@ -117,10 +117,10 @@ namespace ReactivePlot.Multi
         IObserver<KeyValuePair<TGroupKey, TGroupPoint>>,
         IObservable<KeyValuePair<TGroupKey, TPlotModelOut>>, 
         IMixedScheduler
-        where TModelType : TimeModel<TGroupKey, TKey, TGroupPoint, TGroupPoint>
+        where TModelType : TimeMinMaxModel<TGroupKey, TKey, TGroupPoint, TGroupPoint>
         where TGroupPoint : ITimeGroupPoint<TGroupKey, TKey>
         where TPlotModelOut : IPlotModel
-        where TPlotModelIn : IPlotModel<ITimeStatsGroupPoint<string, double>>, TPlotModelOut
+        where TPlotModelIn : IMultiPlotModel<ITimeStatsGroupPoint<string, double>>, TPlotModelOut
     {
         protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
         protected readonly Dictionary<TGroupKey, TModelType> Models = new Dictionary<TGroupKey, TModelType>();
@@ -169,7 +169,7 @@ namespace ReactivePlot.Multi
             }
         }
 
-        protected abstract TModelType CreateModel(IPlotModel<ITimeStatsGroupPoint<string, double>> plotModel);
+        protected abstract TModelType CreateModel(IMultiPlotModel<ITimeStatsGroupPoint<string, double>> plotModel);
 
         protected abstract TPlotModelIn CreatePlotModel();
 

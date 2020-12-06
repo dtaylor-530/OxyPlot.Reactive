@@ -28,9 +28,9 @@ namespace ReactivePlot.Multi
         IObserver<RollingOperation>,
         IObserver<double>
         where TPlotModelOut : IPlotModel
-        where TPlotModelIn : IPlotModel<ITimeStatsGroupPoint<string, double>>, TPlotModelOut
+        where TPlotModelIn : IMultiPlotModel<ITimeStatsGroupPoint<string, double>>, TPlotModelOut
         where TModel : TimeLogGroupStats2KeyModel
-        where TPlotModelError: IPlotModel<(string, ErrorPoint)>, TPlotModelOut
+        where TPlotModelError: IMultiPlotModel<(string, ErrorPoint)>, TPlotModelOut
     {
         private ErrorBarModel errorBarModel;
         protected ReplaySubject<RollingOperation> rollingOperationSubject = new ReplaySubject<RollingOperation>(1);

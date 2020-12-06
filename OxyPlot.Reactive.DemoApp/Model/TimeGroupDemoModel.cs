@@ -31,18 +31,17 @@ namespace OxyPlot.Reactive.DemoApp.Model
         {
         }
 
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<ITimePoint<TKey>> collection)
         {
             var ordered = collection
-                .OrderBy(a => a.Value.Key);
+                .OrderBy(a => a.Key);
 
             if (timeSpan.HasValue)
             {
-                var arr = ordered.GroupOn(timeSpan.Value, a => a.Value.Var).ToArray();
+                var arr = ordered.GroupOn(timeSpan.Value, a => a.Var).ToArray();
                 return arr.Select(ac =>
                 {
                     var ss = ac
-                    .Select(a => a.Value)
                     .Scan(default(ITimePoint<TKey>), (a, b) => CreatePoint(a, b))
                     .Cast<ITimePoint<TKey>>()
                     .Skip(1)
@@ -52,7 +51,6 @@ namespace OxyPlot.Reactive.DemoApp.Model
             }
 
             return ordered
-                 .Select(a => a.Value)
                 .Scan(default(TimeRangePoint<TKey>), (a, b) => new TimeRangePoint<TKey>(new Range<DateTime>(b.Var, b.Var), new ITimePoint<TKey>[] { CreatePoint(a, b) }, b.Key))
                 .Cast<ITimeRangePoint<TKey>>()
                 .Skip(1)
@@ -74,6 +72,16 @@ namespace OxyPlot.Reactive.DemoApp.Model
         protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {
             return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
+
+        protected override ITimeRangePoint<TKey> CreateNewPoint(ITimeRangePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override TKey GetKey(ITimePoint<TKey> item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

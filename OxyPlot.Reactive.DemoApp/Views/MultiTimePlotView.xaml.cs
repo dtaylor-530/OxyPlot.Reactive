@@ -51,8 +51,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             mplots
                 .Select((a, i) => (a, i))
                 .ToObservableChangeSet(a => a.i)
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Transform(abc => new ModelKeyIndex { key = abc.a.Key, model = abc.a.Value.PlotModel, index = abc.i })
                 .Sort(DynamicData.Binding.SortExpressionComparer<dynamic>.Descending(t => t.index))
                 .Bind(out var plots)
@@ -83,8 +83,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             mplots
                 .Select((a, i) => (a, i))
                 .ToObservableChangeSet(a => a.i)
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+           .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Transform(abc => new ModelKeyIndex { key = abc.a.Key, model = abc.a.Value.PlotModel, index = abc.i })
                 .Sort(DynamicData.Binding.SortExpressionComparer<dynamic>.Descending(t => t.index))
                 .Bind(out var plots)
@@ -109,8 +109,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             _ = mplots
                 .Select(a => new ModelKeyIndex { key = a.Key, model = a.Value.PlotModel })
                 .ToObservableChangeSet()
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+                 .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Bind(out var plots)
                 .Subscribe();
 
@@ -140,8 +140,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             _ = mplots
                 .Select(a => new ModelKeyIndex { key = a.Key, model = a.Value.PlotModel })
                 .ToObservableChangeSet()
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+               .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Bind(out var plots)
                 .Subscribe();
 
@@ -176,18 +176,18 @@ namespace OxyPlot.Reactive.DemoApp.Views
             _ = mplots
                 .Select(a => new ModelKeyIndex { key = a.Key, model = a.Value.PlotModel })
                 .ToObservableChangeSet()
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+               .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Bind(out var plots)
                 .Subscribe();
 
             return plots;
         }
 
-        public class MultiTimePlotAccumulatedDemoModel : 
+        public class MultiTimePlotAccumulatedDemoModel :
             MultiTimePlotAccumulatedModel<
-                string, 
-                string, 
+                string,
+                string,
                 OxyTimePlotModel<string, ITimeGroupPoint<string, string>>,
                 IOxyPlotModel,
                 ErrorBarPlotModel>

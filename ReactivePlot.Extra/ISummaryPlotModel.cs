@@ -10,7 +10,7 @@ namespace ReactivePlot.Ex
         public SummaryListBox PlotModel { get; }
     }
 
-    public interface ISummaryPlotModel<T> : IPlotModel<T>
+    public interface ISummaryPlotModel<T> : IMultiPlotModel<T>
     {
         public SummaryListBox PlotModel { get; }
     }

@@ -8,7 +8,7 @@ using ReactivePlot.Model;
 namespace ReactivePlot.OxyPlot.Common
 {
 
-    public interface IOxyPlotModel<T> : IPlotModel<T>, IOxyPlotModel
+    public interface IOxyPlotModel<T> : IMultiPlotModel<T>, IOxyPlotModel
     {
 
     }

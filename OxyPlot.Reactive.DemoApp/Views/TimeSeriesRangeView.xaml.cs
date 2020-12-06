@@ -50,8 +50,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
             obs.SubscribeCustom(model3);
 
             obs.Scan(new HashSet<DateTime>(), (a, b) => { a.Add(b.Value.Key); return a; })
-                             .ObserveOnDispatcher()
-               .SubscribeOnDispatcher()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                .Subscribe(c =>
                 {
                     if (Value == c.Count - 1)
@@ -60,8 +60,8 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 });
 
             obs.ToMinMax(a => FromDateTime(a.Value.Key))
-               .ObserveOnDispatcher()
-               .SubscribeOnDispatcher()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                .Subscribe(a =>
                {
                    if (TimeValue == Max - Min || TimeValue == 0)

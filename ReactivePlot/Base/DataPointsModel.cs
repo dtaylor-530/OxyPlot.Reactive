@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace ReactivePlot.Base
 {
-    public class DataPointsModel<TKey, TValue>
+    public class DataPointsModel<TKey, TValue>: IObserver<ISet<TKey>>
     {
         protected readonly Dictionary<TKey, ICollection<TValue>> DataPoints;
         protected readonly IEqualityComparer<TKey>? equalityComparer;
@@ -33,9 +33,7 @@ namespace ReactivePlot.Base
 
         protected virtual ICollection<TValue> CreateCollection() => new List<TValue>();
 
-
-
-        protected virtual void RemoveFromDataPoints(IEnumerable<TKey> keys)
+        protected virtual void Remove(ISet<TKey> keys)
         {
             lock (DataPoints)
             {
@@ -45,11 +43,40 @@ namespace ReactivePlot.Base
             }
         }
 
+        protected virtual void Reset()
+        {
+            lock (DataPoints)
+                DataPoints.Clear();
+        }
+
+
         protected virtual Dictionary<TKey, ICollection<TValue>> GetDataPoints()
         {
             return equalityComparer == default ?
                    new Dictionary<TKey, ICollection<TValue>>() :
                 new Dictionary<TKey, ICollection<TValue>>(equalityComparer);
+        }
+
+        public virtual void OnCompleted()
+        {
+            //throw new NotImplementedException();
+        }
+
+        public virtual void OnError(Exception error)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnNext(ISet<TKey> value)
+        {
+            if(value.Any())
+            {
+                this.Remove(value);
+            }
+            else
+            {
+                this.Reset();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ReactivePlot.Model;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 
@@ -12,7 +13,7 @@ namespace ReactivePlot.Ex
     //    public const string X = "x";
     //}
 
-    public class SummaryPlotModel : ISummaryPlotModel<IDoublePoint>, IAddData<IDoublePoint>
+    public class SummaryPlotModel : ISummaryPlotModel<IDoublePoint>, IAddSeries<IDoublePoint>
     {
         ConcurrentQueue<Action> actions = new ConcurrentQueue<Action>();
 
@@ -25,7 +26,7 @@ namespace ReactivePlot.Ex
         public SummaryListBox PlotModel { get; }
 
 
-        public virtual void AddData(IDoublePoint[] items, string title, int? index = null)
+        public virtual void AddSeries(IReadOnlyCollection<IDoublePoint> items, string title, int? index = null)
         {
 
             lock (PlotModel)
@@ -75,7 +76,7 @@ namespace ReactivePlot.Ex
             }
         }
 
-        public virtual void ClearSeries()
+        public virtual void Clear()
         {
             lock (PlotModel)
             {

@@ -19,18 +19,18 @@ namespace ReactivePlot.Time
         private ITimeRange? dateTimeRange;
         private TimeSpan? timeSpan;
 
-        public TimeRangeModel(IPlotModel<ITimePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeRangeModel(IMultiPlotModel<ITimePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        protected override IEnumerable<ITimePoint<TKey>> Create(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> value)
+        protected override IEnumerable<ITimePoint<TKey>> Create(IEnumerable<ITimePoint<TKey>> value)
         {
             return rangeType switch
             {
                 RangeType.None => ToDataPoints(value),
                 RangeType.Count when takeLastCount.HasValue => Enumerable.TakeLast(ToDataPoints(value), takeLastCount.Value),
-                RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(value.ToArray().Filter(timeSpan.Value, a => a.Value.Var)),
-                RangeType.DateTimeRange when dateTimeRange != null => ToDataPoints(value.Filter(dateTimeRange, a => a.Value.Var)),
+                RangeType.TimeSpan when timeSpan.HasValue => ToDataPoints(value.ToArray().Filter(timeSpan.Value, a => a.Var)),
+                RangeType.DateTimeRange when dateTimeRange != null => ToDataPoints(value.Filter(dateTimeRange, a => a.Var)),
                 _ => throw new ArgumentOutOfRangeException("fdssffd")
             };
         }

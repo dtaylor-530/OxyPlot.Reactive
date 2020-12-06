@@ -5,6 +5,7 @@ using OxyPlot.Series;
 using ReactivePlot.Model;
 using ReactivePlot.OxyPlot.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using oxy = OxyPlot;
 namespace ReactivePlot.OxyPlot.PlotModel
@@ -23,7 +24,7 @@ namespace ReactivePlot.OxyPlot.PlotModel
         {
         }
 
-        protected override T OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, T[] items)
+        protected override T OxyMouseDownAction(OxyMouseDownEventArgs e, XYAxisSeries series, IReadOnlyCollection<T> items)
         {
             var time = DateTimeAxis.ToDateTime(series.InverseTransform(e.Position).X);
             var point = items.MinBy(a => Math.Abs((a.Var - time).Ticks)).First();

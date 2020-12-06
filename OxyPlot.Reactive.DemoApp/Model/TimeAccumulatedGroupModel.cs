@@ -17,11 +17,11 @@ namespace ReactivePlot.DemoApp.Model
         }
 
 
-        public TimeAccumulatedGroupModel(IPlotModel<ITimeRangePoint<TKey>> model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
+        public TimeAccumulatedGroupModel(IMultiPlotModel<ITimeRangePoint<TKey>> model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
         }
 
-        public TimeAccumulatedGroupModel(IPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeAccumulatedGroupModel(IMultiPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 

@@ -10,7 +10,15 @@ using oxy = OxyPlot;
 
 namespace ReactivePlot.OxyPlot.PlotModel
 {
-    public abstract class OxyBasePlotModel : IOxyPlotModel, IAddData<IDataPointProvider>
+
+    public abstract class OxyBasePlotModel : OxyBasePlotModel<DataPointProvider> 
+    {
+        public OxyBasePlotModel(oxy.PlotModel plotModel) :base(plotModel)
+        {
+        }
+    }
+     
+    public abstract class OxyBasePlotModel<T> : IOxyPlotModel, IAddSeries<T> 
     {
         protected readonly Dictionary<string, IDisposable> disposableDictionary = new Dictionary<string, IDisposable>();
 
@@ -40,7 +48,7 @@ namespace ReactivePlot.OxyPlot.PlotModel
         }
 
 
-        public virtual void AddData(IDataPointProvider[] items, string title, int? index = null)
+        public virtual void AddSeries(IReadOnlyCollection<T> items, string title, int? index = null)
         {
             lock (PlotModel)
             {
@@ -89,7 +97,7 @@ namespace ReactivePlot.OxyPlot.PlotModel
             }
         }
 
-        public virtual void ClearSeries()
+        public virtual void Clear()
         {
             lock (PlotModel)
             {
@@ -100,7 +108,6 @@ namespace ReactivePlot.OxyPlot.PlotModel
                 //}
 
                 PlotModel.Series.Clear();
-
             }
         }
 

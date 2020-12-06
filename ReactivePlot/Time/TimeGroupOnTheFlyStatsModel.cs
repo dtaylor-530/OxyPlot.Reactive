@@ -52,7 +52,7 @@ namespace ReactivePlot.Time
     public class TimeGroupOnTheFlyStatsModel<TKey> : TimeGroupOnTheFlyStatsModel<TKey, TKey>
     {
 
-        public TimeGroupOnTheFlyStatsModel(IPlotModel<ITimeStatsRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupOnTheFlyStatsModel(IMultiPlotModel<ITimeStatsRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }
@@ -68,7 +68,7 @@ namespace ReactivePlot.Time
         private RollingOperation? rollingOperation;
 
 
-        public TimeGroupOnTheFlyStatsModel(IPlotModel<ITimeStatsRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupOnTheFlyStatsModel(IMultiPlotModel<ITimeStatsRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }
@@ -80,27 +80,36 @@ namespace ReactivePlot.Time
             refreshSubject.OnNext(Unit.Default);
         }
 
-
-        protected override ITimeStatsRangePoint<TKey> CreatePoint(ITimeStatsRangePoint<TKey>? timePoint0, IGrouping<Range<DateTime>, KeyValuePair<TGroupKey, ITimeStatsPoint<TKey>>> timePoints)
+        protected override ITimeStatsRangePoint<TKey> CreateNewPoint(ITimeStatsRangePoint<TKey> xy0, ITimeStatsPoint<TKey> xy)
         {
+            throw new NotImplementedException();
+        }
 
-            var points = ToDataPoints(timePoints.Select(a => a.Value), timePoint0?.Collection.Last()).ToArray();
-            return new TimeStatsRangePoint<TKey>(timePoints.Key, points, timePoint0?.Model ?? new OnTheFlyStats.Stats(), timePoints.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+        protected override ITimeStatsRangePoint<TKey> CreatePoint(ITimeStatsRangePoint<TKey>? timePoint0, IGrouping<Range<DateTime>,  ITimeStatsPoint<TKey>> timePoints)
+        {
+            var points = ToDataPoints(timePoints, timePoint0?.Collection.Last()).ToArray();
+            return new TimeStatsRangePoint<TKey>(timePoints.Key, points, timePoint0?.Model ?? new Stats(), timePoints.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+        }
 
-            IEnumerable<ITimeStatsPoint<TKey>> ToDataPoints(IEnumerable<ITimeStatsPoint<TKey>> timePoints, ITimeStatsPoint<TKey>? timePoint0)
-            {
-                var ss = timePoints
-                        .Scan(timePoint0, (a, b) => CreatePoint(a, b))
-                        .Skip(1);
 
-                return ss;
+        protected virtual IEnumerable<ITimeStatsPoint<TKey>> ToDataPoints(IEnumerable<ITimeStatsPoint<TKey>> timePoints, ITimeStatsPoint<TKey>? timePoint0)
+        {
+            var ss = timePoints
+                    .Scan(timePoint0, (a, b) => CreatePoint(a, b))
+                    .Skip(1);
 
-            }
+            return ss;
+
         }
 
         protected override ITimeStatsPoint<TKey> CreatePoint(ITimeStatsPoint<TKey> xy0, ITimeStatsPoint<TKey> xy)
         {
             return OnTheFlyStatsHelper.Combine(xy0, xy, rollingOperation);
+        }
+
+        protected override TGroupKey GetKey(ITimeStatsPoint<TKey> item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

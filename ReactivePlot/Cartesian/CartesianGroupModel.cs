@@ -25,7 +25,7 @@ namespace ReactivePlot.Cartesian
         private Operation? operation;
         protected Range<double>[]? ranges;
 
-        public CartesianGroupModel(IPlotModel<IDoubleRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public CartesianGroupModel(IMultiPlotModel<IDoubleRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -53,10 +53,10 @@ namespace ReactivePlot.Cartesian
             }
         }
 
-        protected override IEnumerable<IDoubleRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, IDoublePoint<TKey>>> collection)
+        protected override IEnumerable<IDoubleRangePoint<TKey>> ToDataPoints(IEnumerable<IDoublePoint<TKey>> collection)
         {
             var ees = collection
-                .OrderBy(a => a.Value.Key);
+                .OrderBy(a => a.Key);
 
             var se = (ranges != null) ? Ranges() : NoRanges();
 
@@ -65,12 +65,11 @@ namespace ReactivePlot.Cartesian
             IEnumerable<IDoubleRangePoint<TKey>> Ranges()
             {
                 var se = ees
-                    .GroupOn(ranges, a => a.Value.Var)
+                    .GroupOn(ranges, a => a.Var)
                     .Where(a => a.Any())
                     .Scan(default(DoubleRangePoint<TKey>), (ac, bc) =>
                     {
                         var ss = bc
-                        .Select(a => a.Value)
                         .Scan(ac?.Collection.Last(), (a, b) => CreatePoint(a, b))
                         .Cast<IDoublePoint<TKey>>()
                         .Skip(1)
@@ -87,8 +86,6 @@ namespace ReactivePlot.Cartesian
             IEnumerable<IDoubleRangePoint<TKey>> NoRanges()
             {
                 return ees
-            .Select(a => a.Value)
-            .Select(a => { return a; })
             .Scan(seed: default(IDoublePoint<TKey>), (a, b) => CreatePoint(a, b))
             .Skip(1)
             .Select(a => new DoubleRangePoint<TKey>(new Range<double>(a.Var, a.Var), new IDoublePoint<TKey>[] { a }, a.Key));
@@ -114,9 +111,20 @@ namespace ReactivePlot.Cartesian
             return disposable;
         }
 
+
+        protected override IDoubleRangePoint<TKey> CreateNewPoint(IDoubleRangePoint<TKey> xy0, IDoublePoint<TKey> xy)
+        {
+            throw new NotImplementedException();
+        }
+
         protected override IDoublePoint<TKey> CreatePoint(IDoublePoint<TKey> xy0, IDoublePoint<TKey> xy)
         {
             return new DoublePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
+
+        protected override TKey GetKey(IDoublePoint<TKey> item)
+        {
+            return item.Key;
         }
     }
 }

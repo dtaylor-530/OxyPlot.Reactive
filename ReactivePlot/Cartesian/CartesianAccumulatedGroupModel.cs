@@ -8,11 +8,11 @@ namespace ReactivePlot.Cartesian
 {
     public class CartesianAccumulatedGroupModel<TKey> : CartesianGroupModel<TKey>
     {
-        public CartesianAccumulatedGroupModel(IPlotModel<IDoubleRangePoint<TKey>> model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
+        public CartesianAccumulatedGroupModel(IMultiPlotModel<IDoubleRangePoint<TKey>> model, IScheduler? scheduler = null) : base(model, scheduler: scheduler)
         {
         }
 
-        public CartesianAccumulatedGroupModel(IPlotModel<IDoubleRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public CartesianAccumulatedGroupModel(IMultiPlotModel<IDoubleRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 

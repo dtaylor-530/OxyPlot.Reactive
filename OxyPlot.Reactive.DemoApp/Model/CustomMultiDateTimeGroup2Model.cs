@@ -18,10 +18,10 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
         {
         }
 
-        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TKey, ITimePoint<TKey>>> collection)
+        protected override IEnumerable<ITimeRangePoint<TKey>> ToDataPoints(IEnumerable< ITimePoint<TKey>> collection)
         {
             var ees = collection
-                    .OrderBy(a => a.Value.Key);
+                    .OrderBy(a => a.Key);
 
             var se = ranges != null ? Ranges() : NoRanges();
 
@@ -30,12 +30,11 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
             IEnumerable<ITimeRangePoint<TKey>> Ranges()
             {
                 return ees
-                    .GroupOn(ranges, a => a.Value.Var)
+                    .GroupOn(ranges, a => a.Var)
                     .Where(a => a.Any())
                     .Scan((default(TimeRangePoint<TKey>), default(ITimePoint<TKey>)), (ac, bc) =>
                     {
                         var ss = bc
-                                  .Select(a => a.Value)
                                   .Scan(ac.Item2, (a, b) => CreatePoint(a, b))
                                   .Cast<ITimePoint<TKey>>()
                                   .Skip(1)

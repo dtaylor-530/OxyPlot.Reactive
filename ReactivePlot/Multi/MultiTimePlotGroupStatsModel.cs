@@ -30,8 +30,8 @@ namespace ReactivePlot.Multi
         IObserver<TimeSpan>,
         IObserver<RollingOperation>
         where TPlotModelOut : IPlotModel
-        where TPlotModelIn : TPlotModelOut, IPlotModel<ITimeStatsRangePoint<TKey>>
-        where TPlotModelError: TPlotModelOut, IPlotModel<(string, ErrorPoint)>
+        where TPlotModelIn : TPlotModelOut, IMultiPlotModel<ITimeStatsRangePoint<TKey>>
+        where TPlotModelError: TPlotModelOut, IMultiPlotModel<(string, ErrorPoint)>
     {
         private readonly ReplaySubject<TimeSpan> timeSpan = new ReplaySubject<TimeSpan>(1);
         private readonly ReplaySubject<Operation> operation = new ReplaySubject<Operation>(1);

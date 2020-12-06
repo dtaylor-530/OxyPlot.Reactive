@@ -19,16 +19,10 @@ namespace ReactivePlot.Base
     public abstract class TimeGroupBaseModel<TGroupKey, TKey, TRangePoint> : TimeGroupBaseModel<TGroupKey, TKey, ITimePoint<TKey>, TRangePoint>
            where TRangePoint : class, ITimeRangePoint<TKey>
     {
-        public TimeGroupBaseModel(IPlotModel<TRangePoint> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupBaseModel(IMultiPlotModel<TRangePoint> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }
-
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
-        {
-            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
-        }
-
     }
 
     /// <summary>
@@ -36,7 +30,7 @@ namespace ReactivePlot.Base
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     public abstract class TimeGroupBaseModel<TGroupKey, TKey, TType, TRangePoint> :
-        TimeModel<TGroupKey, TKey, TType, TRangePoint>,
+        TimeMinMaxModel<TGroupKey, TKey, TType, TRangePoint>,
         IObserver<Operation>, IObserver<TimeSpan>,
         IObservable<Range<DateTime>[]>,
         IObservable<IChangeSet<TRangePoint>>
@@ -50,7 +44,7 @@ namespace ReactivePlot.Base
         protected readonly ISubject<TimeSpan> timeSpanChanges = new Subject<TimeSpan>();
         protected readonly IObservable<IChangeSet<TRangePoint>> changeSet;
 
-        public TimeGroupBaseModel(IPlotModel<TRangePoint> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupBaseModel(IMultiPlotModel<TRangePoint> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             changeSet = ObservableChangeSet.Create<TRangePoint>(sourceList =>
 
@@ -89,20 +83,20 @@ namespace ReactivePlot.Base
             }
         }
 
-        protected override IEnumerable<TRangePoint> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, TType>> collection)
+        protected override IEnumerable<TRangePoint> ToDataPoints(IEnumerable<TType> collection)
         {
-            IOrderedEnumerable<KeyValuePair<TGroupKey, TType>>? ees = collection
-                .OrderBy(a => a.Value.Key);
+            IOrderedEnumerable<TType>? ees = collection
+                .OrderBy(a => a.Key);
 
             var se = ranges != null ? Ranges(ees) : NoRanges(ees);
 
             return se.ToArray();
         }
 
-        protected virtual IEnumerable<TRangePoint> Ranges(IOrderedEnumerable<KeyValuePair<TGroupKey, TType>>? ees)
+        protected virtual IEnumerable<TRangePoint> Ranges(IOrderedEnumerable<TType>? ees)
         {
             return ees
-                .GroupOn(ranges, a => a.Value.Var)
+                .GroupOn(ranges, a => a.Var)
                 .Where(a => a.Any())
                 .Scan(default(TRangePoint), CreatePoint)
                 .Skip(1)
@@ -110,17 +104,17 @@ namespace ReactivePlot.Base
         }
 
 
-        protected virtual IEnumerable<TRangePoint> NoRanges(IOrderedEnumerable<KeyValuePair<TGroupKey, TType>>? ees)
+        protected virtual IEnumerable<TRangePoint> NoRanges(IOrderedEnumerable<TType>? ees)
         {
             return ees
-                .Select(a => (range: new Range<DateTime>(a.Value.Var, a.Value.Var), a))
+                .Select(a => (range: new Range<DateTime>(a.Var, a.Var), a))
                 .GroupBy(a => a.range, a => a.a)
                 .Scan(default(TRangePoint), CreatePoint)
                 .Skip(1)
                 .Cast<TRangePoint>();
         }
 
-        protected abstract TRangePoint CreatePoint(TRangePoint? timePoint0, IGrouping<Range<DateTime>, KeyValuePair<TGroupKey, TType>> timePoints);
+        protected abstract TRangePoint CreatePoint(TRangePoint? timePoint0, IGrouping<Range<DateTime>, TType> timePoints);
 
 
         public void OnNext(TimeSpan value)

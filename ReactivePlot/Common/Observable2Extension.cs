@@ -13,7 +13,7 @@ namespace ReactivePlot.Common
     {
         public static IDisposable Subscribe<TGroupKey, T, R, S>(
             this IObservable<T> observable,
-            TimeModel<TGroupKey, string, R, S> model, Func<T, R> funcR, Func<T, TGroupKey> fTGroupKey, Func<T, string>? keyFunc = null)
+            TimeMinMaxModel<TGroupKey, string, R, S> model, Func<T, R> funcR, Func<T, TGroupKey> fTGroupKey, Func<T, string>? keyFunc = null)
     where R : ITimePoint<string>
     where S : R
         {
@@ -29,7 +29,7 @@ namespace ReactivePlot.Common
 
         public static IDisposable Subscribe<TGroupKey, T, S>(
     this IObservable<T> observable,
-    TimeModel<TGroupKey, string, ITimePoint<string>, S> model, Func<T, DateTime> fts, Func<T, double> fr, Func<T, TGroupKey> fTGroupKey, Func<T, string>? keyFunc = null)
+    TimeMinMaxModel<TGroupKey, string, ITimePoint<string>, S> model, Func<T, DateTime> fts, Func<T, double> fr, Func<T, TGroupKey> fTGroupKey, Func<T, string>? keyFunc = null)
 where S : ITimePoint<string>
         {
             keyFunc ??= new Func<T, string>(a => CreateKey());

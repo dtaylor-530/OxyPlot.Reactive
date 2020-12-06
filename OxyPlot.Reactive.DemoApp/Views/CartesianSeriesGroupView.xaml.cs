@@ -41,8 +41,8 @@ namespace OxyPlotEx.DemoAppCore.Pages
                 .ToObservableChangeSet(a => Guid.NewGuid(), limitSizeTo: 10)
                 .Group(a => a.Item1)
                 .Transform(a => new GroupViewModel<object, Range<double>, Guid>(a.Key, a.Cache.Connect().Transform(a => (object)new { a.b.Key, date = a.b.Value.Key, a.b.Value.Value })))
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Bind(out var rangeCollection)
                 .Subscribe();
 

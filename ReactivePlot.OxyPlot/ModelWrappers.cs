@@ -64,10 +64,10 @@ namespace ReactivePlot.OxyPlot
 
     }
 
-    public class OxyTime2KellyModel<TKey> : Time2KellyModel<TKey>
+    public class OxyTimeKellyModel<TKey> : TimeKellyModel<TKey>
     {
-        public OxyTime2KellyModel(OxyPlotModel plotModel, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) :
-            base(new OxyTimePlotModel<TKey, IKellyPoint<TKey>>(plotModel), comparer, scheduler: scheduler)
+        public OxyTimeKellyModel(OxyPlotModel plotModel, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) :
+            base(new OxyTimePlotModel<TKey, IKellyModelPoint<TKey>>(plotModel), comparer, scheduler: scheduler)
         {
 
         }
@@ -173,7 +173,7 @@ namespace ReactivePlot.OxyPlot
         }
 
 
-        protected override TimeLogGroupStats2KeyModel CreateModel(IPlotModel<ITimeStatsGroupPoint<string, double>> plotModel)
+        protected override TimeLogGroupStats2KeyModel CreateModel(IMultiPlotModel<ITimeStatsGroupPoint<string, double>> plotModel)
         {
             var model = new TimeKeyValueGroupStatsModel(plotModel, comparer, Scheduler);
             rollingOperationSubject.Subscribe(model);
@@ -193,7 +193,7 @@ namespace ReactivePlot.OxyPlot
 
         internal class TimeKeyValueGroupStatsModel : TimeLogGroupStats2KeyModel
         {
-            public TimeKeyValueGroupStatsModel(IPlotModel<ITimeStatsGroupPoint<string, double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) :
+            public TimeKeyValueGroupStatsModel(IMultiPlotModel<ITimeStatsGroupPoint<string, double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) :
                 base(model, comparer, scheduler)
             {
 

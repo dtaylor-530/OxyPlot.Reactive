@@ -8,7 +8,7 @@ namespace ReactivePlot.Ex
         public DataGrid PlotModel { get;  }
     }   
     
-    public interface IDataGridPlotModel<T>: IPlotModel<T>
+    public interface IDataGridPlotModel<T>: IMultiPlotModel<T>
     {
         public DataGrid PlotModel { get;  }
     }

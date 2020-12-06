@@ -23,7 +23,7 @@ namespace ReactivePlot.Time
     public class TimeLogGroupKeyModel : TimeLogGroupValueModel<double>
     {
 
-        public TimeLogGroupKeyModel(IPlotModel<ITimePoint<double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupKeyModel(IMultiPlotModel<ITimePoint<double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -38,28 +38,33 @@ namespace ReactivePlot.Time
 
     public class TimeLogGroupValueModel<TKey> : TimeLogGroupValueModel<TKey, ITimePoint<TKey>>
     {
-        public TimeLogGroupValueModel(IPlotModel<ITimePoint<TKey>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupValueModel(IMultiPlotModel<ITimePoint<TKey>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
+
+        protected override ITimePoint<TKey> CreateNewPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+        }
+
+   //     protected override IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<string, ITimePoint<TKey>>> collection)
+   //     {
+   //         return collection
+   //.Select(a => a.Value)
+   //.Select(a => { return a; })
+   //.Scan(seed: default(ITimePoint<TKey>), (a, b) => CreateNewPoint(a, b))
+   //.Skip(1)
+   //.Cast<ITimePoint<TKey>>();
+   //     }
 
         protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {
             return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
         }
 
-        protected override IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<string, ITimePoint<TKey>>> collection)
+        protected override string GetKey(ITimePoint<TKey> item)
         {
-            return collection
-   .Select(a => a.Value)
-   .Select(a => { return a; })
-   .Scan(seed: default(ITimePoint<TKey>), (a, b) => CreatePoint(a, b))
-   .Skip(1)
-   .Cast<ITimePoint<TKey>>();
-        }
-
-        protected override ITimePoint<TKey> CreateAllPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
-        {
-            return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
+            throw new NotImplementedException();
         }
     }
 
@@ -72,13 +77,13 @@ namespace ReactivePlot.Time
     {
         protected Subject<double> powerSubject = new Subject<double>();
 
-        public TimeLogGroupValueModel(IPlotModel<TPoint> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupValueModel(IMultiPlotModel<TPoint> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             powerSubject
                 .Subscribe(a =>
                 {
                     Power = a;
-                    model.ClearSeries();
+                    model.Clear();
                     model.Invalidate(true);
                     refreshSubject.OnNext(Unit.Default);
                 });
@@ -86,6 +91,10 @@ namespace ReactivePlot.Time
             this.OnNext(new Comparer());
         }
 
+        protected override TPoint CreatePoint(TPoint xy0, TPoint xy)
+        {
+            return CreateNewPoint(xy0, xy);
+        }
 
 
         public double? Power { get; private set; }

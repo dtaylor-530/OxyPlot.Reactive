@@ -1,140 +1,165 @@
 ﻿#nullable enable
 
+using MoreLinq;
 using ReactivePlot.Common;
 using ReactivePlot.Model;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
-using e = System.Linq.Enumerable;
+using System.Threading.Tasks;
 
 namespace ReactivePlot.Base
 {
-
-    public abstract class MultiSeries2BaseModel<TGroupKey, TKey, TR, TRS, TRS2> : MultiSeriesBaseModel<TGroupKey, TKey, TRS>
+    public abstract class MultiSeriesBaseModel<TGroupKey, TKey, TVar, TType, TType3> :
+    SeriesBaseModel<TGroupKey, TKey, TVar, TType, TType3>,
+    IObservable<TType3[]>,
+    IObserver<int>,
+    IObserver<IComparer<TGroupKey>>,
+    IObservable<Exception>
+    where TVar : IComparable<TVar>
     {
-        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 1000, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
-        {
-        }
+        protected readonly Collection<KeyValuePair<TGroupKey, TType>> temporaryCollection = new Collection<KeyValuePair<TGroupKey, TType>>();
+        protected readonly Subject<TType3[]> pointsSubject = new Subject<TType3[]>();
+        protected readonly Subject<Exception> exceptionSubject = new Subject<Exception>();
+        protected readonly IMultiPlotModel<TType3> plotModel;
+        protected int? takeLastCount;
+        private IComparer<TGroupKey>? comparer;
 
-        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 1000, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
-        {
-        }
-    }
-
-    public abstract class MultiSeries2BaseModel<TKey, TR, TRS, TRS2> : MultiSeriesBaseModel<TKey, TKey, TRS>, IObservable<TRS2>
-    {
-        protected readonly IPlotModel<TRS> plotModel;
-
-        public MultiSeries2BaseModel(IPlotModel<TRS> plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 1000, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
+        public MultiSeriesBaseModel(IMultiPlotModel<TType3> plotModel, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) :
+            base(plotModel, comparer, scheduler: scheduler)
         {
             this.plotModel = plotModel;
         }
 
-        public MultiSeries2BaseModel(IPlotModel<TRS> plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 1000, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
+        protected override async void Refresh(IList<Unit> units)
         {
-            this.plotModel = plotModel;
-        }
+            await AddToDataPointsAsync();
 
-        public abstract IDisposable Subscribe(IObserver<TRS2> observer);
-    }
-
-    public abstract class MultiSeries2BaseModel<TKey, TR> : MultiSeriesBaseModel<TKey, TKey, KeyValuePair<TR, double>>
-    {
-        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = null) : base(plotModel, comparer, refreshRate, scheduler)
-        {
-        }
-
-        public MultiSeries2BaseModel(IPlotModel plotModel, IEqualityComparer<TKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = null) : base(plotModel, comparer, refreshRate, context)
-        {
-        }
-    }
-
-    public abstract class MultiSeriesBaseModel<TGroupKey, TKey, TValue> : DataPointsModel<TGroupKey, TValue>, IObserver<KeyValuePair<TGroupKey, TValue>>, IObserver<bool>, IMixedScheduler
-    {
-        private readonly SynchronizationContext? context;
-        public IScheduler? scheduler;
-        protected readonly ISubject<Unit> refreshSubject = new Subject<Unit>();
-        private readonly IPlotModel plotModel;
-        protected readonly object lck = new object();
-        protected bool showAll;
-
-        public MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, IScheduler? scheduler = default) : this(plotModel, comparer, refreshRate)
-        {
-            this.scheduler = scheduler ?? Scheduler.CurrentThread;
-        }
-
-        public MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100, SynchronizationContext? context = default) : this(plotModel, comparer, refreshRate)
-        {
-            this.context = context ?? SynchronizationContext.Current;
-        }
-
-        private MultiSeriesBaseModel(IPlotModel plotModel, IEqualityComparer<TGroupKey>? comparer = null, int refreshRate = 100) : base(comparer)
-        {
-            this.plotModel = plotModel ?? throw new ArgumentNullException("PlotModel is null");
-         
-            refreshSubject.Buffer(TimeSpan.FromMilliseconds(refreshRate)).Where(e.Any).Subscribe(Refresh);
-        }
-
-
-        public virtual void OnNext(KeyValuePair<TGroupKey, TValue> item)
-        {
-            this.AddToDataPoints(new[] { item });
-            refreshSubject.OnNext(Unit.Default);
-        }
-
-        public void OnNext(bool showAll)
-        {
-            this.showAll = showAll;
-            refreshSubject.OnNext(Unit.Default);
-        }
-
-        public void Reset()
-        {
-            (this as IMixedScheduler).ScheduleAction(() =>
+            _ = (this as IMixedScheduler).ScheduleAction(async () =>
             {
-                lock (DataPoints)
-                    DataPoints.Clear();
+                KeyValuePair<TGroupKey, ICollection<TType>>[]? dataPoints;
 
-                lock (plotModel)
+                this.PreModify();
+
+                lock (DataPoints)
+                    dataPoints = DataPoints.ToArray();
+
+                await AddAllPointsToSeries(dataPoints);
+
+                try
                 {
-                    plotModel.ClearSeries();
                     plotModel.Invalidate(true);
+                }
+                catch (Exception e)
+                {
+                    exceptionSubject.OnNext(e);
+                    refreshSubject.OnNext(Unit.Default);
                 }
             });
         }
 
-        public void Remove(ISet<TGroupKey> names)
+        protected virtual async Task AddAllPointsToSeries(KeyValuePair<TGroupKey, ICollection<TType>>[] dataPoints)
         {
-            (this as IMixedScheduler).ScheduleAction(() =>
+            foreach (var keyValue in (comparer != null ? dataPoints.OrderBy(a => a.Key, comparer) : dataPoints.AsEnumerable()).Index())
             {
-                lock (DataPoints)
-                    RemoveFromDataPoints(names);
+                _ = await Task.Run(() =>
+                {
+                    return CreateSingle(keyValue.Value).ToArray();
+                }).ContinueWith(async points =>
+                {
+                    plotModel.AddSeries(await points, keyValue.Value.Key?.ToString() ?? string.Empty, keyValue.Key);
+                });
+            }
+        }
+
+        protected virtual async Task AddToDataPointsAsync()
+        {
+            await Task.Run(() =>
+            {
+                lock (temporaryCollection)
+                {
+                    if (temporaryCollection.Any())
+                    {
+                        AddToDataPoints(temporaryCollection.ToArray());
+                        temporaryCollection.Clear();
+                    }
+                }
+            });
+        }
+
+        protected virtual IEnumerable<TType3> CreateSingle(KeyValuePair<TGroupKey, ICollection<TType>> keyValue)
+        {
+            return Create(keyValue.Value);
+        }
+
+        protected virtual IEnumerable<TType3> Create(IEnumerable<TType> value)
+        {
+            return takeLastCount.HasValue ?
+                                 Enumerable.TakeLast(ToDataPoints(value), takeLastCount.Value) :
+                                 ToDataPoints(value);
+        }
+
+        protected virtual void PreModify()
+        {
+        }
+
+        protected virtual IEnumerable<TType3> ToDataPoints(IEnumerable<TType> collection)
+        {
+            return
+                collection
+                .Scan(seed: default(TType3)!, (a, b) => CreateNewPoint(a, b))
+                .Skip(1);
+        }
+
+        protected abstract TType3 CreateNewPoint(TType3 xy0, TType xy);
+
+        protected override void Remove(ISet<TGroupKey> names)
+        {
+            base.Remove(names);
+
+            _ = (this as IMixedScheduler).ScheduleAction(() =>
+            {
                 lock (plotModel)
                 {
+                    //TODO fix
                     foreach (var name in names.Select(a => a.ToString()))
                         plotModel.RemoveSeries(name);
-                    plotModel.Invalidate(true);
+                    refreshSubject.OnNext(Unit.Default);
                 }
             });
-
         }
-
-        public void OnCompleted()
+        public void OnNext(int count)
         {
-            //throw new NotImplementedException();
+            this.takeLastCount = count;
+            refreshSubject.OnNext(Unit.Default);
         }
 
-        public void OnError(Exception error) => throw new Exception($"Error in {nameof(MultiSeriesBaseModel<TGroupKey, TKey, TValue>)}", error);
+        public override void OnNext(KeyValuePair<TGroupKey, TType> item)
+        {
+            lock (temporaryCollection)
+                temporaryCollection.Add(item);
+            refreshSubject.OnNext(Unit.Default);
+        }
 
-        protected abstract void Refresh(IList<Unit> units);
+        public void OnNext(IComparer<TGroupKey> comparer)
+        {
+            this.comparer = comparer;
+            refreshSubject.OnNext(Unit.Default);
+        }
 
-        IScheduler? IMixedScheduler.Scheduler => scheduler;
+        public IDisposable Subscribe(IObserver<TType3[]> observer)
+        {
+            return pointsSubject.Subscribe(observer);
+        }
 
-        SynchronizationContext? IMixedScheduler.Context => context;
+        public IDisposable Subscribe(IObserver<Exception> observer)
+        {
+            return exceptionSubject.Subscribe(observer);
+        }
     }
 }

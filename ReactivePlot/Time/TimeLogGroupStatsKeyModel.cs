@@ -21,11 +21,11 @@ namespace ReactivePlot.Time
     public class TimeLogGroupStats2KeyModel : TimeLogGroupStatsModel<double, ITimeStatsGroupPoint<string, double>>
     {
 
-        public TimeLogGroupStats2KeyModel(IPlotModel<ITimeStatsGroupPoint<string, double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStats2KeyModel(IMultiPlotModel<ITimeStatsGroupPoint<string, double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        public TimeLogGroupStats2KeyModel(IPlotModel<ITimeStatsGroupPoint<string, double>> model, RollingOperation rollingOperation, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStats2KeyModel(IMultiPlotModel<ITimeStatsGroupPoint<string, double>> model, RollingOperation rollingOperation, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             this.OnNext(rollingOperation);
         }
@@ -36,21 +36,27 @@ namespace ReactivePlot.Time
                 GroupKeyFactory.Create(val.Key, Power.Value);
         }
 
-        protected override ITimeStatsGroupPoint<string, double> CreatePoint(ITimeStatsGroupPoint<string, double> xy0, ITimeStatsGroupPoint<string, double> xy)
+        protected override ITimeStatsGroupPoint<string, double> CreateNewPoint(ITimeStatsGroupPoint<string, double> xy0, ITimeStatsGroupPoint<string, double> xy)
         { 
             return OnTheFlyStatsHelper.Combine(xy0, xy, rollingOperation);
         }
-    
-        protected override IEnumerable<ITimeStatsGroupPoint<string, double>> ToDataPoints(IEnumerable<KeyValuePair<string, ITimeStatsGroupPoint<string, double>>> collection)
+
+        protected override string GetKey(ITimeStatsGroupPoint<string, double> item)
         {
-            return
-           collection
-           .Select(a => a.Value)
-           .Select(a => { return a; })
-           .Scan(seed: default(ITimeStatsGroupPoint<string, double>), (a, b) => CreatePoint(a, b))
-           .Cast<ITimeStatsGroupPoint<string, double>>()
-           .Skip(1);
+            throw new NotImplementedException();
         }
+
+
+        //protected override IEnumerable<ITimeStatsGroupPoint<string, double>> ToDataPoints(IEnumerable<TimeStatsGroupPoint<string, double>> collection)
+        //{
+        //    return
+        //   collection
+        //   .Select(a => a.Value)
+        //   .Select(a => { return a; })
+        //   .Scan(seed: default(ITimeStatsGroupPoint<string, double>), (a, b) => CreateNewPoint(a, b))
+        //   .Cast<ITimeStatsGroupPoint<string, double>>()
+        //   .Skip(1);
+        //}
 
     }
 
@@ -61,11 +67,11 @@ namespace ReactivePlot.Time
     public class TimeLogGroupStatsKeyModel : TimeLogGroupStatsModel<double>
     {
 
-        public TimeLogGroupStatsKeyModel(IPlotModel<ITimeStatsPoint<double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStatsKeyModel(IMultiPlotModel<ITimeStatsPoint<double>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        public TimeLogGroupStatsKeyModel(IPlotModel<ITimeStatsPoint<double>> model, RollingOperation rollingOperation, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStatsKeyModel(IMultiPlotModel<ITimeStatsPoint<double>> model, RollingOperation rollingOperation, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
             this.OnNext(rollingOperation);
         }
@@ -85,7 +91,7 @@ namespace ReactivePlot.Time
     public class TimeLogGroupStatsValueModel : TimeLogGroupStatsModel<string>
     {
 
-        public TimeLogGroupStatsValueModel(IPlotModel<ITimeStatsPoint<string>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStatsValueModel(IMultiPlotModel<ITimeStatsPoint<string>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
@@ -107,25 +113,30 @@ namespace ReactivePlot.Time
     {
         protected RollingOperation rollingOperation;
 
-        public TimeLogGroupStatsModel(IPlotModel<ITimeStatsPoint<TKey>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStatsModel(IMultiPlotModel<ITimeStatsPoint<TKey>> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        protected override ITimeStatsPoint<TKey> CreatePoint(ITimeStatsPoint<TKey> xy0, ITimeStatsPoint<TKey> xy)
+        protected override ITimeStatsPoint<TKey> CreateNewPoint(ITimeStatsPoint<TKey> xy0, ITimeStatsPoint<TKey> xy)
         {
             return OnTheFlyStatsHelper.Combine(xy0, xy, rollingOperation);
         }
 
-        protected override IEnumerable<ITimeStatsPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<string, ITimeStatsPoint<TKey>>> collection)
+        protected override string GetKey(ITimeStatsPoint<TKey> item)
         {
-            return
-            collection
-            .Select(a => a.Value)
-            .Select(a => { return a; })
-            .Scan(seed: default(ITimeStatsPoint<TKey>), (a, b) => CreatePoint(a, b))
-            .Cast<ITimeStatsPoint<TKey>>()
-            .Skip(1);
+            throw new NotImplementedException();
         }
+
+        //protected override IEnumerable<ITimeStatsPoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<string, ITimeStatsPoint<TKey>>> collection)
+        //{
+        //    return
+        //    collection
+        //    .Select(a => a.Value)
+        //    .Select(a => { return a; })
+        //    .Scan(seed: default(ITimeStatsPoint<TKey>), (a, b) => CreateNewPoint(a, b))
+        //    .Cast<ITimeStatsPoint<TKey>>()
+        //    .Skip(1);
+        //}
     }
 
 
@@ -138,9 +149,11 @@ namespace ReactivePlot.Time
     {
         protected RollingOperation rollingOperation;
 
-        public TimeLogGroupStatsModel(IPlotModel<TTimeStatsPoint> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeLogGroupStatsModel(IMultiPlotModel<TTimeStatsPoint> model, IEqualityComparer<string>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
+
+
 
         public void OnNext(RollingOperation value)
         {

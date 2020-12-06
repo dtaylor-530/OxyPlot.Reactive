@@ -1,0 +1,51 @@
+﻿<Window
+    x:Class="OxyPlotEx.DemoAppCore.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="800"
+    Height="450"
+    mc:Ignorable="d">
+
+    <FrameworkElement.Resources>
+        <XmlDataProvider x:Key="Pages">
+            <x:XData>
+                <Pages xmlns="">
+                    <Page Title="Kelly" Uri="\ScottPlotView.xaml" />
+                </Pages>
+            </x:XData>
+        </XmlDataProvider>
+    </FrameworkElement.Resources>
+
+    <Grid SnapsToDevicePixels="True">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+            <ColumnDefinition Width="100" />
+        </Grid.ColumnDefinitions>
+
+        <Border>
+            <ListBox
+                Name="PageList"
+                Margin="10,10,20,10"
+                VerticalAlignment="Top"
+                Background="Transparent"
+                BorderThickness="0"
+                DisplayMemberPath="@Title"
+                FontSize="20"
+                Foreground="DarkSlateGray"
+                ItemsSource="{Binding Source={StaticResource Pages}, XPath=Pages/Page}"
+                SelectedIndex="0"
+                SelectedValuePath="@Uri" />
+        </Border>
+
+        <Border Grid.Column="1" Padding="0,10,10,10">
+            <Frame
+                Name="ContentFrame"
+                NavigationUIVisibility="Hidden"
+                Source="{Binding ElementName=PageList, Path=SelectedValue}" />
+        </Border>
+    </Grid>
+</Window>

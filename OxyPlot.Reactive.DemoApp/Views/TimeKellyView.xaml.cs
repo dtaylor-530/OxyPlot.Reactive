@@ -1,5 +1,4 @@
 ﻿using OxyPlot.Reactive.DemoApp.Common;
-using ReactivePlot.OxyPlot;
 using ReactivePlot.Time;
 using ReactiveUI;
 using System;
@@ -10,9 +9,20 @@ using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using ReactivePlot.Data.Common;
+using HandyControl.Data;
+using ReactivePlot.Model;
+using ReactivePlot.OxyPlot.PlotModel;
+//using ScottPlot;
+//using ReactivePlot.Base;
+//using ReactivePlot.ScottPlot;
+//using System.Threading;
+using ReactivePlot.Data.Factory;
+using ReactivePlot.Ex;
 
 namespace OxyPlot.Reactive.DemoApp.Views
 {
+    using static MathNetExtensions;
+
     /// <summary>
     /// Interaction logic for TimeSeriesStatsView.xaml
     /// </summary>
@@ -23,40 +33,165 @@ namespace OxyPlot.Reactive.DemoApp.Views
         public TimeKellyView()
         {
             InitializeComponent();
+   
 
-            //var model = new TimeKellyModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
-            var model2 = new OxyTime2KellyModel<string>(plotView1.Model ??= new PlotModel(), scheduler: RxApp.MainThreadScheduler);
+            ToggleContent
+                 .SelectToggleChanges()
+                 .Subscribe(a =>
+                 {
+                     disposable.Dispose();
+                     disposable = new CompositeDisposable();
+                     var models = GetModels(out var kellys);
 
-            model2.OnNext(0.02);
+                     kellys.BindTo(PropertyGridConfig2, a => a.SelectedObject)
+                     .DisposeWith(disposable);
+                     IObservable<ProfitPoint<string>[]>? samples = null;
+                     if (!a)
+                     {
+                         samples = GetSimulatedData(out var configs);
+                         configs.BindTo(PropertyGridConfig, a => a.SelectedObject)
+                                .DisposeWith(disposable);
+                     }
+                     else
+                     {
+                         var array = new Csv().Read().Take(1000).ToArray();
+                         samples = GetCsvData(array);
+                     }
 
-            disposable = new CompositeDisposable();
+                     //samples.Subscribe(ac =>
+                     //{
+                     //    this.Dispatcher.Invoke(() =>
+                     //    {
+                     //        DataGrid1.ItemsSource = ac;
+                     //    });
+                     //}).DisposeWith(disposable);
 
-            var array = new Csv().Read()
-           .Take(1000).ToArray();
-
-            DataGrid1.ItemsSource = array;
-
-            GetData(array)
-                .Subscribe(a => model2.OnNext(KeyValuePair.Create("", (IKellyPoint<string>)a)))
-                .DisposeWith(disposable);
-
-            RatioComboBox.SelectItemChanges<double>().Subscribe(model2.OnNext);
+                     GetTimeKellyModel(samples, models);
+                     GetTimeKellyModel2(samples, models);
+                     GetKellyModel(samples);
+                 });
         }
 
-        static IObservable<KellyPoint<string>> GetData(CsvRow[] csvRows)
-        {
 
-            var csv = csvRows.Select(a => new KellyPoint<string>(a.DateTime_, default, default, a.Odd, LayUnitProfit(a), ""))
+        void GetTimeKellyModel(IObservable<ProfitPoint<string>[]> samples, IObservable<KellyModel> configs)
+        {
+            var dateTime = DateTime.Now;
+
+            var md = new OxyTimePlotModel<string, IKellyModelPoint<string>>(plotView1.Model ??= new PlotModel());
+
+            var model = new TimeKellyModel<string>(md, scheduler: RxApp.MainThreadScheduler);
+
+            samples
+                .SelectMany(a => a)
+                .Subscribe(a =>
+                {
+                    model.OnNext(new HashSet<string>());
+                    model.OnNext(KeyValuePair.Create("", (IProfitPoint<string>)a));
+                })
+                .DisposeWith(disposable);
+
+            _ = configs.Subscribe(model)
+                        .DisposeWith(disposable);
+        }       
+        
+        void GetTimeKellyModel2(IObservable<ProfitPoint<string>[]> samples, IObservable<KellyModel> configs)
+        {
+            var dateTime = DateTime.Now;
+
+            var md = new DataGridPlotModel<DateTime,IKellyModelPoint<string>>(DataGrid1);
+
+            var model = new TimeKellyModel<string>(md, scheduler: RxApp.MainThreadScheduler);
+
+            samples
+                .SelectMany(a => a)
+                .Subscribe(a =>
+                {
+                    model.OnNext(new HashSet<string>());
+                    model.OnNext(KeyValuePair.Create("", (IProfitPoint<string>)a));
+                })
+                .DisposeWith(disposable);
+
+            _ = configs.Subscribe(model)
+                        .DisposeWith(disposable);
+        }
+
+        void GetKellyModel(IObservable<ProfitPoint<string>[]> samples)
+        {
+            var md2 = new OxyCartesianPlotModel<string, Point<double>>(plotView2.Model ??= new PlotModel());
+
+            var model = new KellyModel<string>(md2, scheduler: RxApp.MainThreadScheduler);
+
+            samples
+                .SelectMany(a => a)
+             .Subscribe(a =>
+             {
+                 model.OnNext(new HashSet<string>());
+                 model.OnNext(KeyValuePair.Create("", (IProfitPoint<string>)a));
+             })
+             .DisposeWith(disposable);
+
+            //_ = configs.Subscribe(model)
+            //            .DisposeWith(disposable);
+
+        }
+
+
+        IObservable<KellyModel> GetModels(out IObservable<KellyConfiguration> configs)
+        {
+            configs = BalanceNumericUpDown.SelectValueChanges()
+              .CombineLatest(FractionNumericUpDown.SelectValueChanges(),
+              (a, b) => (a, b))
+              .Select(d =>
+              {
+                  var config = new KellyConfiguration(d.a, d.b / 100d);
+                  return config;
+              });
+
+            return configs.Select(config => new KellyModel(config));
+        }
+
+        IObservable<ProfitPoint<string>[]> GetSimulatedData(out IObservable<BetConfiguration> configs)
+        {
+            var dateTime = DateTime.Now;
+            Random random = new Random();
+
+            configs = OddMeanNumericUpDown
+                .SelectValueChanges()
+                .CombineLatest(
+                OddDeviationNumericUpDown.SelectValueChanges(),
+                CountNumericUpDown.SelectValueChanges(),
+                (a, b, c) => new BetConfiguration(a, b, c));
+
+            var profits = configs.CombineLatest(WinPercentageNumericUpDown.SelectValueChanges(), (a, b) => (a, b)).Select(ae =>
+            {
+                (BetConfiguration a, double b) = ae;
+                Point<int>[] sa = NormalSamples(1 / a.Mean, a.Deviation, (int)a.Count).Where(a => a > 1).Select((a, i) => new Point<int>(i, Math.Truncate(a * 100d) / 100d)).ToArray();
+
+                var kelly2 = new KellyState2(b / 1000d, random);
+
+                return sa.Select((b, i) =>
+                {
+                    var profit = kelly2.GetUnitProfit(b.Value);
+                    return new ProfitPoint<string>(dateTime.AddDays(i), b.Value, profit, default, default);
+                }).ToArray();
+            });
+            return profits;
+        }
+
+        static IObservable<ProfitPoint<string>[]> GetCsvData(CsvRow[] csvRows)
+        {
+            var csv = csvRows.Select(a => new ProfitPoint<string>(a.DateTime_, a.Odd, LayUnitProfit(a), "", ""))
           .OrderBy(a => a.Var);
 
-            IObservable<KellyPoint<string>> cc = csv
-                .Take(500)
-                .ToObservable()
-                .Merge(
-                csv
-                .Skip(500)
-                .ToObservable()
-                .Pace(TimeSpan.FromSeconds(0.5)))
+            var merge = Observable.Return(csv.Take(500).ToArray())
+                 .Merge(
+                Observable.Return(csv
+                 .Skip(500)
+                 .ToArray()));
+
+            IObservable<ProfitPoint<string>[]> cc =
+                merge
+                .Pace(TimeSpan.FromSeconds(0.5))
                  .Publish().RefCount();
             return cc;
         }
@@ -71,5 +206,45 @@ namespace OxyPlot.Reactive.DemoApp.Views
             disposable.Dispose();
         }
     }
+
+    static class HandyExtension
+    {
+        public static IObservable<double> SelectValueChanges(this HandyControl.Controls.NumericUpDown numericUpDown)
+        {
+            return Observable.FromEventPattern<
+                EventHandler<FunctionEventArgs<double>>,
+                FunctionEventArgs<double>>(a => numericUpDown.ValueChanged += a, a => numericUpDown.ValueChanged -= a)
+                .Select(a => a.EventArgs.Info)
+                .StartWith(numericUpDown.Value);
+        }
+    }
+
+    static class MathNetExtensions
+    {
+        static Random random = new Random();
+
+        public static double[] NormalSamples(double mean, double deviation, int count)
+        {
+
+            var array = MathNet.Numerics.Distributions.Normal.Samples(random, mean, deviation).Take(count).ToArray();
+            return array;
+        }
+
+    }
+
+    public struct BetConfiguration
+    {
+        public BetConfiguration(double mean, double deviation, double count)
+        {
+            Mean = mean;
+            Deviation = deviation;
+            Count = count;
+        }
+
+        public double Mean { get; }
+        public double Deviation { get; }
+        public double Count { get; }
+    }
+
 
 }

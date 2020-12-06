@@ -9,6 +9,9 @@ namespace ReactivePlot.Data.Factory
     public static class DataSource
     {
         private static Lazy<KeyValuePair<string, KeyValuePair<int, double>>[]> array;
+        static Random random = new Random();
+        static Troschuetz.Random.Distributions.Continuous.NormalDistribution trandom = new Troschuetz.Random.Distributions.Continuous.NormalDistribution(3, 0.5);
+        static Troschuetz.Random.Distributions.Continuous.NormalDistribution trandom2 = new Troschuetz.Random.Distributions.Continuous.NormalDistribution(7, 2);
 
         static DataSource()
         {
@@ -33,6 +36,16 @@ namespace ReactivePlot.Data.Factory
             return array.Value.ToObservable().Select(a =>
             {
                 var kvp = KeyValuePair.Create(a.Value.Key, Enumerable.Range(-1, 3).Random() * a.Value.Value);
+                var tt = KeyValuePair.Create(a.Key, kvp);
+                return tt;
+            });
+        }
+
+        public static IObservable<KeyValuePair<string, KeyValuePair<double, double>>> Observe1000XYPlusMinus()
+        {
+            return array.Value.ToObservable().Select(a =>
+            {
+                var kvp = KeyValuePair.Create(trandom.NextDouble(), trandom2.NextDouble());
                 var tt = KeyValuePair.Create(a.Key, kvp);
                 return tt;
             });

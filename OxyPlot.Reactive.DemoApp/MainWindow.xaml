@@ -15,7 +15,7 @@
                 <Pages xmlns="">
 
                     <Page Title="Kelly" Uri="\Views\TimeKellyView.xaml" />
-                    
+
                     <Page Title="Cartesian" Uri="\Views\CartesianView.xaml" />
 
                     <Page Title="Box Plot Series" Uri="\Views\BoxPlotView.xaml" />

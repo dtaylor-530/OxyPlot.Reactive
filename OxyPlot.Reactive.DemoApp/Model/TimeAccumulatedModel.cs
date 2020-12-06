@@ -16,7 +16,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        protected override ITimePoint<TKey> CreateNewPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {
             return new TimePoint<TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key);
         }
@@ -31,7 +31,7 @@ namespace OxyPlot.Reactive
         {
         }
 
-        protected override ITimeGroupPoint<TGroupKey, TKey> CreatePoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
+        protected override ITimeGroupPoint<TGroupKey, TKey> CreateNewPoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
         {
             return new TimeGroupPoint<TGroupKey, TKey>(xy.Var, (xy0?.Value ?? 0) + xy.Value, xy.Key, xy.GroupKey);
         }

@@ -6,6 +6,7 @@ using OxyPlot.Series;
 using ReactivePlot.Model;
 using ReactivePlot.OxyPlot.Common;
 using ReactivePlot.OxyPlot.PlotModel;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using OxyPlotModel = OxyPlot.PlotModel;
@@ -55,7 +56,7 @@ namespace ReactivePlot.OxyPlot
             }
         }
 
-        public virtual void AddData((string key, ErrorPoint)[] points, string title, int? index)
+        public virtual void AddSeries(IReadOnlyCollection<(string key, ErrorPoint)> points, string title, int? index)
         {
             PlotModel.Series.Add(OxyFactory.BuildError(
                 points.Select(a => a.Item2).Select(a => new ErrorColumnItem(a.Value, a.Deviation) { Color = a.Value > 0 ? Positive : Negative }).ToArray(), title));
@@ -80,7 +81,7 @@ namespace ReactivePlot.OxyPlot
             PlotModel.Axes.Add(categoryAxis1);
         }
 
-        public void ClearSeries()
+        public void Clear()
         {
             PlotModel.Series.Clear();
         }

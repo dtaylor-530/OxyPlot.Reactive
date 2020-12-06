@@ -10,8 +10,14 @@
     d:DesignWidth="800"
     FontSize="16"
     mc:Ignorable="d">
-    <UserControl.Resources />
-
+    <FrameworkElement.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/SkinDefault.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/HandyControl;component/Themes/Theme.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </FrameworkElement.Resources>
     <UniformGrid>
         <DockPanel>
             <ToolBar

@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 namespace ReactivePlot.Model
 {
+    public interface IIndex
+    {
+        long Index { get; }
+    }
+
     public interface IValue<T>
     {
         T Value { get; }
@@ -36,15 +41,23 @@ namespace ReactivePlot.Model
 
     public interface IKeyPoint<TKey, TVar, TValue> : IKey<TKey>, IPoint<TVar, TValue>
     {
-    }
+        void Deconstruct(out TKey key, out TVar x, out TValue y)
+        {
+            key = Key;
+            x = Var;
+            y = Value;
+        }
 
-    public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double> where TVar : IComparable<TVar>
-    {
-        void Deconstruct(out TVar x, out double y)
+        void Deconstruct(out TVar x, out TValue y)
         {
             x = Var;
             y = Value;
         }
+    }
+
+    public interface IDoublePoint<TKey, TVar> : IKeyPoint<TKey, TVar, double> where TVar : IComparable<TVar>
+    {
+
     }
 
     public interface ITimePoint : IValue<double>, IVar<DateTime>, IPoint<DateTime, double>
@@ -60,7 +73,7 @@ namespace ReactivePlot.Model
     }
 
 
-    public interface I2Point<TKey, TVar> : IDoublePoint<TKey, TVar>, IKey<TKey> where TVar : IComparable<TVar>
+    public interface IDoubleKeyPoint<TKey, TVar> : IDoublePoint<TKey, TVar>, IKey<TKey> where TVar : IComparable<TVar>
     {
     }
 
@@ -141,14 +154,4 @@ namespace ReactivePlot.Model
     public interface IRangePoint<TKey, TVar, TValue, TPoint> : IKeyPoint<TKey, TVar, TValue>, IPointCollection<TVar, TValue, TPoint>, IRange<TVar> where TVar : struct, IComparable<TVar>, IFormattable, IEquatable<TVar>
     {
     }
-
-
-
-    //public interface IDataPointKeyProvider<T> : IDeconstructDoubleDouble, IKey<T>
-    //{
-    //}
-
-    //public interface IDateTimeKeyPointObserver<TType, TKey> : IObserver<TType> where TType : ITimePoint<TKey>
-    //{
-    //}
 }

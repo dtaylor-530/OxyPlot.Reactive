@@ -1,4 +1,5 @@
 ﻿using NMT.Wpf.Controls;
+using ReactiveUI;
 using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -38,8 +39,8 @@ namespace OxyPlot.Reactive.DemoApp.Common
         {
             isBusyChanges
                 .StartWith(IsBusy)
-                .ObserveOnDispatcher()
-                .SubscribeOnDispatcher()
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
                 .Subscribe(hideContent =>
                 {
                     if (windowsProgressRing != null && contentPresenter != null)

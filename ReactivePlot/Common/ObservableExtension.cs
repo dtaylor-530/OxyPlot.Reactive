@@ -69,7 +69,7 @@ namespace ReactivePlot.Common
             return observable.Subscribe(model, a => a.Key, a => a.Value.Key, a => a.Value.Value);
         }
 
-        public static IDisposable SubscribeCustom<TGroupKey, R, S>(this IObservable<KeyValuePair<TGroupKey, KeyValuePair<DateTime, double>>> observable, TimeModel<TGroupKey, string, R, S> model, Func<string>? keyFunc = null)
+        public static IDisposable SubscribeCustom<TGroupKey, R, S>(this IObservable<KeyValuePair<TGroupKey, KeyValuePair<DateTime, double>>> observable, TimeMinMaxModel<TGroupKey, string, R, S> model, Func<string>? keyFunc = null)
             where R : ITimePoint<string>
             where S : R
         {
@@ -130,7 +130,7 @@ namespace ReactivePlot.Common
         }
 
 
-        public static IDisposable SubscribeCustom4(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeModel<string, string, ITimePoint<string>, ITimeRangePoint<string>> model, Func<string>? keyFunc = null)
+        public static IDisposable SubscribeCustom4(this IObservable<KeyValuePair<string, KeyValuePair<DateTime, double>>> observable, TimeMinMaxModel<string, string, ITimePoint<string>, ITimeRangePoint<string>> model, Func<string>? keyFunc = null)
         {
             keyFunc ??= CreateKey;
             return observable

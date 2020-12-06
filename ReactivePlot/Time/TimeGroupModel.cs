@@ -20,7 +20,7 @@ namespace ReactivePlot.Time
     public class TimeGroupModel<TKey> : TimeGroupModel<TKey, TKey>
     {
 
-        public TimeGroupModel(IPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupModel(IMultiPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }
@@ -33,25 +33,40 @@ namespace ReactivePlot.Time
     public class TimeGroupModel<TGroupKey, TKey> : TimeGroupBaseModel<TGroupKey, TKey, ITimeRangePoint<TKey>>
     {
 
-        public TimeGroupModel(IPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeGroupModel(IMultiPlotModel<ITimeRangePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
 
         }
 
-        protected override ITimeRangePoint<TKey> CreatePoint(ITimeRangePoint<TKey>? timePoint0, IGrouping<Range<DateTime>, KeyValuePair<TGroupKey, ITimePoint<TKey>>> timePoints)
+        protected override ITimeRangePoint<TKey> CreatePoint(ITimeRangePoint<TKey>? timePoint0, IGrouping<Range<DateTime>,ITimePoint<TKey>> timePoints)
         {
+            var points = ToDataPoints(timePoints, timePoint0?.Collection.Last()).ToArray();
+            return new TimeRangePoint<TKey>(timePoints.Key, points, timePoints.FirstOrDefault().Key, this.operation.HasValue ? operation.Value : Operation.Mean);
 
-            var points = ToDataPoints(timePoints.Select(a => a.Value), timePoint0?.Collection.Last()).ToArray();
-            return new TimeRangePoint<TKey>(timePoints.Key, points, timePoints.FirstOrDefault().Value.Key, this.operation.HasValue ? operation.Value : Operation.Mean);
+        }
 
-            IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<ITimePoint<TKey>> timePoints, ITimePoint<TKey>? timePoint0)
-            {
-                var ss = timePoints
-                        .Scan(timePoint0, (a, b) => CreatePoint(a, b))
-                        .Skip(1);
+        protected virtual IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<ITimePoint<TKey>> timePoints, ITimePoint<TKey>? timePoint0)
+        {
+            var ses = timePoints
+                    .Scan(timePoint0, (a, b) => CreatePoint(a, b))
+                    .Skip(1);
 
-                return ss;
-            }
+            return ses;
+        }
+
+        protected override ITimeRangePoint<TKey> CreateNewPoint(ITimeRangePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override TGroupKey GetKey(ITimePoint<TKey> item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

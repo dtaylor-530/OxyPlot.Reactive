@@ -2,7 +2,7 @@
 
 namespace ReactivePlot.Model
 {
-    public struct Point<TVar> : I2Point<string, TVar> where TVar : IComparable<TVar>
+    public struct Point<TVar> : IDoubleKeyPoint<string, TVar> where TVar : IComparable<TVar>
     {
         public Point(TVar dateTime, double value, string key)
         {

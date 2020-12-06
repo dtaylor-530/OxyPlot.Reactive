@@ -13,19 +13,18 @@ namespace OxyPlotEx.DemoAppCore.Pages
     /// </summary>
     public partial class StackedBarView : Page
     {
-        private StackedBarModel sb1 = new StackedBarModel(), sb2 = new StackedBarModel(), sb3 = new StackedBarModel();
+        private StackedBarModel sb1, sb2, sb3;
 
         public StackedBarView()
         {
             InitializeComponent();
 
-            plotView1.Model = sb1.Model;
+            sb1 = new StackedBarModel(plotView1.Model ?? new OxyPlot.PlotModel());
+            sb2 = new StackedBarModel(plotView2.Model ?? new OxyPlot.PlotModel());
+            sb3 = new StackedBarModel(plotView3.Model ?? new OxyPlot.PlotModel());
+
             NewMethod1().Subscribe(sb1);
-
-            plotView2.Model = sb2.Model;
             NewMethod2().Subscribe(sb2);
-
-            plotView3.Model = sb3.Model;
             NewMethod3().Subscribe(sb3);
         }
 

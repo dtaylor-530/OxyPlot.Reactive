@@ -17,7 +17,7 @@ namespace ReactivePlot.Base
     /// <typeparam name="TKey"></typeparam>
     public abstract class TimeKeyGroupModel<TKey> : TimeKeyGroupModel<TKey, TKey>
     {
-        public TimeKeyGroupModel(IPlotModel<ITimePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeKeyGroupModel(IMultiPlotModel<ITimePoint<TKey>> model, IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
     }
@@ -28,26 +28,16 @@ namespace ReactivePlot.Base
     /// <typeparam name="TKey"></typeparam>
     public abstract class TimeKeyGroupModel<TGroupKey, TKey> : TimeKeyGroupModel<TGroupKey, TKey, ITimePoint<TKey>, ITimePoint<TKey>>
     {
-        public TimeKeyGroupModel(IPlotModel<ITimePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeKeyGroupModel(IMultiPlotModel<ITimePoint<TKey>> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 
-        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        protected override ITimePoint<TKey> CreateNewPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {
             return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
         }
 
-        protected override IEnumerable<ITimePoint<TKey>> ToDataPoints(IEnumerable<KeyValuePair<TGroupKey, ITimePoint<TKey>>> collection)
-        {
-            return collection
-       .Select(a => a.Value)
-       .Select(a => { return a; })
-       .Scan(seed: default(ITimePoint<TKey>), (a, b) => CreatePoint(a, b))
-       .Skip(1)
-       .Cast<ITimePoint<TKey>>();
-        }
-
-        protected override ITimePoint<TKey> CreateAllPoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
+        protected override ITimePoint<TKey> CreatePoint(ITimePoint<TKey> xy0, ITimePoint<TKey> xy)
         {
             return new TimePoint<TKey>(xy.Var, xy.Value, xy.Key);
         }
@@ -58,11 +48,11 @@ namespace ReactivePlot.Base
     /// Groups each series individually
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
-    public abstract class TimeKeyGroupModel<TGroupKey, TKey, TPointIn, TPointOut> : TimeModel<TGroupKey, TKey, TPointIn, TPointOut>
+    public abstract class TimeKeyGroupModel<TGroupKey, TKey, TPointIn, TPointOut> : TimeMinMaxModel<TGroupKey, TKey, TPointIn, TPointOut>
         where TPointIn : ITimePoint<TKey>
         where TPointOut : ITimePoint<TKey>, TPointIn
     {
-        public TimeKeyGroupModel(IPlotModel<TPointOut> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
+        public TimeKeyGroupModel(IMultiPlotModel<TPointOut> model, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null) : base(model, comparer, scheduler: scheduler)
         {
         }
 

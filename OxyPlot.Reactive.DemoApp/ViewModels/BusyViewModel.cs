@@ -16,9 +16,11 @@ namespace OxyPlot.Reactive.DemoApp.ViewModels
 
             observable.Where(a => a.HasValue).Select(a => a.Value).SubscribeCustom(model3);
 
-            isBusy = observable.ObserveOnDispatcher().Select(a => !a.HasValue)
+            isBusy = observable
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .SubscribeOn(RxApp.MainThreadScheduler)
+                .Select(a => !a.HasValue)
                 .DistinctUntilChanged()
-                .SubscribeOnDispatcher()
                 .ToProperty(this, a => a.IsBusy);
         }
 

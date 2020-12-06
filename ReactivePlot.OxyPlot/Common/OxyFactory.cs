@@ -242,7 +242,7 @@ namespace ReactivePlot.OxyPlot.Common
             };
         }
 
-        internal static Series BuildBoxPlot(BoxPlotItem[] points, string title)
+        internal static Series BuildBoxPlot(IEnumerable<BoxPlotItem> points, string title)
         {
             return new BoxPlotSeries
             {
@@ -253,7 +253,7 @@ namespace ReactivePlot.OxyPlot.Common
         }
 
 
-        internal static Series BuildError(ErrorColumnItem[] points, string title)
+        internal static Series BuildError(IEnumerable<ErrorColumnItem> points, string title)
         {
             return new ErrorColumnSeries
             {

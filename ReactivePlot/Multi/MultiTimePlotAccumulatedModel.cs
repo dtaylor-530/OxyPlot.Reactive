@@ -16,8 +16,8 @@ namespace ReactivePlot.Multi
     public abstract class MultiTimePlotAccumulatedModel<TKey, TPlotModelIn, TPlotModelOut, TPlotModelError> :
         MultiTimePlotAccumulatedModel<TKey, TKey, TPlotModelIn, TPlotModelOut, TPlotModelError> 
         where TPlotModelOut : IPlotModel
-        where TPlotModelIn : TPlotModelOut, IPlotModel<ITimeGroupPoint<TKey, TKey>>
-        where TPlotModelError : IPlotModel<(string, ErrorPoint)>, TPlotModelOut
+        where TPlotModelIn : TPlotModelOut, IMultiPlotModel<ITimeGroupPoint<TKey, TKey>>
+        where TPlotModelError : IMultiPlotModel<(string, ErrorPoint)>, TPlotModelOut
     {
         public MultiTimePlotAccumulatedModel(IEqualityComparer<TKey>? comparer = null, IScheduler? scheduler = null, SynchronizationContext? synchronizationContext = null) :
           base(comparer, scheduler, synchronizationContext)
@@ -35,9 +35,9 @@ namespace ReactivePlot.Multi
             ITimeGroupPoint<TGroupKey, TKey>,
             TPlotModelIn,
             TPlotModelOut>
-        where TPlotModelIn : TPlotModelOut, IPlotModel<ITimeGroupPoint<TGroupKey, TKey>>
+        where TPlotModelIn : TPlotModelOut, IMultiPlotModel<ITimeGroupPoint<TGroupKey, TKey>>
         where TPlotModelOut : IPlotModel
-        where TPlotModelError : IPlotModel<(string, ErrorPoint)>, TPlotModelOut
+        where TPlotModelError : IMultiPlotModel<(string, ErrorPoint)>, TPlotModelOut
     {
         private ErrorBarModel errorBarModel;
 
@@ -77,15 +77,23 @@ namespace ReactivePlot.Multi
     {
         private readonly Func<ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>> func;
 
-        public TimeAccumulatedAModel(IPlotModel<ITimeGroupPoint<TGroupKey, TKey>> model, Func<ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>> func, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null)
+        public TimeAccumulatedAModel(IMultiPlotModel<ITimeGroupPoint<TGroupKey, TKey>> model, Func<ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>, ITimeGroupPoint<TGroupKey, TKey>> func, IEqualityComparer<TGroupKey>? comparer = null, IScheduler? scheduler = null)
             : base(model, comparer, scheduler)
         {
             this.func = func;
         }
 
-        protected override ITimeGroupPoint<TGroupKey, TKey> CreatePoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
+        protected override ITimeGroupPoint<TGroupKey, TKey> CreateNewPoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
         {
             return func(xy0, xy);
         }
+
+
+
+
+        //protected override ITimeGroupPoint<TGroupKey, TKey> CreatePoint(ITimeGroupPoint<TGroupKey, TKey> xy0, ITimeGroupPoint<TGroupKey, TKey> xy)
+        //{
+
+        //}
     }
 }

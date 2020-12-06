@@ -16,23 +16,20 @@ namespace ReactivePlot.OxyPlot
 {
     public class StackedBarModel : IObserver<(string groupkey, string key, double value)>, IObserver<bool>
     {
-        private readonly Lazy<OxyPlotModel> model;
         private readonly ReplaySubject<Series> refreshSubject = new ReplaySubject<Series>();
         private readonly ReplaySubject<(string groupkey, string key, double value)> itemSubject = new ReplaySubject<(string groupkey, string key, double value)>();
         private readonly ReplaySubject<bool> stackSubject = new ReplaySubject<bool>();
         private readonly SynchronizationContext scheduler;
-        private IDisposable? disposable;
+        private readonly IDisposable? disposable;
         private readonly object lck = new object();
+        private readonly OxyPlotModel plotModel;
+        private int columnCount = 0;
 
-        public StackedBarModel(SynchronizationContext? scheduler = null)
+        public StackedBarModel(OxyPlotModel plotModel, SynchronizationContext? scheduler = null)
         {
             this.scheduler = scheduler ?? SynchronizationContext.Current;
-            model = new Lazy<OxyPlotModel>(() => PlotBuilder.Build());
-            Init();
-        }
-
-        private void Init()
-        {
+            PlotBuilder.Build(plotModel);
+            this.plotModel = plotModel;
             disposable ??= itemSubject.Buffer(TimeSpan.FromMilliseconds(300))
                 .Where(a => a.Any())
                 .CombineLatest(stackSubject.StartWith(true).DistinctUntilChanged(), (a, b) => (a, b))
@@ -40,23 +37,115 @@ namespace ReactivePlot.OxyPlot
                 .SubscribeOn(scheduler)
                 .Subscribe(series =>
                 {
-                    lock (model)
-                        model.Value.InvalidatePlot(true);
+                    lock (plotModel)
+                        plotModel.InvalidatePlot(true);
                 });
+
+
+            Unit Combine(IList<(string groupkey, string key, double value)> items, bool stack)
+            {
+                lock (plotModel)
+                {
+                    if (plotModel.DefaultXAxis == null)
+                    {
+                        throw new Exception($"plotModel needs a {plotModel.DefaultXAxis} (can't be null)");
+                    }
+
+                    var cSeries = EnumerateColumnSeries(stack).ToArray();
+
+                    foreach (var gk in items.GroupBy(a => a.groupkey))
+                    {
+                        ColumnSeries s = FindSeries(gk.Key, cSeries, stack);
+                        foreach (var (groupkey, key, value) in items)
+                        {
+                            double val = s.Items.Sum(a => a.Value);
+                            double newVal = value;
+                            if (groupkey == key)
+                            {
+                                newVal += val;
+                                s.Items.Clear();
+                            }
+
+                            s.Items.Add(new ColumnItem(newVal));
+                        }
+                    }
+                    if (plotModel.DefaultXAxis is CategoryAxis axis)
+                    {
+                        foreach (var k in items.GroupBy(a => (a.groupkey, a.key)).Select(a => a.Key).Where(a => a.groupkey != a.key).Select(a => a.key))
+                        {
+                            var labels = axis.Labels;
+                            if (labels.Contains(k) == false)
+                                labels.Add(k);
+                        }
+                    }
+
+                    return Unit.Default;
+                }
+
+                ColumnSeries FindSeries(string key, IEnumerable<ColumnSeries> series, bool stack)
+                {
+                    ColumnSeries? cSerie = null;
+
+                    foreach (var serie in series)
+                    {
+                        if (serie.Title == key)
+                        {
+                            cSerie = serie;
+                        }
+                        serie.IsStacked = stack;
+                    }
+                    if (cSerie == null)
+                    {
+                        cSerie = new ColumnSeries { Title = key, IsStacked = stack };
+                        columnCount++;
+                        lock (plotModel)
+                            plotModel.Series.Add(cSerie);
+                    }
+
+                    return cSerie;
+                }
+            }
+
+
+            IEnumerable<ColumnSeries> EnumerateColumnSeries(bool stack)
+            {
+                for (int i = 0; i < columnCount; i++)
+                {
+                    if (plotModel.Series[i] is ColumnSeries cSeries)
+                    {
+                        cSeries.IsStacked = stack;
+                        yield return cSeries;
+                    }
+                }
+            }
         }
 
-        public OxyPlotModel Model => model.Value;
+        public void Reset()
+        {
+            scheduler.Post((a) =>
+            {
+                lock (plotModel)
+                {
+                    columnCount = 0;
+                    while (plotModel.Series.Any())
+                        plotModel.Series.Remove(plotModel.Series.First());
+
+                    if (plotModel.DefaultXAxis is CategoryAxis categoryAxis)
+                        categoryAxis.Labels.Clear();
+                    plotModel.InvalidatePlot(false);
+                }
+            }, null);
+        }
 
         public void OnCompleted()
         {
-            //            disposable.Dispose();
+            // disposable.Dispose();
             //Reset();
         }
 
         public void OnError(Exception error)
         {
             throw new NotImplementedException($"Error in {nameof(StackedBarModel)}");
-            //throw new NotImplementedException();
         }
 
         public void OnNext(bool value)
@@ -68,128 +157,30 @@ namespace ReactivePlot.OxyPlot
         {
             itemSubject.OnNext(value);
         }
-
-        public Unit Combine(IList<(string groupkey, string key, double value)> items, bool stack)
-        {
-            lock (model)
-            {
-                if (model.Value.DefaultXAxis == null)
-                {
-                    throw new Exception($"PlotModel needs a {model.Value.DefaultXAxis} (can't be null)");
-                }
-
-                var cSeries = EnumerateColumnSeries(stack).ToArray();
-
-                foreach (var gk in items.GroupBy(a => a.groupkey))
-                {
-                    ColumnSeries s = FindSeries(gk.Key, cSeries, stack);
-                    foreach (var (groupkey, key, value) in items)
-                    {
-                        double val = s.Items.Sum(a => a.Value);
-                        double newVal = value;
-                        if (groupkey == key)
-                        {
-                            newVal += val;
-                            s.Items.Clear();
-                        }
-
-                        s.Items.Add(new ColumnItem(newVal));
-                    }
-                }
-                if (model.Value.DefaultXAxis is CategoryAxis axis)
-                {
-                    foreach (var k in items.GroupBy(a => (a.groupkey, a.key)).Select(a => a.Key).Where(a => a.groupkey != a.key).Select(a => a.key))
-                    {
-                        var labels = axis.Labels;
-                        if (labels.Contains(k) == false)
-                            labels.Add(k);
-                    }
-                }
-
-                return Unit.Default;
-            }
-        }
-
-        private int columnCount = 0;
-
-        private ColumnSeries FindSeries(string key, IEnumerable<ColumnSeries> series, bool stack)
-        {
-            ColumnSeries? cSerie = null;
-
-            foreach (var serie in series)
-            {
-                if (serie.Title == key)
-                {
-                    cSerie = serie;
-                }
-                serie.IsStacked = stack;
-            }
-            if (cSerie == null)
-            {
-                cSerie = new ColumnSeries { Title = key, IsStacked = stack };
-                columnCount++;
-                lock (model)
-                    model.Value.Series.Add(cSerie);
-            }
-
-            return cSerie;
-        }
-
-        private IEnumerable<ColumnSeries> EnumerateColumnSeries(bool stack)
-        {
-            for (int i = 0; i < columnCount; i++)
-            {
-                if (model.Value.Series[i] is ColumnSeries cSeries)
-                {
-                    cSeries.IsStacked = stack;
-                    yield return cSeries;
-                }
-            }
-        }
-
-        public void Reset()
-        {
-            scheduler.Post((a) =>
-            {
-                lock (model)
-                {
-                    columnCount = 0;
-                    while (model.Value.Series.Any())
-                        model.Value.Series.Remove(model.Value.Series.First());
-
-                    if (model.Value.DefaultXAxis is CategoryAxis categoryAxis)
-                        categoryAxis.Labels.Clear();
-                    model.Value.InvalidatePlot(false);
-                }
-            }, null);
-        }
     }
 
     public static class PlotBuilder
     {
-        public static OxyPlotModel Build()
+        public static void Build(OxyPlotModel plotModel)
         {
-            (Axis xaxis, Axis yaxis, List<Series> s1) = BuildComponents();
+            (Axis xaxis, Axis yaxis, _) = BuildComponents();
 
-            var model = Construct(xaxis, yaxis, s1);
+            Construct(xaxis, yaxis);
 
-            return model;
-
-            static OxyPlotModel Construct(Axis xaxis, Axis yaxis, List<Series> s1)
+    
+            OxyPlotModel Construct(Axis xaxis, Axis yaxis)
             {
                 xaxis.MajorGridlineStyle = LineStyle.Solid;
                 xaxis.MinorGridlineStyle = LineStyle.Dot;
                 yaxis.MajorGridlineStyle = LineStyle.Dot;
                 xaxis.MinorGridlineStyle = LineStyle.Dot;
 
-                var model = new OxyPlotModel();
-
-                model.Axes.Add(xaxis);
-                model.Axes.Add(yaxis);
+                plotModel.Axes.Add(xaxis);
+                plotModel.Axes.Add(yaxis);
                 //foreach (var series in s1)
-                //    model.Series.Add(series);
+                //    plotModel.Series.Add(series);
 
-                return model;
+                return plotModel;
             }
 
             static (Axis, Axis, List<Series>) BuildComponents()
