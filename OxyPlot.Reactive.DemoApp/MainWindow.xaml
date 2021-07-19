@@ -13,7 +13,7 @@
         <XmlDataProvider x:Key="Pages">
             <x:XData>
                 <Pages xmlns="">
-
+                    
                     <Page Title="Kelly" Uri="\Views\TimeKellyView.xaml" />
 
                     <Page Title="Cartesian" Uri="\Views\CartesianView.xaml" />
@@ -41,6 +41,8 @@
                     <Page Title="Multi Group" Uri="\Views\TimeSeriesGroupView.xaml" />
 
                     <Page Title="Time Series" Uri="\Views\TimeSeriesView.xaml" />
+
+                    <Page Title="Data-Grid" Uri="\Views\DataGridView.xaml" />
                 </Pages>
             </x:XData>
         </XmlDataProvider>

@@ -12,11 +12,6 @@ using ReactivePlot.Data.Common;
 using HandyControl.Data;
 using ReactivePlot.Model;
 using ReactivePlot.OxyPlot.PlotModel;
-//using ScottPlot;
-//using ReactivePlot.Base;
-//using ReactivePlot.ScottPlot;
-//using System.Threading;
-using ReactivePlot.Data.Factory;
 using ReactivePlot.Ex;
 
 namespace OxyPlot.Reactive.DemoApp.Views
@@ -34,46 +29,53 @@ namespace OxyPlot.Reactive.DemoApp.Views
         {
             InitializeComponent();
    
-
             ToggleContent
                  .SelectToggleChanges()
                  .Subscribe(a =>
                  {
                      disposable.Dispose();
                      disposable = new CompositeDisposable();
-                     var models = GetModels(out var kellys);
-
-                     kellys.BindTo(PropertyGridConfig2, a => a.SelectedObject)
-                     .DisposeWith(disposable);
-                     IObservable<ProfitPoint<string>[]>? samples = null;
-                     if (!a)
-                     {
-                         samples = GetSimulatedData(out var configs);
-                         configs.BindTo(PropertyGridConfig, a => a.SelectedObject)
-                                .DisposeWith(disposable);
-                     }
-                     else
-                     {
-                         var array = new Csv().Read().Take(1000).ToArray();
-                         samples = GetCsvData(array);
-                     }
-
-                     //samples.Subscribe(ac =>
-                     //{
-                     //    this.Dispatcher.Invoke(() =>
-                     //    {
-                     //        DataGrid1.ItemsSource = ac;
-                     //    });
-                     //}).DisposeWith(disposable);
-
-                     GetTimeKellyModel(samples, models);
-                     GetTimeKellyModel2(samples, models);
-                     GetKellyModel(samples);
+                     var kellys = GetConfigs();
+                     var models = kellys.Select(config => new KellyModel(config)); 
+                     SetConfigs2(kellys);
+                     var samples = GetData(a);
+                     SetTimeKellyModel(samples, models);
+                     SetTimeKellyModel2(samples, models);
+                     SetKellyModel(samples);
                  });
         }
 
+        IObservable<ProfitPoint<string>[]> GetData(bool a)
+        {
+            IObservable<ProfitPoint<string>[]> samples;
+            if (!a)
+            {
+                samples = GetSimulatedData(out var configs);
+                SetConfigs(configs);
+            }
+            else
+            {
+                samples = GetCsvData(new Csv().Read().Take(1000).ToArray());
+            }
+            return samples;
+        }
 
-        void GetTimeKellyModel(IObservable<ProfitPoint<string>[]> samples, IObservable<KellyModel> configs)
+
+        void SetConfigs(IObservable<BetConfiguration> configs)
+        {
+            configs
+                .BindTo(PropertyGridConfig, a => a.SelectedObject)
+                .DisposeWith(disposable);
+        }      
+        
+        void SetConfigs2(IObservable<KellyConfiguration> kellys)
+        {
+            kellys
+                .BindTo(PropertyGridConfig2, a => a.SelectedObject)
+                .DisposeWith(disposable);
+        }
+
+        void SetTimeKellyModel(IObservable<ProfitPoint<string>[]> samples, IObservable<KellyModel> configs)
         {
             var dateTime = DateTime.Now;
 
@@ -94,7 +96,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                         .DisposeWith(disposable);
         }       
         
-        void GetTimeKellyModel2(IObservable<ProfitPoint<string>[]> samples, IObservable<KellyModel> configs)
+        void SetTimeKellyModel2(IObservable<ProfitPoint<string>[]> samples, IObservable<KellyModel> configs)
         {
             var dateTime = DateTime.Now;
 
@@ -115,7 +117,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                         .DisposeWith(disposable);
         }
 
-        void GetKellyModel(IObservable<ProfitPoint<string>[]> samples)
+        void SetKellyModel(IObservable<ProfitPoint<string>[]> samples)
         {
             var md2 = new OxyCartesianPlotModel<string, Point<double>>(plotView2.Model ??= new PlotModel());
 
@@ -129,16 +131,12 @@ namespace OxyPlot.Reactive.DemoApp.Views
                  model.OnNext(KeyValuePair.Create("", (IProfitPoint<string>)a));
              })
              .DisposeWith(disposable);
-
-            //_ = configs.Subscribe(model)
-            //            .DisposeWith(disposable);
-
         }
 
 
-        IObservable<KellyModel> GetModels(out IObservable<KellyConfiguration> configs)
+        IObservable<KellyConfiguration> GetConfigs()
         {
-            configs = BalanceNumericUpDown.SelectValueChanges()
+            var configs = BalanceNumericUpDown.SelectValueChanges()
               .CombineLatest(FractionNumericUpDown.SelectValueChanges(),
               (a, b) => (a, b))
               .Select(d =>
@@ -147,7 +145,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
                   return config;
               });
 
-            return configs.Select(config => new KellyModel(config));
+            return configs;
         }
 
         IObservable<ProfitPoint<string>[]> GetSimulatedData(out IObservable<BetConfiguration> configs)
@@ -194,17 +192,13 @@ namespace OxyPlot.Reactive.DemoApp.Views
                 .Pace(TimeSpan.FromSeconds(0.5))
                  .Publish().RefCount();
             return cc;
+
+            static double LayUnitProfit(CsvRow csvRow)
+            {
+                return csvRow.Profit > 0 ? 1 : 1 - csvRow.Odd;
+            }
         }
 
-        static double LayUnitProfit(CsvRow csvRow)
-        {
-            return csvRow.Profit > 0 ? 1 : 1 - csvRow.Odd;
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            disposable.Dispose();
-        }
     }
 
     static class HandyExtension
@@ -221,7 +215,7 @@ namespace OxyPlot.Reactive.DemoApp.Views
 
     static class MathNetExtensions
     {
-        static Random random = new Random();
+        static readonly Random random = new Random();
 
         public static double[] NormalSamples(double mean, double deviation, int count)
         {
@@ -229,7 +223,6 @@ namespace OxyPlot.Reactive.DemoApp.Views
             var array = MathNet.Numerics.Distributions.Normal.Samples(random, mean, deviation).Take(count).ToArray();
             return array;
         }
-
     }
 
     public struct BetConfiguration
@@ -245,6 +238,4 @@ namespace OxyPlot.Reactive.DemoApp.Views
         public double Deviation { get; }
         public double Count { get; }
     }
-
-
 }

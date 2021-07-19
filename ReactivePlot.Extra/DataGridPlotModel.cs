@@ -18,23 +18,18 @@ namespace ReactivePlot.Ex
     }
 
     public class DataGridPlotModel<TType> : DataGridPlotModel<double, TType>
-   where TType : IKeyPoint<string, double, double>
+        where TType : IKeyPoint<string, double, double>
     {
         public DataGridPlotModel(DataGrid plotModel) : base(plotModel)
         {
-
-
         }
     }
-
 
     public class DataGridDateTimePlotModel<TType> : DataGridPlotModel<DateTime, TType>
        where TType : IKeyPoint<string, DateTime, double>
     {
         public DataGridDateTimePlotModel(DataGrid plotModel) : base(plotModel)
         {
-
-
         }
     }
 
@@ -42,15 +37,16 @@ namespace ReactivePlot.Ex
         IDataGridPlotModel<TType>,
         IAddSeries<TType>
         where TVar : IEquatable<TVar>
-        where TType : IKeyPoint<string, TVar, double>
+        where TType : IPoint<TVar, double>
     {
+        int i = 0;
+        private readonly int limit;
+        private readonly DataTable<TVar, TType> dataTable = new DataTable<TVar, TType>();
 
-        DataTable<TVar, TType> dataTable = new DataTable<TVar, TType>();
-
-        public DataGridPlotModel(DataGrid plotModel)
+        public DataGridPlotModel(DataGrid plotModel, int limit =100)
         {
             this.PlotModel = plotModel;
-
+            this.limit = limit;
         }
 
         public DataGrid PlotModel { get; }
@@ -95,6 +91,7 @@ namespace ReactivePlot.Ex
 
         public virtual void Invalidate(bool v)
         {
+     
             AddXColumn();
             AddColumns();
             AddItems();
@@ -133,9 +130,11 @@ namespace ReactivePlot.Ex
                     }
             }
 
+
             void AddItems()
             {
-                while (dataTable.ItemsQueue.TryDequeue(out var dsf))
+                // Only add 100 items;
+                while (dataTable.ItemsQueue.TryDequeue(out var dsf) && (i++ <= limit))
                 {
                     var (rowIndex, row) = dsf;
                     if (rowIndex.HasValue && rowIndex < PlotModel.Items.Count)
@@ -147,7 +146,6 @@ namespace ReactivePlot.Ex
                     {
                         PlotModel.Items.Add(row);
                     }
-
                 }
             }
         }
@@ -155,51 +153,44 @@ namespace ReactivePlot.Ex
 
     class DataTable<TVar, TType>
         where TVar : IEquatable<TVar>
-        where TType : IKeyPoint<string, TVar, double>
+        where TType : IPoint<TVar, double>
     {
-        RankedDictionary<TVar, Dictionary<string, double>> valuesDictionary = new RankedDictionary<TVar, Dictionary<string, double>>();
-        HashSet<string> titles = new HashSet<string>();
+        readonly RankedDictionary<TVar, Dictionary<string, double>> valuesDictionary = new RankedDictionary<TVar, Dictionary<string, double>>();
+        readonly HashSet<string> titles = new HashSet<string>();
+
 
         public ConcurrentQueue<string> Titlesqueue { get; } = new ConcurrentQueue<string>();
         public ConcurrentQueue<(int?, ExpandoObject)> ItemsQueue { get; } = new ConcurrentQueue<(int?, ExpandoObject)>();
 
         public void Add(IReadOnlyCollection<TType> items, string title)
         {
-            (TVar x, (TVar x, double y) xy, bool)[]? arr = null;
+            if (string.IsNullOrEmpty(title))
+                throw new Exception("Title cannot be empty");
+
+            ((TVar x, double y) xy, bool)[] arr = null;
             lock (valuesDictionary)
             {
                 var keys = from xy in items.Select(a => { var (x, y) = a; return (x, y); })
                            join key in valuesDictionary.Keys on true equals true
                            into temp
                            let s = temp.SingleOrDefault(a => a.Equals(xy.x))
-                           select (xy.x, xy, !s.Equals(default));
+                           select ((xy.x, xy.y), !s.Equals(default));
 
                 arr = keys.ToArray();
             }
-            //if (index.HasValue)
-            //{
-            //    //throw new NotImplementedException();
-            //    titles.Add(title);
-            //    //foreach (var kvp in titles)
-            //    //{
-            //    //    var idx = titles[kvp.Key];
-            //    //    if (idx > index.Value)
-            //    //        titles[kvp.Key] = idx + 1;
-            //    //}
-            //}
-            //else
+
             titles.Add(title);
             Titlesqueue.Enqueue(title);
             List<(int?, ExpandoObject)> listtemp = new List<(int?, ExpandoObject)>();
 
-            foreach (var (key, (x, y), match) in arr)
+            foreach (var ((x, y), match) in arr)
             {
 
-                var values = valuesDictionary[key] = match ? valuesDictionary[key] : new Dictionary<string, double>();
+                var values = valuesDictionary[x] = match ? valuesDictionary[x] : new Dictionary<string, double>();
                 values[title] = y;
 
                 ExpandoObject row = new ExpandoObject();
-                row.TryAdd(Constants.X, key);
+                row.TryAdd(Constants.X, x);
                 foreach (var kvpKey in titles)
                 {
                     if (values.TryGetValue(kvpKey, out double value))
@@ -210,7 +201,7 @@ namespace ReactivePlot.Ex
 
                 if (match)
                 {
-                    var indexInValues = valuesDictionary.IndexOfKey(key);
+                    var indexInValues = valuesDictionary.IndexOfKey(x);
                     //PlotModel.Items.RemoveAt(indexInValues);
                     //PlotModel.Items.Insert(indexInValues, row);
                     if (indexInValues < 0)
@@ -218,8 +209,6 @@ namespace ReactivePlot.Ex
 
                     }
                     listtemp.Add((indexInValues, row));
-
-
                 }
                 else
                 {

@@ -37,6 +37,11 @@ namespace ReactivePlot.Model
 
     public interface IPoint<TVar, TValue> : IVar<TVar>, IValue<TValue>
     {
+        void Deconstruct(out TVar x, out TValue y)
+        {
+            x = Var;
+            y = Value;
+        }
     }
 
     public interface IKeyPoint<TKey, TVar, TValue> : IKey<TKey>, IPoint<TVar, TValue>
@@ -44,12 +49,6 @@ namespace ReactivePlot.Model
         void Deconstruct(out TKey key, out TVar x, out TValue y)
         {
             key = Key;
-            x = Var;
-            y = Value;
-        }
-
-        void Deconstruct(out TVar x, out TValue y)
-        {
             x = Var;
             y = Value;
         }
